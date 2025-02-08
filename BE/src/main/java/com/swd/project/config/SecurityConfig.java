@@ -34,7 +34,9 @@ public class SecurityConfig {
     private static final List<String> SECURED_URLS = List.of(
             "/api/user/p",
             "/api/user/p/update",
-            "api/user/p/update/password"
+            "api/user/p/update/password",
+            "/api/children/add",
+            "/api/children/info/**"
     );
 
     @Bean
