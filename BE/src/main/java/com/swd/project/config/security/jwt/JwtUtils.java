@@ -46,7 +46,7 @@ public class JwtUtils {
         return false;
     }
 
-    public String getUserNameFromJwtToken(String jwt){
+    public String getEmailFromJwtToken(String jwt){
         return Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(jwt).getBody().getSubject();
     }
 
@@ -71,7 +71,7 @@ public class JwtUtils {
     public String generateVerificationToken(String username){
         return Jwts.builder()
                 .setSubject(username)
-                .setIssuer("homelet")
+                .setIssuer("baby-tracking-system")
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().toInstant().plus(1, ChronoUnit.DAYS).toEpochMilli()))

@@ -3,6 +3,7 @@ package com.swd.project.config.security.jwt;
 import com.swd.project.entity.User;
 import com.swd.project.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+                .orElseThrow(() -> new BadCredentialsException("Invalid Username or Password"));
         if(!user.isActive()){
             throw new RuntimeException("Account is not active");
         }else if(user.isBanned()){
