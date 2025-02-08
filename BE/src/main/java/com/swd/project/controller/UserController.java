@@ -10,6 +10,9 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @CrossOrigin("*")
 @RestController
@@ -25,7 +28,7 @@ public class UserController {
         UserDTO userDTO = userService.register(request);
         return ApiResponse.<UserDTO>builder()
                 .statusCode(HttpStatus.CREATED.value())
-                .message("User registered successfully")
+                .message("User registered")
                 .data(userDTO)
                 .build();
     }
@@ -35,7 +38,7 @@ public class UserController {
         UserDTO userDTO = userService.verifyEmail(request.getToken());
         return ApiResponse.<UserDTO>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("User verified successfully")
+                .message("User verified")
                 .data(userDTO)
                 .build();
     }
@@ -45,7 +48,34 @@ public class UserController {
         UserDTO userDTO = userService.getAuthenticatedUserDTO();
         return ApiResponse.<UserDTO>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("User retrieved successfully")
+                .message("User profile retrieved")
+                .data(userDTO)
+                .build();
+    }
+
+    @PostMapping("/p/update")
+    public ApiResponse<UserDTO> updateUserProfile(
+            @RequestParam("firstName") String firstName,
+            @RequestParam("lastName") String lastName,
+            @RequestParam("phone") String phone,
+            @RequestParam("address") String address,
+            @RequestParam("avatar") MultipartFile avatar
+    ) throws IOException {
+        UserDTO userDTO = userService.updateUserProfile(firstName, lastName, phone, address, avatar);
+        return ApiResponse.<UserDTO>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("User profile updated")
+                .data(userDTO)
+                .build();
+    }
+
+    @PostMapping("/p/update/password")
+    public ApiResponse<UserDTO> updatePassword(@RequestParam("oldPassword") String oldPassword,
+                                               @RequestParam("newPassword") String newPassword){
+        UserDTO userDTO = userService.updatePassword(oldPassword, newPassword);
+        return ApiResponse.<UserDTO>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Password updated")
                 .data(userDTO)
                 .build();
     }

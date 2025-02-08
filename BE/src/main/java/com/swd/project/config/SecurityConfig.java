@@ -31,7 +31,11 @@ public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
 
-    private static final List<String> SECURED_URLS = List.of("/api/user/p");
+    private static final List<String> SECURED_URLS = List.of(
+            "/api/user/p",
+            "/api/user/p/update",
+            "api/user/p/update/password"
+    );
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {

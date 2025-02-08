@@ -16,8 +16,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class UserService implements IUserService {
     private final EmailService emailService;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public UserDTO register(UserCreationRequest request) throws MessagingException {
@@ -88,5 +92,37 @@ public class UserService implements IUserService {
     public User getAuthenticatedUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    @Override
+    public UserDTO updatePassword(String oldPassword, String newPassword) {
+        User user = getAuthenticatedUser();
+        if(passwordEncoder.matches(oldPassword, user.getPassword())){
+            user.setPassword(passwordEncoder.encode(newPassword));
+            User savedUser = userRepository.save(user);
+            return userMapper.toUserDTO(savedUser);
+        }else{
+            throw new RuntimeException("Old password is incorrect");
+        }
+    }
+
+    @Override
+    public UserDTO updateUserProfile(String firstName,
+                                     String lastName,
+                                     String phone,
+                                     String address,
+                                     MultipartFile file) throws IOException {
+        User user = getAuthenticatedUser();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPhone(phone);
+        user.setAddress(address);
+        if(!file.isEmpty()){
+            Map url = cloudinaryService.upload(file);
+            String avatarUrl = (String) url.get("url");
+            user.setAvatar(avatarUrl);
+        }
+        User savedUser = userRepository.save(user);
+        return userMapper.toUserDTO(savedUser);
     }
 }
