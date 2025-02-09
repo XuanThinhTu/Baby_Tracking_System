@@ -28,12 +28,15 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    private static final ThreadLocal<String> currentToken = new ThreadLocal<>();
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
+            currentToken.set(jwt);
             if(jwt != null && jwtUtils.validateToken(jwt)){
                 String email = jwtUtils.getEmailFromJwtToken(jwt);
 
@@ -55,5 +58,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             return headerAuth.substring(7);
         }
         return null;
+    }
+
+    public static String getCurrentToken() {
+        return currentToken.get();
     }
 }

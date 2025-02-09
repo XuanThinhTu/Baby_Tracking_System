@@ -5,6 +5,7 @@ import com.swd.project.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,14 @@ public class JwtUtils {
     private int jwtExpirationMs;
     @Autowired
     private UserRepository userRepository;
+    // Biến static để lưu giá trị jwtSecret cho các phương thức static
+    private static String staticJwtSecret;
+
+    // Phương thức khởi tạo sau khi bean được tạo, gán giá trị từ jwtSecret sang staticJwtSecret
+    @PostConstruct
+    public void init() {
+        staticJwtSecret = jwtSecret;
+    }
 
     private Key key(){
         return Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(jwtSecret));
@@ -85,5 +94,25 @@ public class JwtUtils {
                 .build()
                 .parseClaimsJws(token)
                 .getBody().getExpiration();
+    }
+
+    public static String getRoleFromJwtToken(String token) {
+        // Giải mã token và lấy phần body chứa các claims
+        Claims claims = Jwts.parser()
+                .setSigningKey(staticJwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+        // Lấy claim "role" (nếu role được lưu dưới dạng chuỗi)
+        return claims.get("role", String.class);
+    }
+
+    public static String getSubFromJwtToken(String token) {
+        // Giải mã token và lấy phần body chứa các claims
+        Claims claims = Jwts.parser()
+                .setSigningKey(staticJwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+        // Lấy claim "role" (nếu role được lưu dưới dạng chuỗi)
+        return claims.get("role", String.class);
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @CrossOrigin("*")
 @RestController
@@ -77,6 +78,53 @@ public class UserController {
                 .statusCode(HttpStatus.OK.value())
                 .message("Password updated")
                 .data(userDTO)
+                .build();
+    }
+
+
+    @GetMapping("/admin/getAll")
+    public ApiResponse<List<UserDTO>> getAllUsers(){
+        List<UserDTO> userDTOs = userService.getAllUsers();
+        return ApiResponse.<List<UserDTO>>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Show all users")
+                .data(userDTOs)
+                .build();
+    }
+
+    @DeleteMapping("/admin/deactivate")
+    public ApiResponse<?> deactivateUser(@RequestParam("user") int id){
+        userService.deactivateByUserId(id);
+        return ApiResponse.<List<UserDTO>>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Deactivate user successfully")
+                .build();
+    }
+
+    @PutMapping("/admin/activate")
+    public ApiResponse<?> activateUser(@RequestParam("user") int id){
+        userService.activateByUserId(id);
+        return ApiResponse.<List<UserDTO>>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Activate user successfully")
+                .build();
+    }
+
+    @PutMapping("/admin/ban")
+    public ApiResponse<?> banUser(@RequestParam("user") int id){
+        userService.banByUserId(id);
+        return ApiResponse.<List<UserDTO>>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Deactivate user successfully")
+                .build();
+    }
+
+    @PutMapping("/admin/unban")
+    public ApiResponse<?> unbanUser(@RequestParam("user") int id){
+        userService.unbanByUserId(id);
+        return ApiResponse.<List<UserDTO>>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Deactivate user successfully")
                 .build();
     }
 
