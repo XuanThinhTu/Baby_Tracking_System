@@ -1,9 +1,11 @@
 package com.swd.project.exception;
 
 
+
 import com.swd.project.dto.response.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import com.swd.project.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -73,6 +75,7 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(UnauthorizedTokenException.class)
     public ResponseEntity<ApiResponse<?>> handleUnauthorizedTokenException(UnauthorizedTokenException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
