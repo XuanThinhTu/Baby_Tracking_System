@@ -1,6 +1,5 @@
 package com.swd.project.service.Impl;
 
-import com.swd.project.config.security.filter.AuthTokenFilter;
 import com.swd.project.config.security.jwt.JwtUtils;
 import com.swd.project.dto.request.UserCreationRequest;
 import com.swd.project.dto.response.UserDTO;
@@ -8,7 +7,6 @@ import com.swd.project.entity.Role;
 import com.swd.project.entity.User;
 import com.swd.project.exception.ResourceAlreadyExistException;
 import com.swd.project.exception.ResourceNotFoundException;
-import com.swd.project.exception.UnauthorizedTokenException;
 import com.swd.project.mapper.UserMapper;
 import com.swd.project.repository.RoleRepository;
 import com.swd.project.repository.UserRepository;
@@ -133,13 +131,6 @@ public class UserService implements IUserService {
 
     @Override
     public List<UserDTO> getAllUsers() {
-        String token = AuthTokenFilter.getCurrentToken();
-        System.out.println(token);
-        String role = JwtUtils.getRoleFromJwtToken(token);
-        System.out.println(role);
-        if (!role.equals("ROLE_ADMIN")) {
-            throw new UnauthorizedTokenException("UNAUTHORIZED");
-        }
         List<User> users = userRepository.findAll();
         return users.stream()
                 .map(userMapper::toUserDTO)
@@ -148,11 +139,6 @@ public class UserService implements IUserService {
 
     @Override
     public void deactivateByUserId(int id) {
-        String token = AuthTokenFilter.getCurrentToken();
-        String role = JwtUtils.getRoleFromJwtToken(token);
-        if (!role.equals("ROLE_ADMIN")) {
-            throw new UnauthorizedTokenException("UNAUTHORIZED");
-        }
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setActive(false);
         userRepository.save(user);
@@ -160,13 +146,6 @@ public class UserService implements IUserService {
 
     @Override
     public void activateByUserId(int id) {
-        String token = AuthTokenFilter.getCurrentToken();
-        System.out.println(token);
-        String role = JwtUtils.getRoleFromJwtToken(token);
-        System.out.println(role);
-        if (!role.equals("ROLE_ADMIN")) {
-            throw new UnauthorizedTokenException("UNAUTHORIZED");
-        }
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setActive(true);
         userRepository.save(user);
@@ -174,11 +153,6 @@ public class UserService implements IUserService {
 
     @Override
     public void banByUserId(int id) {
-        String token = AuthTokenFilter.getCurrentToken();
-        String role = JwtUtils.getRoleFromJwtToken(token);
-        if (!role.equals("ROLE_ADMIN")) {
-            throw new UnauthorizedTokenException("UNAUTHORIZED");
-        }
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setBanned(true);
         userRepository.save(user);
@@ -186,11 +160,6 @@ public class UserService implements IUserService {
 
     @Override
     public void unbanByUserId(int id) {
-        String token = AuthTokenFilter.getCurrentToken();
-        String role = JwtUtils.getRoleFromJwtToken(token);
-        if (!role.equals("ROLE_ADMIN")) {
-            throw new UnauthorizedTokenException("UNAUTHORIZED");
-        }
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setBanned(false);
         userRepository.save(user);

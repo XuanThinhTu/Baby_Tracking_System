@@ -9,6 +9,7 @@ import com.swd.project.service.IUserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -83,6 +84,7 @@ public class UserController {
 
 
     @GetMapping("/admin/getAll")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ApiResponse<List<UserDTO>> getAllUsers(){
         List<UserDTO> userDTOs = userService.getAllUsers();
         return ApiResponse.<List<UserDTO>>builder()
@@ -93,6 +95,7 @@ public class UserController {
     }
 
     @DeleteMapping("/admin/deactivate")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ApiResponse<?> deactivateUser(@RequestParam("user") int id){
         userService.deactivateByUserId(id);
         return ApiResponse.<List<UserDTO>>builder()
@@ -102,6 +105,7 @@ public class UserController {
     }
 
     @PutMapping("/admin/activate")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ApiResponse<?> activateUser(@RequestParam("user") int id){
         userService.activateByUserId(id);
         return ApiResponse.<List<UserDTO>>builder()
@@ -111,6 +115,7 @@ public class UserController {
     }
 
     @PutMapping("/admin/ban")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ApiResponse<?> banUser(@RequestParam("user") int id){
         userService.banByUserId(id);
         return ApiResponse.<List<UserDTO>>builder()
@@ -120,6 +125,7 @@ public class UserController {
     }
 
     @PutMapping("/admin/unban")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ApiResponse<?> unbanUser(@RequestParam("user") int id){
         userService.unbanByUserId(id);
         return ApiResponse.<List<UserDTO>>builder()

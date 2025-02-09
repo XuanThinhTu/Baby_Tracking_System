@@ -35,6 +35,7 @@ public class SecurityConfig {
             "/api/user/p",
             "/api/user/p/update",
             "api/user/p/update/password",
+            "/api/user/admin/**",
             "/api/children/add",
             "/api/children/info/**"
     );

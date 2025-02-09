@@ -39,9 +39,9 @@ public class AppInitConfig {
             roleRepository.save(roleDoctor);
             log.info("Roles initialized.");
             }
-            if (userRepository.findByEmail("huynhtuanphat115@gmail.com").isEmpty()) {
+            if (userRepository.findByEmail("babytrackingsys@gmail.com").isEmpty()) {
                 User admin = new User();
-                admin.setEmail("huynhtuanphat115@gmail.com");
+                admin.setEmail("babytrackingsys@gmail.com");
                 admin.setPassword(passwordEncoder.encode("123456")); // thay đổi mật khẩu theo nhu cầu
                 admin.setFirstName("Admin");
                 admin.setLastName("Admin");
