@@ -56,6 +56,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, Object>> handleConstraintViolationException(ConstraintViolationException ex) {
@@ -73,6 +74,7 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(UnauthorizedTokenException.class)
     public ResponseEntity<ApiResponse<?>> handleUnauthorizedTokenException(UnauthorizedTokenException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
