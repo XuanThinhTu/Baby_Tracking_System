@@ -1,5 +1,7 @@
 package com.swd.project.exception;
 
+
+import com.swd.project.dto.response.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -71,5 +72,14 @@ public class GlobalExceptionHandler {
         response.put("message", errors.get("birthDate"));
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(UnauthorizedTokenException.class)
+    public ResponseEntity<ApiResponse<?>> handleUnauthorizedTokenException(UnauthorizedTokenException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                ApiResponse.builder()
+                        .statusCode(HttpStatus.UNAUTHORIZED.value())
+                        .message(ex.getMessage())
+                        .build()
+        );
     }
 }

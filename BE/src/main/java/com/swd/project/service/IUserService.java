@@ -7,6 +7,7 @@ import jakarta.mail.MessagingException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface IUserService {
 
@@ -27,4 +28,11 @@ public interface IUserService {
     ) throws IOException;
 
     UserDTO updatePassword(String oldPassword, String newPassword);
+
+    List<UserDTO> getAllUsers();
+
+    void deactivateByUserId(int id);
+    void activateByUserId(int id);
+    void banByUserId(int id);
+    void unbanByUserId(int id);
 }
