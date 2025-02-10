@@ -32,12 +32,14 @@ public class SecurityConfig {
     private final AuthEntryPointJwt unauthorizedHandler;
 
     private static final List<String> SECURED_URLS = List.of(
-            "/api/user/p",
-            "/api/user/p/update",
-            "api/user/p/update/password",
-            "/api/user/admin/**",
-            "/api/children/add",
-            "/api/children/info/**"
+            "/api/v1/user/p",
+            "/api/v1/user/p/update",
+            "api/v1/user/p/update/password",
+            "/api/v1/user/admin/**",
+            "/api/v1/children/add",
+            "/api/v1/children/info/**",
+            "/api/v1/membership-package/**",
+            "/api/v1/membership-package"
     );
 
     @Bean
