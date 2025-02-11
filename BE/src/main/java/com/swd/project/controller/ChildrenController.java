@@ -11,7 +11,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/children")
+@RequestMapping("children")
 @RequiredArgsConstructor
 public class ChildrenController {
 
