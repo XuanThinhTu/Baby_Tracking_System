@@ -11,6 +11,7 @@ import { Content, Footer, Header } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 import React, { useState } from "react";
 import UserManagement from "../content/UserManagement";
+import DoctorManagement from "../content/DoctorManagement";
 
 const items1 = [
   { key: "home", label: "Home" },
@@ -76,6 +77,8 @@ function AdminHomePage() {
     switch (selectedKey) {
       case "user-management":
         return <UserManagement />;
+      case "doctor-management":
+        return <DoctorManagement />;
     }
   };
 
@@ -123,9 +126,9 @@ function AdminHomePage() {
         <Content
           style={{
             flex: 1,
-            padding: 0,
-            minHeight: "100vh",
+            padding: "20px",
             background: "#f0f2f5",
+            overflow: "auto",
           }}
         >
           {renderContent()}
@@ -133,7 +136,12 @@ function AdminHomePage() {
       </Layout>
 
       <Footer
-        style={{ textAlign: "center", background: "#fff", padding: "10px 0" }}
+        style={{
+          textAlign: "center",
+          background: "#fff",
+          padding: "10px 0",
+          marginTop: "20px",
+        }}
       >
         Footer
       </Footer>
