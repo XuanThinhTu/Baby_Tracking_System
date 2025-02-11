@@ -1,12 +1,7 @@
 import React from "react";
-import AdminHeader from "./components/header/AdminHeader/AdminHeader";
 
 function App() {
-  return (
-    <div>
-      <AdminHeader />
-    </div>
-  );
+  return <div>Heloo</div>;
 }
 
 export default App;
