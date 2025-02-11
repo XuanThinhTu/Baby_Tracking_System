@@ -7,13 +7,15 @@ import SignUp from "../pages/user/Auth/Register";
 
 function AppRouter() {
   return (
-    <Router>
+    <Router >
       <UserHeader />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<SignIn />} />
-        <Route path="/register" element={<SignUp />} />
-      </Routes>
+      <div className="container mx-auto px-2 py-4">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<SignIn />} />
+          <Route path="/register" element={<SignUp />} />
+        </Routes>
+      </div>
     </Router>
   );
 }

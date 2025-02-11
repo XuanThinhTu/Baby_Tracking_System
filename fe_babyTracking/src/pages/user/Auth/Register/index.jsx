@@ -2,11 +2,12 @@ import React from "react";
 import logBg from "../../../../assets/images/background/log-in-bg.png";
 import siginUpImg from "../../../../assets/images/auth/sign-up.png";
 import RegisterForm from "./RegisterForm";
+import Breadcrumbs from "../../../../components/elements/Breadcrumb";
 
 const SignUp = () => {
     return (
         <>
-            {/* <Breadcrumbs headline="Đăng Ký" /> */}
+            <Breadcrumbs headline="Đăng Ký" />
             <div
                 className={
                     "w-full bg-cover bg-center flex flex-col lg:flex-row gap-8 my-4"

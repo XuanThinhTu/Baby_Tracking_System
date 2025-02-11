@@ -65,7 +65,7 @@ const RegisterForm = () => {
                         <input
                             className="w-full border-2 border-[rgba(0,0,0,0.2)] rounded-xl p-4 mt-1 bg-transparent"
                             placeholder="Nhập tên tài khoản..."
-                            disabled
+                        // disabled
                         />
                     </div>
                     {/* Địa chỉ email */}
@@ -74,7 +74,7 @@ const RegisterForm = () => {
                         <input
                             className="w-full border-2 rounded-xl p-4 mt-1 bg-transparent border-[rgba(0,0,0,0.2)]"
                             placeholder="Nhập email..."
-                            disabled
+                        // disabled
                         />
                     </div>
                 </div>
@@ -86,7 +86,7 @@ const RegisterForm = () => {
                         className="w-full border-2 border-[rgba(0,0,0,0.2)] rounded-xl p-4 mt-1 bg-transparent"
                         placeholder="Nhập mật khẩu..."
                         type="password"
-                        disabled
+                    // disabled
                     />
                 </div>
 
