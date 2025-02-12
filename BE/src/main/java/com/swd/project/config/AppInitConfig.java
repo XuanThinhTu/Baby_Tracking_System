@@ -52,6 +52,8 @@ public class AppInitConfig {
                 admin.setRole(adminRole);
 
                 userRepository.save(admin);
+                log.info("Admin account initialized.");
+
             }
         };
     }
