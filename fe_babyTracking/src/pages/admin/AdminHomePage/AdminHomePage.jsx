@@ -12,11 +12,12 @@ import Sider from "antd/es/layout/Sider";
 import React, { useState } from "react";
 import UserManagement from "../content/UserManagement";
 import DoctorManagement from "../content/DoctorManagement";
+import AppointmentManagement from "../content/AppointmentManagement";
 
 const items1 = [
   { key: "home", label: "Home" },
   { key: "users", label: "Users" },
-  { key: "orders", label: "Orders" },
+  { key: "charts", label: "Charts" },
   { key: "settings", label: "Settings" },
 ];
 
@@ -55,9 +56,9 @@ const items2 = [
     label: "Mail",
   },
   {
-    key: "calendar",
+    key: "appointment",
     icon: <CalendarOutlined />,
-    label: "Calendar",
+    label: "Appointment",
   },
 ];
 
@@ -79,6 +80,8 @@ function AdminHomePage() {
         return <UserManagement />;
       case "doctor-management":
         return <DoctorManagement />;
+      case "appointment":
+        return <AppointmentManagement />;
     }
   };
 
