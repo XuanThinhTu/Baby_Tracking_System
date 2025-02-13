@@ -16,7 +16,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("membership-package")
+@RequestMapping("/api/v1/membership-package")
 @RequiredArgsConstructor
 public class MembershipPackageController {
     private final MembershipPackageService membershipPackageService;
