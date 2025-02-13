@@ -1,4 +1,14 @@
-import { Badge, Button, Calendar, Form, Input, Modal, TimePicker } from "antd";
+import {
+  Badge,
+  Button,
+  Calendar,
+  Form,
+  Input,
+  message,
+  Modal,
+  Popconfirm,
+  TimePicker,
+} from "antd";
 import { useForm } from "antd/es/form/Form";
 import dayjs from "dayjs";
 import React, { useState } from "react";
@@ -130,12 +140,21 @@ function AppointmentManagement() {
           >
             {editing ? "Save Change" : "Edit Information"}
           </Button>
-          <Button
-            onClick={handleDeleteAppointment}
-            style={{ backgroundColor: "red", color: "white" }}
+          <Popconfirm
+            title="Delete this appointment"
+            description="DO you want to delete this appointment?"
+            okText="Delete"
+            cancelText="Cancel"
+            onConfirm={handleDeleteAppointment}
+            onCancel={handleCLoseModal}
           >
-            Delete Appointment
-          </Button>
+            <Button
+              onClick={handleDeleteAppointment}
+              style={{ backgroundColor: "red", color: "white" }}
+            >
+              Delete Appointment
+            </Button>
+          </Popconfirm>
         </div>
       </Modal>
     </div>

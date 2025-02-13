@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import UserManagement from "../content/UserManagement";
 import DoctorManagement from "../content/DoctorManagement";
 import AppointmentManagement from "../content/AppointmentManagement";
+import PieChart from "../content/charts/PieChart";
 
 const items1 = [
   { key: "home", label: "Home" },
@@ -82,6 +83,8 @@ function AdminHomePage() {
         return <DoctorManagement />;
       case "appointment":
         return <AppointmentManagement />;
+      case "pie":
+        return <PieChart />;
     }
   };
 
