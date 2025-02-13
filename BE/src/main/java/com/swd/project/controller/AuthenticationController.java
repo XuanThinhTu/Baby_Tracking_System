@@ -4,13 +4,14 @@ import com.swd.project.dto.request.AuthenticationRequest;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.AuthenticationResponse;
 import com.swd.project.service.IAuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
 
