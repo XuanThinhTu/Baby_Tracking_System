@@ -1,4 +1,4 @@
-import { Button, Calendar, Form, Input, Modal, TimePicker } from "antd";
+import { Badge, Button, Calendar, Form, Input, Modal, TimePicker } from "antd";
 import { useForm } from "antd/es/form/Form";
 import dayjs from "dayjs";
 import React, { useState } from "react";
@@ -6,6 +6,7 @@ import React, { useState } from "react";
 function AppointmentManagement() {
   const [showModal, setShowModal] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(dayjs());
+  const [selectedDate, setSelectedDate] = useState("");
   const [editing, setEditing] = useState(false);
   const [formVar] = useForm();
 
@@ -18,18 +19,49 @@ function AppointmentManagement() {
     setShowModal(false);
   };
 
+  const handleOk = () => {
+    formVar.submit();
+    handleCLoseModal();
+  };
+
   const onDateChange = (value) => {
     handleOpenModal();
-    console.log(dayjs(value).format("YYYY-MM-DD"));
+    setSelectedDate(dayjs(value).format("DD/MM/YYYY"));
   };
 
   const handlePostAppointment = async (values) => {};
 
   const handleUpdateAppointment = async (values) => {
-    setEditing(true);
+    setEditing(!editing);
   };
 
   const handleDeleteAppointment = async () => {};
+
+  const appointmentData = [
+    {
+      date: "2025-02-05",
+      event: "Doctor Jones's Appointment",
+    },
+    {
+      date: "2025-02-14", //(YYYY-MM-DD)
+      event: "Valentine's Day",
+    },
+    {
+      date: "2025-02-20",
+      event: "Doctor Emily's Appointment",
+    },
+    {
+      date: "2025-02-24",
+      event: "Doctor Clark's Appointment",
+    },
+  ];
+
+  const eventDate = (value) => {
+    const dateString = value.format("YYYY-MM-DD");
+    const event = appointmentData.find((e) => e.date === dateString);
+
+    return event ? <Badge color="blue" text={event.event} /> : null;
+  };
 
   return (
     <div>
@@ -45,14 +77,16 @@ function AppointmentManagement() {
         onPanelChange={(value) => {
           setCurrentMonth(value);
         }}
+        dateCellRender={eventDate}
       />
       <Modal
         title="Appointment Information"
         open={showModal}
-        onOk={handleCLoseModal}
+        onOk={handleOk}
         onCancel={handleCLoseModal}
       >
         <p>Meeting Appointment ID: 1234567</p>
+        <p>Date: {selectedDate}</p>
         <Form
           labelCol={{ span: 8 }}
           labelAlign="left"
