@@ -3,13 +3,12 @@ import {
   CalendarOutlined,
   LaptopOutlined,
   MailOutlined,
-  NotificationOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { App, Avatar, Dropdown, Layout, Menu, Space, theme } from "antd";
+import { Avatar, Dropdown, Layout, Menu, Space } from "antd";
 import { Content, Footer, Header } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
-import React, { useState } from "react";
+import { useState } from "react";
 import UserManagement from "../content/UserManagement";
 import DoctorManagement from "../content/DoctorManagement";
 import AppointmentManagement from "../content/AppointmentManagement";
