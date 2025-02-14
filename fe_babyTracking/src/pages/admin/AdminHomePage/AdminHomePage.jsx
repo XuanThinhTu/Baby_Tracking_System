@@ -3,19 +3,21 @@ import {
   CalendarOutlined,
   LaptopOutlined,
   MailOutlined,
-  NotificationOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { App, Avatar, Dropdown, Layout, Menu, Space, theme } from "antd";
+import { Avatar, Dropdown, Layout, Menu, Space } from "antd";
 import { Content, Footer, Header } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
-import React, { useState } from "react";
+import { useState } from "react";
 import UserManagement from "../content/UserManagement";
+// import DoctorManagement from "../content/DoctorManagement";
+// import AppointmentManagement from "../content/AppointmentManagement";
+// import PieChart from "../content/charts/PieChart";
 
 const items1 = [
   { key: "home", label: "Home" },
   { key: "users", label: "Users" },
-  { key: "orders", label: "Orders" },
+  { key: "charts", label: "Charts" },
   { key: "settings", label: "Settings" },
 ];
 
@@ -54,9 +56,9 @@ const items2 = [
     label: "Mail",
   },
   {
-    key: "calendar",
+    key: "appointment",
     icon: <CalendarOutlined />,
-    label: "Calendar",
+    label: "Appointment",
   },
 ];
 
@@ -76,6 +78,12 @@ function AdminHomePage() {
     switch (selectedKey) {
       case "user-management":
         return <UserManagement />;
+      case "doctor-management":
+        return <DoctorManagement />;
+      case "appointment":
+        return <AppointmentManagement />;
+      case "pie":
+        return <PieChart />;
     }
   };
 
@@ -123,9 +131,9 @@ function AdminHomePage() {
         <Content
           style={{
             flex: 1,
-            padding: 0,
-            minHeight: "100vh",
+            padding: "20px",
             background: "#f0f2f5",
+            overflow: "auto",
           }}
         >
           {renderContent()}
@@ -133,7 +141,12 @@ function AdminHomePage() {
       </Layout>
 
       <Footer
-        style={{ textAlign: "center", background: "#fff", padding: "10px 0" }}
+        style={{
+          textAlign: "center",
+          background: "#fff",
+          padding: "10px 0",
+          marginTop: "20px",
+        }}
       >
         Footer
       </Footer>
