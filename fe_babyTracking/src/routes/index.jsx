@@ -17,9 +17,11 @@ function AppRouter() {
           <Route path="/login" element={<SignIn />} />
           <Route path="/register" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+
         </Routes>
       </div>
       <MainFooter />
+
     </Router>
   );
 }
