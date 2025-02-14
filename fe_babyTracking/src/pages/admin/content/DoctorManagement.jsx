@@ -1,25 +1,17 @@
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Modal,
-  Select,
-  Table,
-  Tooltip,
-} from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import React, { useState } from "react";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Button, Form, Input, Modal, Select, Table, Tag, Tooltip } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { Option } from "antd/es/mentions";
+import React, { useState } from "react";
 
-function UserManagement() {
+function DoctorManagement() {
   const [showModal, setShowModal] = useState(false);
   const [formVar] = useForm();
 
   const handleOpenModal = () => {
     setShowModal(true);
   };
+
   const handleCloseModal = () => {
     setShowModal(false);
   };
@@ -29,144 +21,55 @@ function UserManagement() {
     handleCloseModal();
   };
 
-  const handlePostAccount = async (values) => { };
-  const handleDeleteAccount = async () => { };
-  const handleUpdateAccount = async (values) => { };
+  const handlePostAccount = async (values) => {};
+  const handleDeleteAccount = async () => {};
+  const handleUpdateAccount = async (values) => {};
+
   //=======================
   const dataSource = [
     {
       key: "1",
-      id: "U001",
-      username: "mike123",
-      email: "mike123@example.com",
-      password: "hashed_password_1",
-      role: "User",
+      id: "D001",
+      username: "dr_jones",
+      email: "dr.jones@example.com",
+      password: "hashed_password_11",
+      role: "Doctor",
       status: "active",
     },
     {
       key: "2",
-      id: "U002",
-      username: "john_doe",
-      email: "john.doe@example.com",
-      password: "hashed_password_2",
-      role: "User",
-      status: "inactive",
-    },
-    {
-      key: "3",
-      id: "U003",
-      username: "sarah_99",
-      email: "sarah99@example.com",
-      password: "hashed_password_3",
-      role: "User",
+      id: "D002",
+      username: "dr_smith",
+      email: "dr.smith@example.com",
+      password: "hashed_password_12",
+      role: "Doctor",
       status: "active",
     },
     {
+      key: "3",
+      id: "D003",
+      username: "dr_emily",
+      email: "dr.emily@example.com",
+      password: "hashed_password_13",
+      role: "Doctor",
+      status: "inactive",
+    },
+    {
       key: "4",
-      id: "U004",
-      username: "david_w",
-      email: "david.w@example.com",
-      password: "hashed_password_4",
-      role: "User",
+      id: "D004",
+      username: "dr_williams",
+      email: "dr.williams@example.com",
+      password: "hashed_password_14",
+      role: "Doctor",
       status: "active",
     },
     {
       key: "5",
-      id: "U005",
-      username: "emma_watson",
-      email: "emma.w@example.com",
-      password: "hashed_password_5",
-      role: "User",
-      status: "inactive",
-    },
-    {
-      key: "6",
-      id: "U006",
-      username: "robert_c",
-      email: "robert.c@example.com",
-      password: "hashed_password_6",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "7",
-      id: "U007",
-      username: "linda_x",
-      email: "linda.x@example.com",
-      password: "hashed_password_7",
-      role: "User",
-      status: "inactive",
-    },
-    {
-      key: "8",
-      id: "U008",
-      username: "will_smith",
-      email: "will.s@example.com",
-      password: "hashed_password_8",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "9",
-      id: "U009",
-      username: "natalie_p",
-      email: "natalie.p@example.com",
-      password: "hashed_password_9",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "10",
-      id: "U010",
-      username: "steve_jobs",
-      email: "steve.jobs@example.com",
-      password: "hashed_password_10",
-      role: "User",
-      status: "inactive",
-    },
-    {
-      key: "11",
-      id: "U011",
-      username: "kevin_m",
-      email: "kevin.m@example.com",
-      password: "hashed_password_11",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "12",
-      id: "U012",
-      username: "laura_b",
-      email: "laura.b@example.com",
-      password: "hashed_password_12",
-      role: "User",
-      status: "inactive",
-    },
-    {
-      key: "13",
-      id: "U013",
-      username: "jason_r",
-      email: "jason.r@example.com",
-      password: "hashed_password_13",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "14",
-      id: "U014",
-      username: "olivia_k",
-      email: "olivia.k@example.com",
-      password: "hashed_password_14",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "15",
-      id: "U015",
-      username: "brandon_t",
-      email: "brandon.t@example.com",
+      id: "D005",
+      username: "dr_clark",
+      email: "dr.clark@example.com",
       password: "hashed_password_15",
-      role: "User",
+      role: "Doctor",
       status: "inactive",
     },
   ];
@@ -234,7 +137,7 @@ function UserManagement() {
   return (
     <div>
       <Button type="primary" onClick={handleOpenModal}>
-        Add new user
+        Add new doctor
       </Button>
       <Modal
         title="Add new Account"
@@ -322,4 +225,4 @@ function UserManagement() {
   );
 }
 
-export default UserManagement;
+export default DoctorManagement;
