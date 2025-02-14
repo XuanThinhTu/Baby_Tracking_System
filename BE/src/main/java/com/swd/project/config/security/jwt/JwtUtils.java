@@ -88,6 +88,17 @@ public class JwtUtils {
                 .compact();
     }
 
+    public String generateResetPasswordToken(String email){
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuer("baby-tracking-system")
+                .signWith(key(), SignatureAlgorithm.HS256)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(new Date().toInstant().plus(1, ChronoUnit.DAYS).toEpochMilli()))
+                .setId(String.valueOf(UUID.randomUUID()))
+                .compact();
+    }
+
     public Date getExpDateFromToken(String token){
         return Jwts.parserBuilder()
                 .setSigningKey(key())

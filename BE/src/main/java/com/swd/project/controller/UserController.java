@@ -1,6 +1,8 @@
 package com.swd.project.controller;
 
 
+import com.swd.project.dto.request.ForgotPasswordRequest;
+import com.swd.project.dto.request.ResetPasswordRequest;
 import com.swd.project.dto.request.UserCreationRequest;
 import com.swd.project.dto.request.VerifyUserRequest;
 import com.swd.project.dto.response.ApiResponse;
@@ -131,6 +133,25 @@ public class UserController {
         return ApiResponse.<List<UserDTO>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Deactivate user successfully")
+                .build();
+    }
+
+    @PostMapping("/forgot-password")
+    public ApiResponse<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) throws MessagingException {
+        userService.forgotPassword(request.getEmail());
+        return ApiResponse.<Void>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Email sent")
+                .data(null)
+                .build();
+    }
+
+    @PostMapping("/reset-password")
+    public ApiResponse<UserDTO> resetPassword(@RequestBody ResetPasswordRequest request){
+        return ApiResponse.<UserDTO>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Password reset")
+                .data(userService.resetPassword(request.getToken(), request.getNewPassword()))
                 .build();
     }
 

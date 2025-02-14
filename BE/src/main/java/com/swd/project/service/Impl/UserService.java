@@ -165,4 +165,29 @@ public class UserService implements IUserService {
         userRepository.save(user);
     }
 
+    @Override
+    public void forgotPassword(String email) throws MessagingException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if(user.isBanned()){
+            throw new RuntimeException("User is banned");
+        }else if(!user.isActive()){
+            throw new RuntimeException("User is not active");
+        }
+        emailService.sendEmail(email, emailService.subjectResetPassword(), emailService.bodyResetPassword(email));
+    }
+
+    @Override
+    public UserDTO resetPassword(String token, String newPassword) {
+        String email = jwtUtils.getEmailFromJwtToken(token);
+        Date expirationDate = jwtUtils.getExpDateFromToken(token);
+        if(!expirationDate.before(new Date())){
+            User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            user.setPassword(passwordEncoder.encode(newPassword));
+            User savedUser = userRepository.save(user);
+            return userMapper.toUserDTO(savedUser);
+        }else{
+            throw new RuntimeException("Time to reset password is expired");
+        }
+    }
 }
