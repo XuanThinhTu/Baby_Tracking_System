@@ -35,4 +35,8 @@ public interface IUserService {
     void activateByUserId(int id);
     void banByUserId(int id);
     void unbanByUserId(int id);
+
+    void forgotPassword(String email) throws MessagingException;
+
+    UserDTO resetPassword(String token, String newPassword);
 }

@@ -32,14 +32,23 @@ public class SecurityConfig {
     private final AuthEntryPointJwt unauthorizedHandler;
 
     private static final List<String> SECURED_URLS = List.of(
-            "/api/v1/user/p",
-            "/api/v1/user/p/update",
-            "api/v1/user/p/update/password",
-            "/api/v1/user/admin/**",
-            "/api/v1/children/add",
-            "/api/v1/children/info/**",
-            "/api/v1/membership-package/**",
-            "/api/v1/membership-package"
+            "./user/p",
+            "./user/p/update",
+            "./user/p/update/password",
+            "./user/admin/**",
+            "./children/add",
+            "./children/info/**",
+            "./v2/api-docs",
+            "./v3/api-docs",
+            "./v3/api-docs/**",
+            "./swagger-resources",
+            "./swagger-resources/**",
+            "./configuration/ui",
+            "./configuration/security",
+            "./swagger-ui/**",
+            "./webjars/**",
+            "./swagger-ui.html"
+
     );
 
     @Bean
