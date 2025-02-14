@@ -10,9 +10,9 @@ import { Content, Footer, Header } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 import { useState } from "react";
 import UserManagement from "../content/UserManagement";
-// import DoctorManagement from "../content/DoctorManagement";
-// import AppointmentManagement from "../content/AppointmentManagement";
-// import PieChart from "../content/charts/PieChart";
+import DoctorManagement from "../content/DoctorManagement";
+import AppointmentManagement from "../content/AppointmentManagement";
+import PieChart from "../content/charts/PieChart";
 
 const items1 = [
   { key: "home", label: "Home" },
