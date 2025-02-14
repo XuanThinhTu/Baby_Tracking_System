@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-// import LinkToGoogle from "../Google/LinkToGoogle";
+import LinkToGoogle from "../Google/LinkToGoogle";
 // import { fetchRegister } from "../../../data/api.jsx";
 // import { toast } from "react-hot-toast";
 
@@ -112,13 +112,7 @@ const RegisterForm = () => {
                     </button>
 
                     <div>
-                        <button
-                            type="button"
-                            className="w-full py-4 bg-gray-200 text-gray-700 rounded-xl font-medium text-lg cursor-not-allowed"
-                        // disabled
-                        >
-                            Đăng Ký Bằng Google
-                        </button>
+                        <LinkToGoogle headline="Đăng Nhập Bằng Google" />
                     </div>
                 </div>
 
