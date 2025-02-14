@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import App from "../App";
 import AdminHomePage from "../pages/admin/AdminHomePage/AdminHomePage";
 import HomePage from "../pages/user/Home/HomePage";
@@ -9,9 +14,9 @@ import SignUp from "../pages/user/Auth/Register";
 import ForgotPassword from "../pages/user/Auth/ForgotPassword";
 import MainFooter from "../components/Footer";
 
-function AppRouter() {
+function UserLayout() {
   return (
-    <Router>
+    <>
       <UserHeader />
       <div className="container mx-auto px-2 py-4">
         <Routes>
@@ -22,8 +27,25 @@ function AppRouter() {
         </Routes>
       </div>
       <MainFooter />
+    </>
+  );
+}
+
+function AdminLayout() {
+  return (
+    <div className="w-full min-h-screen bg-gray-100">
       <Routes>
-        <Route path="/admin" element={<AdminHomePage />} />
+        <Route path="/" element={<AdminHomePage />} />
+      </Routes>
+    </div>
+  );
+}
+function AppRouter() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/*" element={<UserLayout />} />
+        <Route path="/admin" element={<AdminLayout />} />
       </Routes>
     </Router>
   );
