@@ -5,6 +5,7 @@ import SignIn from "../pages/user/Auth/Login";
 import UserHeader from "../components/header/UserHeader";
 import SignUp from "../pages/user/Auth/Register";
 import ForgotPassword from "../pages/user/Auth/ForgotPassword";
+import MainFooter from "../components/Footer";
 
 function AppRouter() {
   return (
@@ -18,6 +19,7 @@ function AppRouter() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </div>
+      <MainFooter />
     </Router>
   );
 }
