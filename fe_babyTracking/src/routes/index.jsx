@@ -45,7 +45,7 @@ function AppRouter() {
     <Router>
       <Routes>
         <Route path="/*" element={<UserLayout />} />
-        <Route path="/admin" element={<AdminHomePage />} />
+        <Route path="/admin" element={<AdminLayout />} />
       </Routes>
     </Router>
   );
