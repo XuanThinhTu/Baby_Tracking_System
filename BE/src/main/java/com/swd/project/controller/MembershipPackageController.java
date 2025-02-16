@@ -1,9 +1,12 @@
 package com.swd.project.controller;
 
+import com.paypal.base.rest.PayPalRESTException;
 import com.swd.project.dto.request.MembershipPackageRequest;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.MembershipPackageResponse;
+import com.swd.project.dto.response.PaymentDTO;
 import com.swd.project.service.Impl.MembershipPackageService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,12 +19,12 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/v1/membership-package")
+@RequestMapping("/membership-package")
 @RequiredArgsConstructor
 public class MembershipPackageController {
     private final MembershipPackageService membershipPackageService;
 
-    @GetMapping()
+    @GetMapping("/list")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<?>> getAllMembershipPackages() {
         List<MembershipPackageResponse> list = membershipPackageService.getAllMembershipPackages();
@@ -47,21 +50,24 @@ public class MembershipPackageController {
         );
     }
 
-    @PostMapping()
+    @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<?>> createMembershipPackages(@RequestBody MembershipPackageRequest request) {
         MembershipPackageResponse membershipPackage = membershipPackageService.createMembershipPackage(request);
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(HttpStatus.OK.value())
+                        .statusCode(HttpStatus.CREATED.value())
                         .message("Membership Package created successfully")
                         .data(membershipPackage)
                         .build()
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<?>> updateMembershipPackagesById(
             @PathVariable int id,
             @RequestBody MembershipPackageRequest request
@@ -76,8 +82,9 @@ public class MembershipPackageController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<?>> deleteMembershipPackagesById(
             @PathVariable int id
     ) {
@@ -90,8 +97,9 @@ public class MembershipPackageController {
         );
     }
 
-    @PutMapping("/{id}/enable")
+    @PutMapping("/enable/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<?>> enableMembershipPackagesById(
             @PathVariable int id
     ) {
@@ -104,8 +112,9 @@ public class MembershipPackageController {
         );
     }
 
-    @PutMapping("/{id}/disable")
+    @PutMapping("/disable/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<?>> disableMembershipPackagesById(
             @PathVariable int id
     ) {
@@ -116,5 +125,25 @@ public class MembershipPackageController {
                         .message("Membership Package disable successfully")
                         .build()
         );
+    }
+
+    @PostMapping("/payment/{membershipId}")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<PaymentDTO> createMembershipPayment(@PathVariable int membershipId) throws PayPalRESTException {
+        PaymentDTO paymentDTO = membershipPackageService.createMembershipPayment(membershipId);
+        return ApiResponse.<PaymentDTO>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Payment created successfully")
+                .data(paymentDTO)
+                .build();
+    }
+
+    @GetMapping("/execute")
+    public ApiResponse<?> executePayment(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) throws PayPalRESTException {
+        return ApiResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Payment executed successfully")
+                .data(membershipPackageService.executeMembershipPayment(paymentId, payerId))
+                .build();
     }
 }

@@ -1,24 +1,48 @@
 package com.swd.project.service.Impl;
 
+import com.paypal.api.payments.*;
+import com.paypal.base.rest.APIContext;
+import com.paypal.base.rest.PayPalRESTException;
 import com.swd.project.dto.request.MembershipPackageRequest;
 import com.swd.project.dto.response.MembershipPackageResponse;
+import com.swd.project.dto.response.PaymentDTO;
 import com.swd.project.entity.MembershipPackage;
+import com.swd.project.entity.MembershipSubscription;
+import com.swd.project.entity.User;
+import com.swd.project.enums.MembershipSubscriptionStatus;
+import com.swd.project.enums.PaymentStatus;
 import com.swd.project.exception.ResourceNotFoundException;
 import com.swd.project.mapper.MembershipPackageMapper;
 import com.swd.project.repository.MembershipPackageRepository;
+import com.swd.project.repository.MembershipSubscriptionRepository;
 import com.swd.project.service.IMembershipPackage;
+import com.swd.project.service.IUserService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MembershipPackageService implements IMembershipPackage {
     private final MembershipPackageRepository packageRepository;
     private final MembershipPackageMapper packageMapper;
+    private final IUserService userService;
+    private final String CURRENCY = "USD";
+    private final String METHOD = "paypal";
+    private final String INTENT = "sale";
+    private final APIContext apiContext;
+
+    @Value("${client.domain}")
+    private String clientDomain;
+    private final MembershipSubscriptionRepository membershipSubscriptionRepository;
 
     @Override
     public MembershipPackageResponse createMembershipPackage(MembershipPackageRequest request) {
@@ -75,5 +99,89 @@ public class MembershipPackageService implements IMembershipPackage {
                 .orElseThrow(() -> new RuntimeException("Membership Package id: " + id + " not found"));
         membershipPackage.setEnable(false);
         packageRepository.save(membershipPackage);
+    }
+
+    @Override
+    public PaymentDTO createMembershipPayment(int membershipId) throws PayPalRESTException {
+        Payment payment = processPayment(membershipId);
+        PaymentDTO paymentDTO = new PaymentDTO();
+        payment.getLinks().stream().filter(link -> link.getRel().equals("approval_url"))
+                .findFirst()
+                .ifPresent(link -> {
+                    paymentDTO.setPaymentUrl(link.getHref());
+                });
+        return paymentDTO;
+    }
+
+    @Override
+    public String executeMembershipPayment(String paymentId, String payerId) throws PayPalRESTException {
+        Payment payment = executePayment(paymentId, payerId);
+        if (payment.getState().equals("approved")) {
+            User user = userService.getAuthenticatedUser();
+            MembershipSubscription membershipSubscription = membershipSubscriptionRepository
+                    .findByUserIdAndPaymentStatusAndStatus(user.getId(), PaymentStatus.PENDING, MembershipSubscriptionStatus.UNAVAILABLE);
+            membershipSubscription.setPaymentStatus(PaymentStatus.SUCCESS);
+            membershipSubscription.setStatus(MembershipSubscriptionStatus.AVAILABLE);
+            membershipSubscriptionRepository.save(membershipSubscription);
+            return "Payment success";
+        }else {
+            User user = userService.getAuthenticatedUser();
+            MembershipSubscription membershipSubscription = membershipSubscriptionRepository
+                    .findByUserIdAndPaymentStatusAndStatus(user.getId(), PaymentStatus.PENDING, MembershipSubscriptionStatus.UNAVAILABLE);
+            membershipSubscription.setPaymentStatus(PaymentStatus.FAILED);
+            membershipSubscription.setStatus(MembershipSubscriptionStatus.UNAVAILABLE);
+            membershipSubscriptionRepository.save(membershipSubscription);
+            return "Payment failed";
+        }
+    }
+
+    private Payment executePayment(String paymentId, String payerId) throws PayPalRESTException {
+        Payment payment = new Payment();
+        payment.setId(paymentId);
+        PaymentExecution paymentExecution = new PaymentExecution();
+        paymentExecution.setPayerId(payerId);
+        return payment.execute(apiContext, paymentExecution);
+    }
+
+    private Payment processPayment(int membershipId) throws PayPalRESTException {
+        MembershipPackage membershipPackage = packageRepository.findById(membershipId)
+                .orElseThrow(() -> new ResourceNotFoundException("Membership Package not found"));
+        //membership subscription
+        MembershipSubscription membershipSubscription = new MembershipSubscription();
+        membershipSubscription.setStartDate(Date.valueOf(LocalDateTime.now().toLocalDate()));
+        membershipSubscription.setEndDate(Date.valueOf(LocalDateTime.now().plusDays(membershipPackage.getDuration()).toLocalDate()));
+        membershipSubscription.setStatus(MembershipSubscriptionStatus.UNAVAILABLE);
+        membershipSubscription.setCreatedAt(Date.valueOf(LocalDateTime.now().toLocalDate()));
+        membershipSubscription.setPaymentStatus(PaymentStatus.PENDING);
+        membershipSubscription.setMembershipPackage(membershipPackage);
+        membershipSubscription.setUser(userService.getAuthenticatedUser());
+        membershipSubscriptionRepository.save(membershipSubscription);
+        //paypal payment
+        Amount amount = new Amount();
+        amount.setCurrency(CURRENCY);
+        amount.setTotal(String.format(Locale.forLanguageTag(CURRENCY), "%.2f", membershipPackage.getPrice()));
+
+        Transaction transaction = new Transaction();
+        transaction.setDescription(membershipPackage.getName());
+        transaction.setAmount(amount);
+
+        List<Transaction> transactions = new ArrayList<>();
+        transactions.add(transaction);
+
+        Payer payer = new Payer();
+        payer.setPaymentMethod(METHOD);
+
+        Payment payment = new Payment();
+        payment.setIntent(INTENT);
+        payment.setPayer(payer);
+        payment.setTransactions(transactions);
+
+        RedirectUrls redirectUrls = new RedirectUrls();
+        redirectUrls.setCancelUrl(clientDomain+"/paypal/cancel");
+        redirectUrls.setReturnUrl(clientDomain+"/paypal/success");
+
+        payment.setRedirectUrls(redirectUrls);
+
+        return payment.create(apiContext);
     }
 }
