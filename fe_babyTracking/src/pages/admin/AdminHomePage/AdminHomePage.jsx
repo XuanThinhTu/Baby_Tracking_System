@@ -14,6 +14,7 @@ import DoctorManagement from "../content/DoctorManagement";
 import AppointmentManagement from "../content/AppointmentManagement";
 import PieChart from "../content/charts/PieChart";
 import BarChart from "../content/charts/BarChart";
+import Analytics from "../content/Analytics";
 
 const items1 = [
   { key: "home", label: "Home" },
@@ -87,6 +88,8 @@ function AdminHomePage() {
         return <PieChart />;
       case "bar":
         return <BarChart />;
+      case "analytics":
+        return <Analytics />;
     }
   };
 
