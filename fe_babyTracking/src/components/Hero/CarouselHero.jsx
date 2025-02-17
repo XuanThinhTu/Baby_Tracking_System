@@ -16,7 +16,7 @@ function CarouselHero() {
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-        }, 20000);
+        }, 10000); // Đổi lại thành 10 giây
         return () => clearInterval(interval);
     }, []);
 
@@ -29,9 +29,9 @@ function CarouselHero() {
     };
 
     return (
-        <div className="relative w-screen mx-auto">
-            {/* Carousel wrapper */}
-            <div className="relative h-80 md:h-[500px] lg:h-[600px] xl:h-[700px] overflow-hidden">
+        <div className="relative w-screen h-screen"> {/* Full màn hình */}
+            {/* Carousel wrapper - Full màn hình */}
+            <div className="relative w-full h-full overflow-hidden">
                 {images.map((image, index) => (
                     <div
                         key={index}
@@ -50,13 +50,13 @@ function CarouselHero() {
             {/* Slider controls */}
             <button
                 onClick={prevSlide}
-                className="absolute top-1/2 left-4 transform -translate-y-1/2 z-30 flex items-center justify-center h-10 w-10 bg-black/50 hover:bg-black/70 rounded-full shadow-md"
+                className="absolute top-1/2 left-4 transform -translate-y-1/2 z-30 flex items-center justify-center h-12 w-12 bg-black/50 hover:bg-black/70 rounded-full shadow-md"
             >
                 <FaChevronLeft className="w-6 h-6 text-white" />
             </button>
             <button
                 onClick={nextSlide}
-                className="absolute top-1/2 right-4 transform -translate-y-1/2 z-30 flex items-center justify-center h-10 w-10 bg-black/50 hover:bg-black/70 rounded-full shadow-md"
+                className="absolute top-1/2 right-4 transform -translate-y-1/2 z-30 flex items-center justify-center h-12 w-12 bg-black/50 hover:bg-black/70 rounded-full shadow-md"
             >
                 <FaChevronRight className="w-6 h-6 text-white" />
             </button>
