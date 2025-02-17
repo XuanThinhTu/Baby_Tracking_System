@@ -8,6 +8,7 @@ import com.swd.project.dto.request.VerifyUserRequest;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.UserDTO;
 import com.swd.project.service.IUserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -48,6 +49,7 @@ public class UserController {
     }
 
     @GetMapping("/p")
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<UserDTO> getAuthUser(){
         UserDTO userDTO = userService.getAuthenticatedUserDTO();
         return ApiResponse.<UserDTO>builder()
@@ -58,6 +60,7 @@ public class UserController {
     }
 
     @PostMapping("/p/update")
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<UserDTO> updateUserProfile(
             @RequestParam("firstName") String firstName,
             @RequestParam("lastName") String lastName,
@@ -74,6 +77,7 @@ public class UserController {
     }
 
     @PostMapping("/p/update/password")
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<UserDTO> updatePassword(@RequestParam("oldPassword") String oldPassword,
                                                @RequestParam("newPassword") String newPassword){
         UserDTO userDTO = userService.updatePassword(oldPassword, newPassword);
@@ -87,6 +91,7 @@ public class UserController {
 
     @GetMapping("/admin/getAll")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<List<UserDTO>> getAllUsers(){
         List<UserDTO> userDTOs = userService.getAllUsers();
         return ApiResponse.<List<UserDTO>>builder()
@@ -98,6 +103,7 @@ public class UserController {
 
     @DeleteMapping("/admin/deactivate")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<?> deactivateUser(@RequestParam("user") int id){
         userService.deactivateByUserId(id);
         return ApiResponse.<List<UserDTO>>builder()
@@ -108,6 +114,7 @@ public class UserController {
 
     @PutMapping("/admin/activate")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<?> activateUser(@RequestParam("user") int id){
         userService.activateByUserId(id);
         return ApiResponse.<List<UserDTO>>builder()
@@ -118,6 +125,7 @@ public class UserController {
 
     @PutMapping("/admin/ban")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<?> banUser(@RequestParam("user") int id){
         userService.banByUserId(id);
         return ApiResponse.<List<UserDTO>>builder()
@@ -128,6 +136,7 @@ public class UserController {
 
     @PutMapping("/admin/unban")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<?> unbanUser(@RequestParam("user") int id){
         userService.unbanByUserId(id);
         return ApiResponse.<List<UserDTO>>builder()
@@ -137,6 +146,7 @@ public class UserController {
     }
 
     @PostMapping("/forgot-password")
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) throws MessagingException {
         userService.forgotPassword(request.getEmail());
         return ApiResponse.<Void>builder()
@@ -147,6 +157,7 @@ public class UserController {
     }
 
     @PostMapping("/reset-password")
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<UserDTO> resetPassword(@RequestBody ResetPasswordRequest request){
         return ApiResponse.<UserDTO>builder()
                 .statusCode(HttpStatus.OK.value())
