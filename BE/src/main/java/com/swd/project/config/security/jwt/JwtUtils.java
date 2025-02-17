@@ -113,7 +113,6 @@ public class JwtUtils {
                 .setSigningKey(staticJwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
-        // Lấy claim "role" (nếu role được lưu dưới dạng chuỗi)
         return claims.get("role", String.class);
     }
 
@@ -123,7 +122,6 @@ public class JwtUtils {
                 .setSigningKey(staticJwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
-        // Lấy claim "role" (nếu role được lưu dưới dạng chuỗi)
-        return claims.get("role", String.class);
+        return claims.get("sub", String.class);
     }
 }

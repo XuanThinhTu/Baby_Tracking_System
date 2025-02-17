@@ -18,10 +18,12 @@ public class GrowthTracker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int height;
-    private int weight;
-    private int headCircumference;
+    private Double height;
+    private Double weight;
+    private Double headCircumference;
+    private Double bmi;
     private Date measuredAt;
     @ManyToOne
     private Children children;
+    private boolean deleted = false;
 }
