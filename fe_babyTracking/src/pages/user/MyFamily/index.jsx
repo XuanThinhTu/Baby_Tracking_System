@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { FaBirthdayCake, FaPencilAlt, FaPlusCircle } from "react-icons/fa";
-import BabyForm from "./BabyForm";
+import BabyForm from "./BabyForm"; // Import form
 
 const MyFamily = () => {
     const [children, setChildren] = useState([
-        { id: 1, name: "My child", dob: "April 8, 2024" },
-        { id: 2, name: "Tyler Tu", dob: "March 17, 2024" },
+        { id: 1, name: "My child", dob: "April 8, 2024", avatar: null },
+        { id: 2, name: "Tyler Tu", dob: "March 17, 2024", avatar: null },
     ]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -21,9 +21,13 @@ const MyFamily = () => {
                 {children.map((child) => (
                     <div key={child.id} className="flex items-center justify-between border-b pb-3">
                         <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 bg-green-200 flex items-center justify-center rounded-full text-xl">
-                                😊
-                            </div>
+                            {child.avatar ? (
+                                <img src={child.avatar} alt="Avatar" className="w-12 h-12 rounded-full object-cover" />
+                            ) : (
+                                <div className="w-12 h-12 bg-green-200 flex items-center justify-center rounded-full text-xl">
+                                    😊
+                                </div>
+                            )}
                             <div>
                                 <p className="font-medium text-gray-900">{child.name}</p>
                                 <p className="text-sm text-gray-500 flex items-center space-x-2">
