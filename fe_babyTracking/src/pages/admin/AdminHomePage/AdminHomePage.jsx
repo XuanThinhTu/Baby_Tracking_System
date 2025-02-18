@@ -1,8 +1,11 @@
 import {
+  AreaChartOutlined,
   BarChartOutlined,
   CalendarOutlined,
   LaptopOutlined,
   MailOutlined,
+  PieChartOutlined,
+  ProfileOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Dropdown, Layout, Menu, Space } from "antd";
@@ -15,6 +18,7 @@ import AppointmentManagement from "../content/AppointmentManagement";
 import PieChart from "../content/charts/PieChart";
 import BarChart from "../content/charts/BarChart";
 import Analytics from "../content/Analytics";
+import Standard from "../content/Standard";
 
 const items1 = [
   { key: "home", label: "Home" },
@@ -44,13 +48,17 @@ const items2 = [
   },
   {
     key: "charts",
-    icon: <BarChartOutlined />,
+    icon: <AreaChartOutlined />,
     label: "Charts",
     children: [
-      { key: "pie", label: "Pie Chart" },
-      { key: "bar", label: "Bar Chart" },
-      { key: "line", label: "Line Chart" },
+      { key: "pie", icon: <PieChartOutlined />, label: "Pie Chart" },
+      { key: "bar", icon: <BarChartOutlined />, label: "Bar Chart" },
     ],
+  },
+  {
+    key: "standard",
+    icon: <ProfileOutlined />,
+    label: "Growth Standard",
   },
   {
     key: "mail",
@@ -90,6 +98,8 @@ function AdminHomePage() {
         return <BarChart />;
       case "analytics":
         return <Analytics />;
+      case "standard":
+        return <Standard />;
     }
   };
 
