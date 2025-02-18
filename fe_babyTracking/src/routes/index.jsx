@@ -14,11 +14,12 @@ import SignUp from "../pages/user/Auth/Register";
 import ForgotPassword from "../pages/user/Auth/ForgotPassword";
 import MainFooter from "../components/Footer";
 import MyFamily from "../pages/user/MyFamily";
+import BabyOverview from "../pages/user/BabyDetails";
 
 function UserLayout() {
   const location = useLocation(); // Lấy đường dẫn hiện tại
 
-  const isContentPage = ["/login", "/register", "/forgot-password", "/my-family"].includes(
+  const isContentPage = ["/login", "/register", "/forgot-password", "/my-family", "/baby-details"].includes(
     location.pathname
   );
 
@@ -32,6 +33,7 @@ function UserLayout() {
             <Route path="/register" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/my-family" element={<MyFamily />} />
+            <Route path="/baby-details" element={<BabyOverview />} />
           </Routes>
         </div>
       ) : (
