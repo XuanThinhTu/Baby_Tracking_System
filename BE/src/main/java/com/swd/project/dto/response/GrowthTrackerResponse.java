@@ -1,8 +1,8 @@
 package com.swd.project.dto.response;
 
-import com.swd.project.entity.Children;
 import lombok.Builder;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Builder
@@ -12,7 +12,7 @@ public record GrowthTrackerResponse(
         Double weight,
         Double headCircumference,
         Double bmi,
-        Date measuredAt,
+        LocalDateTime measuredAt,
         int childrenId
 ) {
 }
