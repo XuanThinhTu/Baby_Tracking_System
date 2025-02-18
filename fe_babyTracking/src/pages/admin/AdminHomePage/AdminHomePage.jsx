@@ -19,6 +19,7 @@ import PieChart from "../content/charts/PieChart";
 import BarChart from "../content/charts/BarChart";
 import Analytics from "../content/Analytics";
 import Standard from "../content/Standard";
+import Mail from "../content/Mail";
 
 const items1 = [
   { key: "home", label: "Home" },
@@ -100,6 +101,8 @@ function AdminHomePage() {
         return <Analytics />;
       case "standard":
         return <Standard />;
+      case "mail":
+        return <Mail />;
     }
   };
 
