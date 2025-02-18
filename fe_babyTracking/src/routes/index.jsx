@@ -13,23 +13,25 @@ import UserHeader from "../components/header/UserHeader";
 import SignUp from "../pages/user/Auth/Register";
 import ForgotPassword from "../pages/user/Auth/ForgotPassword";
 import MainFooter from "../components/Footer";
+import MyFamily from "../pages/user/MyFamily";
 
 function UserLayout() {
   const location = useLocation(); // Lấy đường dẫn hiện tại
 
-  const isAuthPage = ["/login", "/register", "/forgot-password"].includes(
+  const isContentPage = ["/login", "/register", "/forgot-password", "/my-family"].includes(
     location.pathname
   );
 
   return (
     <>
       <UserHeader />
-      {isAuthPage ? (
+      {isContentPage ? (
         <div className="container mx-auto px-2 py-4">
           <Routes>
             <Route path="/login" element={<SignIn />} />
             <Route path="/register" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/my-family" element={<MyFamily />} />
           </Routes>
         </div>
       ) : (
