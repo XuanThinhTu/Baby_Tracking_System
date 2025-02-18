@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -22,7 +23,7 @@ public class GrowthTracker {
     private Double weight;
     private Double headCircumference;
     private Double bmi;
-    private Date measuredAt;
+    private LocalDateTime measuredAt;
     @ManyToOne
     private Children children;
     private boolean deleted = false;

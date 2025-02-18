@@ -2,6 +2,7 @@ package com.swd.project.controller;
 
 import com.swd.project.dto.request.GrowTrackerRequest;
 import com.swd.project.dto.response.ApiResponse;
+import com.swd.project.dto.response.GrowthPredictionResponse;
 import com.swd.project.service.Impl.GrowthTrackerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -58,6 +59,21 @@ public class GrowthTrackerController {
                 ApiResponse.builder()
                         .statusCode(HttpStatus.OK.value())
                         .message("Tracking data with id: " + id + " deleted successfully")
+                        .build()
+        );
+    }
+
+    @GetMapping("/{childId}/predict-next")
+    public ResponseEntity<ApiResponse<?>> predictNextN(
+            @PathVariable int childId,
+            @RequestParam(defaultValue = "2") int n // mặc định 2 mốc
+    ) {
+        List<GrowthPredictionResponse> result = growTrackerService.predictNextNPoints(childId, n);
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .statusCode(200)
+                        .message("Predicted " + n + " next points for child " + childId)
+                        .data(result)
                         .build()
         );
     }
