@@ -17,9 +17,8 @@ import com.swd.project.mapper.MembershipPackageMapper;
 import com.swd.project.mapper.MembershipSubscriptionMapper;
 import com.swd.project.repository.MembershipPackageRepository;
 import com.swd.project.repository.MembershipSubscriptionRepository;
-import com.swd.project.service.IMembershipPackage;
+import com.swd.project.service.IMembershipPackageService;
 import com.swd.project.service.IUserService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MembershipPackageService implements IMembershipPackage {
+public class MembershipPackageService implements IMembershipPackageService {
     private final MembershipPackageRepository packageRepository;
     private final MembershipPackageMapper packageMapper;
     private final IUserService userService;

@@ -8,7 +8,7 @@ import com.swd.project.dto.response.PaymentDTO;
 
 import java.util.List;
 
-public interface IMembershipPackage {
+public interface IMembershipPackageService {
     MembershipPackageResponse createMembershipPackage(MembershipPackageRequest request);
     MembershipPackageResponse updateMembershipPackage(int id, MembershipPackageRequest request);
     void deleteMembershipPackage(int id);
