@@ -12,7 +12,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/v1/grow-tracker")
+@RequestMapping("/api/grow-tracker")
 @RequiredArgsConstructor
 public class GrowthTrackerController {
 
