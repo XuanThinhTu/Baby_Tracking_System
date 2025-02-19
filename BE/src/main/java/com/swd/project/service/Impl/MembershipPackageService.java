@@ -15,9 +15,8 @@ import com.swd.project.exception.ResourceNotFoundException;
 import com.swd.project.mapper.MembershipPackageMapper;
 import com.swd.project.repository.MembershipPackageRepository;
 import com.swd.project.repository.MembershipSubscriptionRepository;
-import com.swd.project.service.IMembershipPackage;
+import com.swd.project.service.IMembershipPackageService;
 import com.swd.project.service.IUserService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class MembershipPackageService implements IMembershipPackage {
+public class MembershipPackageService implements IMembershipPackageService {
     private final MembershipPackageRepository packageRepository;
     private final MembershipPackageMapper packageMapper;
     private final IUserService userService;
