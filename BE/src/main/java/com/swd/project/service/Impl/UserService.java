@@ -190,4 +190,28 @@ public class UserService implements IUserService {
             throw new RuntimeException("Time to reset password is expired");
         }
     }
+
+    @Override
+    public UserDTO addDoctor(UserCreationRequest doctorRequest) {
+        if(userRepository.findByEmail(doctorRequest.getEmail()).isPresent()){
+            throw new ResourceAlreadyExistException("Email already in used");
+        }else if(userRepository.findByPhone(doctorRequest.getPhone()).isPresent()){
+            throw new ResourceAlreadyExistException("Phone already in used");
+        }
+        User user = new User();
+        user.setEmail(doctorRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(doctorRequest.getPassword()));
+        user.setFirstName(doctorRequest.getFirstName());
+        user.setLastName(doctorRequest.getLastName());
+        user.setPhone(doctorRequest.getPhone());
+        user.setAddress(doctorRequest.getAddress());
+        user.setAvatar(null);
+        user.setActive(true);
+        user.setBanned(false);
+        Role role = roleRepository.findByName("ROLE_DOCTOR").orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+        user.setRole(role);
+        User savedUser = userRepository.save(user);
+
+        return userMapper.toUserDTO(savedUser);
+    }
 }

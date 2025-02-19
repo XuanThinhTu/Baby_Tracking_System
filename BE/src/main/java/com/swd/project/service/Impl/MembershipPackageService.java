@@ -5,6 +5,7 @@ import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import com.swd.project.dto.request.MembershipPackageRequest;
 import com.swd.project.dto.response.MembershipPackageResponse;
+import com.swd.project.dto.response.MembershipSubscriptionResponse;
 import com.swd.project.dto.response.PaymentDTO;
 import com.swd.project.entity.MembershipPackage;
 import com.swd.project.entity.MembershipSubscription;
@@ -13,16 +14,20 @@ import com.swd.project.enums.MembershipSubscriptionStatus;
 import com.swd.project.enums.PaymentStatus;
 import com.swd.project.exception.ResourceNotFoundException;
 import com.swd.project.mapper.MembershipPackageMapper;
+import com.swd.project.mapper.MembershipSubscriptionMapper;
 import com.swd.project.repository.MembershipPackageRepository;
 import com.swd.project.repository.MembershipSubscriptionRepository;
 import com.swd.project.service.IMembershipPackage;
 import com.swd.project.service.IUserService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +36,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MembershipPackageService implements IMembershipPackage {
     private final MembershipPackageRepository packageRepository;
     private final MembershipPackageMapper packageMapper;
@@ -43,6 +49,7 @@ public class MembershipPackageService implements IMembershipPackage {
     @Value("${client.domain}")
     private String clientDomain;
     private final MembershipSubscriptionRepository membershipSubscriptionRepository;
+    private final MembershipSubscriptionMapper membershipSubscriptionMapper;
 
     @Override
     public MembershipPackageResponse createMembershipPackage(MembershipPackageRequest request) {
@@ -183,5 +190,26 @@ public class MembershipPackageService implements IMembershipPackage {
         payment.setRedirectUrls(redirectUrls);
 
         return payment.create(apiContext);
+    }
+
+    @Override
+    public MembershipSubscriptionResponse getUserMembership() {
+        User user = userService.getAuthenticatedUser();
+        MembershipSubscription membershipSubscription = membershipSubscriptionRepository
+                .findByUserIdAndStatus(user.getId(), MembershipSubscriptionStatus.AVAILABLE)
+                .get();
+        return membershipSubscriptionMapper.toMembershipSubscriptionResponse(membershipSubscription);
+    }
+
+    @Scheduled(fixedRate = 10000*6) // 1 minute
+    private void checkMembershipSubscription(){
+        List<MembershipSubscription> membershipSubscriptions = membershipSubscriptionRepository.findAll();
+        for (MembershipSubscription membershipSubscription : membershipSubscriptions){
+            if(membershipSubscription.getEndDate().before(Date.valueOf(LocalDate.now()))){
+                membershipSubscription.setStatus(MembershipSubscriptionStatus.EXPIRED);
+                membershipSubscriptionRepository.save(membershipSubscription);
+                log.info("Validated Membership Subscription");
+            }
+        }
     }
 }

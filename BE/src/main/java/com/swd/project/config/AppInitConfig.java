@@ -45,6 +45,8 @@ public class AppInitConfig {
                 admin.setPassword(passwordEncoder.encode("123456")); // thay đổi mật khẩu theo nhu cầu
                 admin.setFirstName("Admin");
                 admin.setLastName("Admin");
+                admin.setAddress("N/A");
+                admin.setPhone("N/A");
                 admin.setActive(true);
 
                 Role adminRole = roleRepository.findByName("ROLE_ADMIN")

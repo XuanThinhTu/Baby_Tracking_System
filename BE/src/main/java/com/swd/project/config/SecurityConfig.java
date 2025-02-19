@@ -47,6 +47,7 @@ public class SecurityConfig {
             "/membership-package/disable/**",
             "/membership-package/payment/**",
             "/membership-package/execute",
+            "/membership-package/my-package",
             "/grow-tracker/**"
     );
 

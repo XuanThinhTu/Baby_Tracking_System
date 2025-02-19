@@ -139,6 +139,7 @@ public class MembershipPackageController {
     }
 
     @GetMapping("/execute")
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<?> executePayment(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) throws PayPalRESTException {
         return ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -146,4 +147,15 @@ public class MembershipPackageController {
                 .data(membershipPackageService.executeMembershipPayment(paymentId, payerId))
                 .build();
     }
+
+    @GetMapping("/my-package")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<?> getUserMembership(){
+        return ApiResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("User Membership Package")
+                .data(membershipPackageService.getUserMembership())
+                .build();
+    }
+
 }

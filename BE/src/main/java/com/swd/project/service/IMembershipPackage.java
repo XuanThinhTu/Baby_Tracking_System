@@ -3,6 +3,7 @@ package com.swd.project.service;
 import com.paypal.base.rest.PayPalRESTException;
 import com.swd.project.dto.request.MembershipPackageRequest;
 import com.swd.project.dto.response.MembershipPackageResponse;
+import com.swd.project.dto.response.MembershipSubscriptionResponse;
 import com.swd.project.dto.response.PaymentDTO;
 
 import java.util.List;
@@ -17,5 +18,7 @@ public interface IMembershipPackage {
     void disableMembershipPackage(int id);
     PaymentDTO createMembershipPayment(int membershipId) throws PayPalRESTException;
     String executeMembershipPayment(String paymentId, String payerId) throws PayPalRESTException;
+
+    MembershipSubscriptionResponse getUserMembership();
 
 }
