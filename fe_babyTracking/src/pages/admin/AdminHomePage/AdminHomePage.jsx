@@ -20,6 +20,7 @@ import BarChart from "../content/charts/BarChart";
 import Analytics from "../content/Analytics";
 import Standard from "../content/Standard";
 import Mail from "../content/Mail";
+import Overview from "../content/Overview";
 
 const items1 = [
   { key: "home", label: "Home" },
@@ -103,6 +104,8 @@ function AdminHomePage() {
         return <Standard />;
       case "mail":
         return <Mail />;
+      case "overview":
+        return <Overview />;
     }
   };
 

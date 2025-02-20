@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Layout, List, Avatar, Input, Card, Typography, Space } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 
