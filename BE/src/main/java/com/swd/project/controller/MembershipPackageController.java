@@ -5,7 +5,9 @@ import com.swd.project.dto.request.MembershipPackageRequest;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.MembershipPackageResponse;
 import com.swd.project.dto.response.PaymentDTO;
-import com.swd.project.service.Impl.MembershipPackageService;
+import com.swd.project.dto.response.PermissionDTO;
+import com.swd.project.service.IPermissionService;
+import com.swd.project.service.impl.MembershipPackageService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MembershipPackageController {
     private final MembershipPackageService membershipPackageService;
+    private final IPermissionService permissionService;
 
     @GetMapping("/list")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -153,6 +156,15 @@ public class MembershipPackageController {
                 .statusCode(HttpStatus.OK.value())
                 .message("User Membership Package")
                 .data(membershipPackageService.getUserMembership())
+                .build();
+    }
+
+    @GetMapping("/permissions")
+    public ApiResponse<List<PermissionDTO>> getAllPermissions() {
+        return ApiResponse.<List<PermissionDTO>>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Permissions listed successfully")
+                .data(permissionService.getAllPermissions())
                 .build();
     }
 

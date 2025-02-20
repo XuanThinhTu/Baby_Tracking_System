@@ -4,6 +4,7 @@ import java.util.Date;
 
 public record MembershipSubscriptionResponse(
         int id,
+        int membershipId,
         String membershipName,
         String membershipDescription,
         double price,

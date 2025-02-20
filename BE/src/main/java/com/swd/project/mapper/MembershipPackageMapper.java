@@ -3,7 +3,11 @@ package com.swd.project.mapper;
 import com.swd.project.dto.request.MembershipPackageRequest;
 import com.swd.project.dto.response.MembershipPackageResponse;
 import com.swd.project.entity.MembershipPackage;
+import com.swd.project.entity.Permission;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -14,13 +18,18 @@ public class MembershipPackageMapper {
         if (membershipPackage == null) {
             return null;
         }
+        Set<String> permissions = membershipPackage.getPermissions()
+                .stream()
+                .map(Permission::getPermissionName)
+                .collect(Collectors.toSet());
         return new MembershipPackageResponse(
                 membershipPackage.getId(),
                 membershipPackage.getName(),
                 membershipPackage.getDescription(),
                 membershipPackage.getPrice(),
                 membershipPackage.getDuration(),
-                membershipPackage.isEnable()
+                membershipPackage.isEnable(),
+                permissions
         );
     }
 

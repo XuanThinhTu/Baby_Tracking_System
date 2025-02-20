@@ -3,7 +3,7 @@ package com.swd.project.controller;
 import com.swd.project.dto.request.GrowTrackerRequest;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.GrowthPredictionResponse;
-import com.swd.project.service.Impl.GrowthTrackerService;
+import com.swd.project.service.impl.GrowthTrackerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

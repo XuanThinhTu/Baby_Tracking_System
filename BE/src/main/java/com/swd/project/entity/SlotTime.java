@@ -1,5 +1,6 @@
 package com.swd.project.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,9 +29,11 @@ public class SlotTime {
     private LocalTime endTime;
 
     // 1 SlotTime có thể được nhiều WorkingSchedule tham chiếu
+    @JsonIgnore
     @OneToMany(mappedBy = "slotTime")
     private List<WorkingSchedule> workingSchedules;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "slotTime")
     private List<Booking> bookings;
 }

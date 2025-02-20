@@ -1,4 +1,4 @@
-package com.swd.project.service.Impl;
+package com.swd.project.service.impl;
 
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
@@ -17,6 +17,7 @@ import com.swd.project.mapper.MembershipPackageMapper;
 import com.swd.project.mapper.MembershipSubscriptionMapper;
 import com.swd.project.repository.MembershipPackageRepository;
 import com.swd.project.repository.MembershipSubscriptionRepository;
+import com.swd.project.repository.PermissionRepository;
 import com.swd.project.service.IMembershipPackageService;
 import com.swd.project.service.IUserService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -49,10 +51,13 @@ public class MembershipPackageService implements IMembershipPackageService {
     private String clientDomain;
     private final MembershipSubscriptionRepository membershipSubscriptionRepository;
     private final MembershipSubscriptionMapper membershipSubscriptionMapper;
+    private final PermissionRepository permissionRepository;
 
     @Override
     public MembershipPackageResponse createMembershipPackage(MembershipPackageRequest request) {
         MembershipPackage membershipPackage = packageMapper.toMembershipPackage(request);
+        var permissions = permissionRepository.findAllById(request.permissions());
+        membershipPackage.setPermissions(new HashSet<>(permissions));
         membershipPackage = packageRepository.save(membershipPackage);
         return packageMapper.toDto(membershipPackage);
     }

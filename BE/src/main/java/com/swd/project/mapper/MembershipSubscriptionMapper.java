@@ -10,6 +10,7 @@ public class MembershipSubscriptionMapper {
     public MembershipSubscriptionResponse toMembershipSubscriptionResponse(MembershipSubscription membershipSubscription) {
         return new MembershipSubscriptionResponse(
                 membershipSubscription.getId(),
+                membershipSubscription.getMembershipPackage().getId(),
                 membershipSubscription.getMembershipPackage().getName(),
                 membershipSubscription.getMembershipPackage().getDescription(),
                 membershipSubscription.getMembershipPackage().getPrice(),
