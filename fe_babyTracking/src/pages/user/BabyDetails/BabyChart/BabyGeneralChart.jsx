@@ -9,23 +9,23 @@ const BabyGeneralChart = () => {
     ];
 
     return (
-        <div className="w-full px-4">
+        <div className="w-full px-4 py-12"> {/* Tăng khoảng cách trên dưới */}
             {/* Header */}
-            <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Chỉ số của bé</h3>
-                <a href="#" className="text-blue-500 text-sm hover:underline">Xem chi tiết</a>
+            <div className="flex justify-between items-center mb-6"> {/* Thêm margin-bottom để tạo khoảng cách */}
+                <h3 className="text-2xl font-bold">Chỉ số của bé</h3> {/* Tăng kích thước chữ lên 2xl */}
+                <a href="#" className="text-blue-500 text-lg hover:underline">Xem chi tiết</a> {/* Tăng kích thước chữ lên lg */}
             </div>
 
             {/* Chart Section */}
             <div className="w-full flex justify-center">
                 <RadialBarChart
-                    width={400}  // Giảm kích thước
-                    height={400} // Giảm kích thước
+                    width={400}
+                    height={400}
                     cx="50%"
                     cy="50%"
                     innerRadius="25%"
                     outerRadius="100%"
-                    barSize={30} // Giảm kích thước thanh biểu đồ
+                    barSize={30}
                     data={data}
                     startAngle={90}
                     endAngle={-270}
@@ -36,6 +36,8 @@ const BabyGeneralChart = () => {
                 </RadialBarChart>
             </div>
         </div>
+
+
     );
 };
 

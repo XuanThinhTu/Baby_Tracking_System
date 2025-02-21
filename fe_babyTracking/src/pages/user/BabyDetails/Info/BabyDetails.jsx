@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { FaRuler, FaWeight, FaCalendarAlt, FaUserMd } from "react-icons/fa";
 
 const BabyDetails = () => {
@@ -61,14 +62,14 @@ const BabyDetails = () => {
                 Theo dõi sự phát triển của bé bằng các tính năng
             </h4>
             <div className="grid grid-cols-3 gap-8 w-full max-w-full px-4 mt-6">
-                <div className="flex flex-col items-center">
+                <Link to="/add-baby-info" className="flex flex-col items-center cursor-pointer">
                     <FaRuler className="text-blue-500 text-7xl" />
                     <p className="text-gray-600 text-lg mt-2">Chiều cao, cân nặng</p>
-                </div>
-                <div className="flex flex-col items-center">
+                </Link>
+                <Link to="/consultation-request" className="flex flex-col items-center cursor-pointer">
                     <FaUserMd className="text-yellow-500 text-7xl" />
                     <p className="text-gray-600 text-lg mt-2">Consultation Request</p>
-                </div>
+                </Link>
                 <div className="flex flex-col items-center">
                     <FaCalendarAlt className="text-red-500 text-7xl" />
                     <p className="text-gray-600 text-lg mt-2">Book lịch</p>

@@ -12,12 +12,11 @@ const WeightChart = ({ userData }) => {
         // Add more months following the extracted data...
     ];
 
-
     return (
-        <div className="w-full p-4">
-            <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Cân nặng</h3>
-                <a href="#" className="text-blue-500 text-sm">Chỉ số tiêu chuẩn</a>
+        <div className="w-full px-4 py-12"> {/* Tăng padding để tạo khoảng cách trên dưới */}
+            <div className="flex justify-between items-center mb-6"> {/* Tạo khoảng cách với biểu đồ */}
+                <h3 className="text-2xl font-bold">Cân nặng</h3> {/* Tăng kích thước chữ */}
+                <a href="#" className="text-blue-500 text-lg hover:underline">Chỉ số tiêu chuẩn</a> {/* Tăng kích thước chữ */}
             </div>
             <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={growthData}>
@@ -39,10 +38,16 @@ const WeightChart = ({ userData }) => {
                     )}
                 </LineChart>
             </ResponsiveContainer>
-            <div className="flex justify-between mt-4 text-sm text-blue-500">
-                <a href="#" className="hover:underline">Xem chi tiết &gt;</a>
-                <a href="#" className="hover:underline">Xem toàn màn hình &gt;</a>
+            <div className="flex justify-center items-center mt-6 text-lg text-purple-500">
+                <a href="#" className="hover:underline flex items-center">
+                    Xem chi tiết <span className="ml-1">&gt;</span>
+                </a>
+                <span className="mx-4 border-l border-gray-300 h-5"></span> {/* Đường phân cách */}
+                <a href="#" className="hover:underline flex items-center">
+                    Xem toàn màn hình <span className="ml-1">&gt;</span>
+                </a>
             </div>
+
         </div>
     );
 };
