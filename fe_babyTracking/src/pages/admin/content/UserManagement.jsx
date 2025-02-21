@@ -29,9 +29,9 @@ function UserManagement() {
     handleCloseModal();
   };
 
-  const handlePostAccount = async (values) => {};
-  const handleDeleteAccount = async () => {};
-  const handleUpdateAccount = async (values) => {};
+  const handlePostAccount = async (values) => { };
+  const handleDeleteAccount = async () => { };
+  const handleUpdateAccount = async (values) => { };
   //=======================
   const dataSource = [
     {
