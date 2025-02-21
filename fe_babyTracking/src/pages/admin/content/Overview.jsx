@@ -1,5 +1,17 @@
 import React from "react";
-import { Card, Row, Col, Statistic, Table, Button, List, Avatar } from "antd";
+import {
+  Card,
+  Row,
+  Col,
+  Statistic,
+  Table,
+  Button,
+  List,
+  Avatar,
+  Flex,
+  Typography,
+  Splitter,
+} from "antd";
 import {
   UserOutlined,
   SolutionOutlined,
@@ -8,9 +20,9 @@ import {
   HeartOutlined,
   FileTextOutlined,
 } from "@ant-design/icons";
+import { BarChart, PieChart } from "@mui/x-charts";
 
 const Overview = () => {
-  // Mock data
   const stats = [
     { title: "Total Babies", value: 120, icon: <UserOutlined /> },
     { title: "Total Users", value: 200, icon: <SolutionOutlined /> },
@@ -19,39 +31,6 @@ const Overview = () => {
     { title: "Appointments", value: 80, icon: <CalendarOutlined /> },
     { title: "Health Records", value: 300, icon: <FileTextOutlined /> },
     { title: "Vaccinations", value: 95, icon: <HeartOutlined /> },
-  ];
-
-  const recentActivities = [
-    {
-      key: 1,
-      name: "John Doe",
-      type: "Growth Record",
-      details: "Added weight: 10kg",
-    },
-    {
-      key: 2,
-      name: "Jane Smith",
-      type: "Appointment",
-      details: "Booked with Dr. Lee",
-    },
-    {
-      key: 3,
-      name: "Emily Johnson",
-      type: "Consultation",
-      details: "Requested a checkup",
-    },
-    {
-      key: 4,
-      name: "Michael Brown",
-      type: "Vaccination",
-      details: "Received MMR shot",
-    },
-    {
-      key: 5,
-      name: "Sarah Williams",
-      type: "Health Record",
-      details: "Updated medical history",
-    },
   ];
 
   const columns = [
@@ -92,6 +71,31 @@ const Overview = () => {
     { name: "Dr. Johnson", specialization: "Neonatology", patients: 40 },
     { name: "Dr. Brown", specialization: "General Medicine", patients: 35 },
   ];
+  //================
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const appointmentData = [50, 80, 45, 70, 90, 100, 110, 120, 95, 85, 75, 60];
+  const consultationData = [30, 60, 40, 65, 80, 95, 105, 110, 85, 70, 65, 50];
+
+  const growthCategories = [
+    { id: 0, value: 30, label: "Underweight", color: "lightblue" },
+    { id: 1, value: 150, label: "Normal", color: "lightgreen" },
+    { id: 2, value: 20, label: "Overweight", color: "red" },
+  ];
+  //=====================
 
   return (
     <div style={{ padding: 20 }}>
@@ -109,12 +113,56 @@ const Overview = () => {
         ))}
       </Row>
 
-      <Card title="Recent Activities" style={{ marginTop: 20 }}>
-        <Table
-          dataSource={recentActivities}
-          columns={columns}
-          pagination={false}
-        />
+      <Card title="Charts" style={{ marginTop: 20 }}>
+        <Splitter
+          style={{
+            height: 300,
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <Splitter.Panel defaultSize="65%" min="30%" max="70%">
+            <BarChart
+              xAxis={[
+                {
+                  scaleType: "band",
+                  data: months,
+                  tickLabelStyle: { textAnchor: "middle", fontSize: 12 },
+                },
+              ]}
+              series={[
+                {
+                  data: appointmentData,
+                  label: "Appointments",
+                  color: "#4CAF50",
+                },
+                {
+                  data: consultationData,
+                  label: "Consultations",
+                  color: "#FF9800",
+                },
+              ]}
+              width={800}
+              height={300}
+            />
+          </Splitter.Panel>
+          <Splitter.Panel>
+            <Typography.Title
+              level={5}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: 30,
+              }}
+            >
+              Child Growth Chart
+            </Typography.Title>
+            <PieChart
+              series={[{ data: growthCategories }]}
+              width={400}
+              height={200}
+            />
+          </Splitter.Panel>
+        </Splitter>
       </Card>
 
       <Card title="Recent Messages" style={{ marginTop: 20 }}>
