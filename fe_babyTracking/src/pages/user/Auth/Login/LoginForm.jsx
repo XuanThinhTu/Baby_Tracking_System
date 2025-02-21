@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-// import LinkToGoogle from "../Google/LinkToGoogle";
+import LinkToGoogle from "../Google/LinkToGoogle";
 // import { fetchLogin } from "../../../data/api.jsx";
 // import { toast, Toaster } from "react-hot-toast";
 
@@ -124,13 +124,7 @@ const LoginForm = () => {
             </button>
 
             <div>
-              <button
-                type="button"
-                className="w-full py-4 bg-gray-200 text-gray-700 rounded-xl font-medium text-lg cursor-not-allowed"
-                disabled
-              >
-                Đăng Nhập Bằng Google
-              </button>
+              <LinkToGoogle headline="Đăng Nhập Bằng Google" />
             </div>
           </div>
         </form>

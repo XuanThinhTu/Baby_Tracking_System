@@ -13,19 +13,40 @@ import UserHeader from "../components/header/UserHeader";
 import SignUp from "../pages/user/Auth/Register";
 import ForgotPassword from "../pages/user/Auth/ForgotPassword";
 import MainFooter from "../components/Footer";
+import MyFamily from "../pages/user/MyFamily";
+import BabyOverview from "../pages/user/BabyDetails";
+import AddBabyInfo from "../pages/user/BabyDetails/Info/AddBabyInfo";
+import ConsultationRequest from "../pages/user/BabyDetails/Info/ConsultationRequest";
+import BookingPage from "../pages/user/Calendar";
 
 function UserLayout() {
+  const location = useLocation(); // Lấy đường dẫn hiện tại
+
+  const isContentPage = ["/login", "/register", "/forgot-password", "/my-family", "/baby-details", "/add-baby-info", "/consultation-request", "/booking-meeting"].includes(
+    location.pathname
+  );
+
   return (
     <>
       <UserHeader />
-      <div className="container mx-auto px-2 py-4">
+      {isContentPage ? (
+        <div className="container mx-auto px-2 py-4">
+          <Routes>
+            <Route path="/login" element={<SignIn />} />
+            <Route path="/register" element={<SignUp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/my-family" element={<MyFamily />} />
+            <Route path="/baby-details" element={<BabyOverview />} />
+            <Route path="/add-baby-info" element={<AddBabyInfo />} />
+            <Route path="/consultation-request" element={<ConsultationRequest />} />
+            <Route path="/booking-meeting" element={<BookingPage />} />
+          </Routes>
+        </div>
+      ) : (
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<SignIn />} />
-          <Route path="/register" element={<SignUp />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
-      </div>
+      )}
       <MainFooter />
     </>
   );
