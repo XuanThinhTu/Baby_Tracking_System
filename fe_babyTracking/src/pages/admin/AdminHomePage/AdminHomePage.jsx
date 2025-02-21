@@ -1,8 +1,11 @@
 import {
+  AreaChartOutlined,
   BarChartOutlined,
   CalendarOutlined,
   LaptopOutlined,
   MailOutlined,
+  PieChartOutlined,
+  ProfileOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Dropdown, Layout, Menu, Space } from "antd";
@@ -15,6 +18,10 @@ import AppointmentManagement from "../content/AppointmentManagement";
 import PieChart from "../content/charts/PieChart";
 import BarChart from "../content/charts/BarChart";
 import Analytics from "../content/Analytics";
+import Standard from "../content/Standard";
+import Mail from "../content/Mail";
+import Overview from "../content/Overview";
+import { useNavigate } from "react-router-dom";
 
 const items1 = [
   { key: "home", label: "Home" },
@@ -44,13 +51,17 @@ const items2 = [
   },
   {
     key: "charts",
-    icon: <BarChartOutlined />,
+    icon: <AreaChartOutlined />,
     label: "Charts",
     children: [
-      { key: "pie", label: "Pie Chart" },
-      { key: "bar", label: "Bar Chart" },
-      { key: "line", label: "Line Chart" },
+      { key: "pie", icon: <PieChartOutlined />, label: "Pie Chart" },
+      { key: "bar", icon: <BarChartOutlined />, label: "Bar Chart" },
     ],
+  },
+  {
+    key: "standard",
+    icon: <ProfileOutlined />,
+    label: "Growth Standard",
   },
   {
     key: "mail",
@@ -64,17 +75,25 @@ const items2 = [
   },
 ];
 
-const profileMenu = (
-  <Menu
-    items={[
-      { key: "profile", label: "Profile" },
-      { key: "logout", label: "Logout" },
-    ]}
-  />
-);
-
 function AdminHomePage() {
   const [selectedKey, setSelectedKey] = useState("overview");
+  const navigator = useNavigate();
+
+  const handleProfileClick = (e) => {
+    if (e.key === "logout") {
+      navigator("/login");
+    }
+  };
+
+  const profileMenu = (
+    <Menu
+      onClick={handleProfileClick}
+      items={[
+        { key: "profile", label: "Profile" },
+        { key: "logout", label: "Logout" },
+      ]}
+    />
+  );
 
   const renderContent = () => {
     switch (selectedKey) {
@@ -90,6 +109,12 @@ function AdminHomePage() {
         return <BarChart />;
       case "analytics":
         return <Analytics />;
+      case "standard":
+        return <Standard />;
+      case "mail":
+        return <Mail />;
+      case "overview":
+        return <Overview />;
     }
   };
 
