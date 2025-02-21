@@ -17,11 +17,12 @@ import MyFamily from "../pages/user/MyFamily";
 import BabyOverview from "../pages/user/BabyDetails";
 import AddBabyInfo from "../pages/user/BabyDetails/Info/AddBabyInfo";
 import ConsultationRequest from "../pages/user/BabyDetails/Info/ConsultationRequest";
+import BookingPage from "../pages/user/Calendar";
 
 function UserLayout() {
   const location = useLocation(); // Lấy đường dẫn hiện tại
 
-  const isContentPage = ["/login", "/register", "/forgot-password", "/my-family", "/baby-details", "/add-baby-info", "/consultation-request"].includes(
+  const isContentPage = ["/login", "/register", "/forgot-password", "/my-family", "/baby-details", "/add-baby-info", "/consultation-request", "/booking-meeting"].includes(
     location.pathname
   );
 
@@ -38,6 +39,7 @@ function UserLayout() {
             <Route path="/baby-details" element={<BabyOverview />} />
             <Route path="/add-baby-info" element={<AddBabyInfo />} />
             <Route path="/consultation-request" element={<ConsultationRequest />} />
+            <Route path="/booking-meeting" element={<BookingPage />} />
           </Routes>
         </div>
       ) : (
