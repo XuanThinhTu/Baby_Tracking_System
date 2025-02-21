@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "Baby_Tracking_MobileV2",
-    "slug": "Baby_Tracking_MobileV2",
+    "name": "Baby_Tracking_Mobile",
+    "slug": "Baby_Tracking_Mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "scheme": "babytrackingmobilev2",
+    "scheme": "babytrackingmobile",
     "ios": {
       "supportsTablet": true
     },

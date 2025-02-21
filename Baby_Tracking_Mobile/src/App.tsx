@@ -3,7 +3,6 @@ import { Asset } from 'expo-asset';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Navigation } from './navigation';
-import TopBar from './components/TopBar';
 
 Asset.loadAsync([
   ...NavigationAssets,
