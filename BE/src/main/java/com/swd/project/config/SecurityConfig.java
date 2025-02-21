@@ -47,7 +47,10 @@ public class SecurityConfig {
             "/membership-package/disable/**",
             "/membership-package/payment/**",
             "/membership-package/execute",
-            "/grow-tracker/**"
+            "/membership-package/my-package",
+            "/grow-tracker/**",
+            "/consultation/request",
+            "/slot-time/add"
     );
 
     @Bean

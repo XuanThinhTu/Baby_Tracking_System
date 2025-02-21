@@ -1,7 +1,10 @@
 package com.swd.project.config;
 
+import com.swd.project.entity.Permission;
 import com.swd.project.entity.Role;
 import com.swd.project.entity.User;
+import com.swd.project.enums.PermissionName;
+import com.swd.project.repository.PermissionRepository;
 import com.swd.project.repository.RoleRepository;
 import com.swd.project.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +23,8 @@ public class AppInitConfig {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PermissionRepository permissionRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -28,16 +33,28 @@ public class AppInitConfig {
     ApplicationRunner init() {
         return args -> {
             if(roleRepository.findAll().isEmpty()){
-            Role roleAdmin = new Role();
-            roleAdmin.setName("ROLE_ADMIN");
-            roleRepository.save(roleAdmin);
-            Role roleUser = new Role();
-            roleUser.setName("ROLE_USER");
-            roleRepository.save(roleUser);
-            Role roleDoctor = new Role();
-            roleDoctor.setName("ROLE_DOCTOR");
-            roleRepository.save(roleDoctor);
-            log.info("Roles initialized.");
+                Role roleAdmin = new Role();
+                roleAdmin.setName("ROLE_ADMIN");
+                roleRepository.save(roleAdmin);
+                Role roleUser = new Role();
+                roleUser.setName("ROLE_USER");
+                roleRepository.save(roleUser);
+                Role roleDoctor = new Role();
+                roleDoctor.setName("ROLE_DOCTOR");
+                roleRepository.save(roleDoctor);
+                log.info("Roles initialized.");
+            }
+            if(permissionRepository.findAll().isEmpty()){
+                Permission permissionGrowthTracker = new Permission();
+                permissionGrowthTracker.setPermissionName(PermissionName.GROWTH_TRACKER.toString());
+                permissionRepository.save(permissionGrowthTracker);
+                Permission permissionConsultationRequest = new Permission();
+                permissionConsultationRequest.setPermissionName(PermissionName.CONSULTATION_REQUEST.toString());
+                permissionRepository.save(permissionConsultationRequest);
+                Permission permissionBookingRequest = new Permission();
+                permissionBookingRequest.setPermissionName(PermissionName.BOOKING_REQUEST.toString());
+                permissionRepository.save(permissionBookingRequest);
+                log.info("Permissions initialized.");
             }
             if (userRepository.findByEmail("babytrackingsys@gmail.com").isEmpty()) {
                 User admin = new User();
@@ -45,6 +62,8 @@ public class AppInitConfig {
                 admin.setPassword(passwordEncoder.encode("123456")); // thay đổi mật khẩu theo nhu cầu
                 admin.setFirstName("Admin");
                 admin.setLastName("Admin");
+                admin.setAddress("N/A");
+                admin.setPhone("N/A");
                 admin.setActive(true);
 
                 Role adminRole = roleRepository.findByName("ROLE_ADMIN")

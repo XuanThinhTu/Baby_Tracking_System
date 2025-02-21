@@ -1,4 +1,4 @@
-package com.swd.project.service.Impl;
+package com.swd.project.service.impl;
 
 import com.swd.project.entity.BmiStandard;
 import com.swd.project.enums.PeriodType;

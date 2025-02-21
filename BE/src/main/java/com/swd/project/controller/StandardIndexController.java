@@ -1,7 +1,7 @@
 package com.swd.project.controller;
 
 import com.swd.project.dto.response.ApiResponse;
-import com.swd.project.service.Impl.StandardIndexService;
+import com.swd.project.service.impl.StandardIndexService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

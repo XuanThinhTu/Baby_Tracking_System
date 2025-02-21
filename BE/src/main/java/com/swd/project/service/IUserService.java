@@ -39,4 +39,6 @@ public interface IUserService {
     void forgotPassword(String email) throws MessagingException;
 
     UserDTO resetPassword(String token, String newPassword);
+
+    UserDTO addDoctor(UserCreationRequest request);
 }

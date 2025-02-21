@@ -1,4 +1,4 @@
-package com.swd.project.service.Impl;
+package com.swd.project.service.impl;
 
 import com.swd.project.dto.response.StandardIndexResponse;
 import com.swd.project.mapper.StandardIndexMapper;

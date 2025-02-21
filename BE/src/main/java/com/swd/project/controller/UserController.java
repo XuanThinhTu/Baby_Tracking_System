@@ -166,4 +166,15 @@ public class UserController {
                 .build();
     }
 
+    @PostMapping("/admin/add-doctor")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ApiResponse<UserDTO> addDoctor(@RequestBody UserCreationRequest request){
+        return ApiResponse.<UserDTO>builder()
+                .statusCode(HttpStatus.CREATED.value())
+                .message("Doctor added")
+                .data(userService.addDoctor(request))
+                .build();
+    }
+
 }

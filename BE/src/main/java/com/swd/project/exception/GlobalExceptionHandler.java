@@ -34,6 +34,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(OutOfPermissionException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, String>> handleOutOfPermissionException(OutOfPermissionException ex) {
+        return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(ResourceAlreadyExistException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, String>> handleResourceAlreadyExistException(ResourceAlreadyExistException ex) {

@@ -1,5 +1,6 @@
 package com.swd.project.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,6 +36,7 @@ public class ConsultationRequest {
     @JoinColumn(name = "doctor_id")
     private User doctor;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "consultationRequest")
     private List<ConsultationResponse> consultationResponses;
 }
