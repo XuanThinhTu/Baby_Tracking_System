@@ -21,6 +21,7 @@ import Analytics from "../content/Analytics";
 import Standard from "../content/Standard";
 import Mail from "../content/Mail";
 import Overview from "../content/Overview";
+import { useNavigate } from "react-router-dom";
 
 const items1 = [
   { key: "home", label: "Home" },
@@ -74,17 +75,25 @@ const items2 = [
   },
 ];
 
-const profileMenu = (
-  <Menu
-    items={[
-      { key: "profile", label: "Profile" },
-      { key: "logout", label: "Logout" },
-    ]}
-  />
-);
-
 function AdminHomePage() {
   const [selectedKey, setSelectedKey] = useState("overview");
+  const navigator = useNavigate();
+
+  const handleProfileClick = (e) => {
+    if (e.key === "logout") {
+      navigator("/login");
+    }
+  };
+
+  const profileMenu = (
+    <Menu
+      onClick={handleProfileClick}
+      items={[
+        { key: "profile", label: "Profile" },
+        { key: "logout", label: "Logout" },
+      ]}
+    />
+  );
 
   const renderContent = () => {
     switch (selectedKey) {
