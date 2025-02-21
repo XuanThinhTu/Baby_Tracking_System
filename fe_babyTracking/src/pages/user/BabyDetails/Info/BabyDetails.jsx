@@ -70,10 +70,10 @@ const BabyDetails = () => {
                     <FaUserMd className="text-yellow-500 text-7xl" />
                     <p className="text-gray-600 text-lg mt-2">Consultation Request</p>
                 </Link>
-                <div className="flex flex-col items-center">
+                <Link to="/booking-meeting" className="flex flex-col items-center cursor-pointer">
                     <FaCalendarAlt className="text-red-500 text-7xl" />
                     <p className="text-gray-600 text-lg mt-2">Book lịch</p>
-                </div>
+                </Link>
             </div>
         </div>
     );

@@ -47,17 +47,6 @@ const MyFamily = () => {
                 <div className="w-full max-w-3xl bg-gray-100 p-6 rounded-2xl shadow-md">
                     {babies.map((baby) => (
                         <div key={baby.id} className="flex justify-between items-center p-4 border-b border-gray-300">
-                            {/* <div className="flex items-center space-x-4">
-                                <img
-                                    src={baby.avatar || "/default-avatar.png"}
-                                    alt={baby.name}
-                                    className="w-12 h-12 rounded-full border"
-                                />
-                                <div>
-                                    <p className="text-lg font-semibold">{baby.name}</p>
-                                    <p className="text-gray-500">{baby.birthday}</p>
-                                </div>
-                            </div> */}
                             <Link to={`/baby-details`} className="flex items-center space-x-4 cursor-pointer hover:bg-gray-100 p-3 rounded-lg transition">
                                 <img
                                     src={baby.avatar || "/default-avatar.png"}
