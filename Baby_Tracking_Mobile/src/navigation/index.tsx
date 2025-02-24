@@ -102,6 +102,7 @@ const RootStack = createNativeStackNavigator({
     Login: {
       screen: Login,
       options: {
+        headerShown: false,
         title: "Login"
       }
     },
