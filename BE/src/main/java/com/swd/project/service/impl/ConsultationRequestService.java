@@ -2,6 +2,7 @@ package com.swd.project.service.impl;
 
 import com.swd.project.dto.response.ConsultationRequestDTO;
 import com.swd.project.entity.*;
+import com.swd.project.enums.ConsultationStatus;
 import com.swd.project.enums.MembershipSubscriptionStatus;
 import com.swd.project.enums.PermissionName;
 import com.swd.project.exception.OutOfPermissionException;
@@ -45,6 +46,7 @@ public class ConsultationRequestService implements IConsultationRequestService {
         }
         ConsultationRequest consultationRequest = new ConsultationRequest();
         consultationRequest.setRequestTitle(title);
+        consultationRequest.setStatus(ConsultationStatus.PENDING);
         consultationRequest.setParent(parent);
         consultationRequest.setRequestDate(Date.valueOf(LocalDate.now()));
         consultationRequest = consultationRequestRepository.save(consultationRequest);

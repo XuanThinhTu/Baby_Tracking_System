@@ -72,7 +72,23 @@ public class AppInitConfig {
 
                 userRepository.save(admin);
                 log.info("Admin account initialized.");
+            }
+            if (userRepository.findByEmail("doctor@gmail.com").isEmpty()) {
+                User doctor = new User();
+                doctor.setEmail("doctor@gmail.com");
+                doctor.setPassword(passwordEncoder.encode("123456")); // thay đổi mật khẩu theo nhu cầu
+                doctor.setFirstName("System");
+                doctor.setLastName("Doctor");
+                doctor.setAddress("N/A");
+                doctor.setPhone("N/A");
+                doctor.setActive(true);
 
+                Role adminRole = roleRepository.findByName("ROLE_DOCTOR")
+                        .orElseThrow(() -> new RuntimeException("Error: Role ROLE_DOCTOR not exist"));
+                doctor.setRole(adminRole);
+
+                userRepository.save(doctor);
+                log.info("System Doctor account initialized.");
             }
         };
     }

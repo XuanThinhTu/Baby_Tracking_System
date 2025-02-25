@@ -207,7 +207,7 @@ public class MembershipPackageService implements IMembershipPackageService {
 
     @Scheduled(fixedRate = 10000*6) // 1 minute
     private void checkMembershipSubscription(){
-        List<MembershipSubscription> membershipSubscriptions = membershipSubscriptionRepository.findAll();
+        List<MembershipSubscription> membershipSubscriptions = membershipSubscriptionRepository.findAllByStatus(MembershipSubscriptionStatus.AVAILABLE);
         for (MembershipSubscription membershipSubscription : membershipSubscriptions){
             if(membershipSubscription.getEndDate().before(Date.valueOf(LocalDate.now()))){
                 membershipSubscription.setStatus(MembershipSubscriptionStatus.EXPIRED);
