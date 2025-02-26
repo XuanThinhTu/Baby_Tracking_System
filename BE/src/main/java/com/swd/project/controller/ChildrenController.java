@@ -3,6 +3,7 @@ package com.swd.project.controller;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.ChildrenDTO;
 import com.swd.project.service.IChildrenService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,7 @@ public class ChildrenController {
                 .build();
     }
 
+    @Operation(summary = "Get all children of the authenticated user")
     @GetMapping("/list")
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<List<ChildrenDTO>> getChildrenByCurrentUser(){
@@ -52,6 +54,21 @@ public class ChildrenController {
                 .statusCode(HttpStatus.OK.value())
                 .message("Children list retrieved")
                 .data(childrenDTOList)
+                .build();
+    }
+
+    @GetMapping("/update/{id}")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<ChildrenDTO> updateChildren(
+            @PathVariable int id,
+            @RequestParam("name") String name,
+            @RequestParam("birthDate") String birthDate,
+            @RequestParam("gender") String gender){
+        ChildrenDTO childrenDTO = childrenService.updateChildren(id, name, birthDate, gender);
+        return ApiResponse.<ChildrenDTO>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Children updated")
+                .data(childrenDTO)
                 .build();
     }
 }

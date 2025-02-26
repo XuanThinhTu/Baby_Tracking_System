@@ -8,6 +8,8 @@ public interface IChildrenService {
 
     ChildrenDTO addChildren(String name, String birthDate, String gender);
 
+    ChildrenDTO updateChildren(int id, String name, String birthDate, String gender);
+
     ChildrenDTO getChildrenById(int id);
 
     List<ChildrenDTO> getChildrenByAuthenticatedUser();

@@ -41,6 +41,21 @@ public class ChildrenService implements IChildrenService {
     }
 
     @Override
+    public ChildrenDTO updateChildren(int id, String name, String birthDate, String gender) {
+        Children children = childrenRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Children not found"));
+        User currentUser = userService.getAuthenticatedUser();
+        if(children.getUser().getId() != currentUser.getId()){
+            throw new RuntimeException("You can only update your own children");
+        }
+        children.setName(name);
+        children.setBirthDate(Date.valueOf(birthDate));
+        children.setGender(gender);
+        children = childrenRepository.save(children);
+        return childrenMapper.toChildrenDTO(children);
+    }
+
+    @Override
     public ChildrenDTO getChildrenById(int id) {
         Children children = childrenRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Children not found"));
         return childrenMapper.toChildrenDTO(children);

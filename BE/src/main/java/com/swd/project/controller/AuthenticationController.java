@@ -1,6 +1,7 @@
 package com.swd.project.controller;
 
 import com.swd.project.dto.request.AuthenticationRequest;
+import com.swd.project.dto.request.RefreshTokenRequest;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.AuthenticationResponse;
 import com.swd.project.service.IAuthenticationService;
@@ -23,6 +24,15 @@ public class AuthenticationController {
                 .statusCode(HttpStatus.OK.value())
                 .message("Login successful")
                 .data(authenticationService.login(request))
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    public ApiResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshTokenRequest request){
+        return ApiResponse.<AuthenticationResponse>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Token refreshed")
+                .data(authenticationService.refreshToken(request))
                 .build();
     }
 

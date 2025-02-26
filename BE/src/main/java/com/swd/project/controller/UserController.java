@@ -8,6 +8,7 @@ import com.swd.project.dto.request.VerifyUserRequest;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.UserDTO;
 import com.swd.project.service.IUserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,7 @@ public class UserController {
                 .build();
     }
 
+    @Operation(summary = "Get the current authenticated user")
     @GetMapping("/p")
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<UserDTO> getAuthUser(){
