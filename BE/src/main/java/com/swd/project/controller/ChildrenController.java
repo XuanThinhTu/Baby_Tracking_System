@@ -44,10 +44,10 @@ public class ChildrenController {
                 .build();
     }
 
-    @GetMapping("/list/{parentId}")
+    @GetMapping("/list")
     @SecurityRequirement(name = "bearerAuth")
-    public ApiResponse<List<ChildrenDTO>> getChildrenByParentId(@PathVariable int parentId){
-        List<ChildrenDTO> childrenDTOList = childrenService.getChildrenByParentId(parentId);
+    public ApiResponse<List<ChildrenDTO>> getChildrenByCurrentUser(){
+        List<ChildrenDTO> childrenDTOList = childrenService.getChildrenByAuthenticatedUser();
         return ApiResponse.<List<ChildrenDTO>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Children list retrieved")

@@ -50,7 +50,8 @@ public class SecurityConfig {
             "/membership-package/my-package",
             "/grow-tracker/**",
             "/consultation/request",
-            "/slot-time/add"
+            "/slot-time/add",
+            "/admin/**"
     );
 
     @Bean

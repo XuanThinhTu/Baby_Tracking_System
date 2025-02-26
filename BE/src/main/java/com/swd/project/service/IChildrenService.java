@@ -10,5 +10,7 @@ public interface IChildrenService {
 
     ChildrenDTO getChildrenById(int id);
 
-    List<ChildrenDTO> getChildrenByParentId(int parentId);
+    List<ChildrenDTO> getChildrenByAuthenticatedUser();
+
+    List<ChildrenDTO> getChildrenByParentId(int id);
 }
