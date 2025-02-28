@@ -25,12 +25,17 @@ public class ConsultationRequest {
 
     @Column(name = "request_title")
     private String requestTitle;
+    @Column(name = "note")
+    private String note;
 
     @Column(name = "request_date")
     private Date requestDate;
     @Column
     @Enumerated(EnumType.STRING)
     private ConsultationStatus status;
+
+    @ManyToOne(optional = false)
+    private Children child;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "parent_id")

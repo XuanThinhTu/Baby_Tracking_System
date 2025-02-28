@@ -1,5 +1,6 @@
 package com.swd.project.controller;
 
+import com.swd.project.dto.request.ConsultationRequestCreation;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.ConsultationRequestDTO;
 import com.swd.project.service.IConsultationRequestService;
@@ -16,10 +17,10 @@ public class ConsultationRequestController {
 
     @PostMapping("/request")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<ConsultationRequestDTO> createConsultationRequest(@RequestParam("title") String title) {
+    public ApiResponse<ConsultationRequestDTO> createConsultationRequest(@RequestBody ConsultationRequestCreation request) {
         return ApiResponse.<ConsultationRequestDTO>builder()
                 .message("Consultation request created")
-                .data(iConsultationRequestService.createConsultationRequest(title))
+                .data(iConsultationRequestService.createConsultationRequest(request))
                 .build();
     }
 

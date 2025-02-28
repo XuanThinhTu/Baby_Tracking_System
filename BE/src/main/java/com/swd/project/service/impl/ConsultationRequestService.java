@@ -1,5 +1,6 @@
 package com.swd.project.service.impl;
 
+import com.swd.project.dto.request.ConsultationRequestCreation;
 import com.swd.project.dto.response.ConsultationRequestDTO;
 import com.swd.project.entity.*;
 import com.swd.project.enums.ConsultationStatus;
@@ -7,10 +8,7 @@ import com.swd.project.enums.MembershipSubscriptionStatus;
 import com.swd.project.enums.PermissionName;
 import com.swd.project.exception.OutOfPermissionException;
 import com.swd.project.mapper.ConsultationRequestMapper;
-import com.swd.project.repository.ConsultationRequestRepository;
-import com.swd.project.repository.MembershipPackageRepository;
-import com.swd.project.repository.MembershipSubscriptionRepository;
-import com.swd.project.repository.PermissionRepository;
+import com.swd.project.repository.*;
 import com.swd.project.service.IConsultationRequestService;
 import com.swd.project.service.IUserService;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +28,11 @@ public class ConsultationRequestService implements IConsultationRequestService {
     private final MembershipPackageRepository membershipPackageRepository;
     private final MembershipSubscriptionRepository membershipSubscriptionRepository;
     private final PermissionRepository permissionRepository;
+    private final ChildrenRepository childrenRepository;
     private final ConsultationRequestMapper consultationRequestMapper;
 
     @Override
-    public ConsultationRequestDTO createConsultationRequest(String title) {
+    public ConsultationRequestDTO createConsultationRequest(ConsultationRequestCreation request) {
         User parent = userService.getAuthenticatedUser();
         MembershipSubscription userSubscription = membershipSubscriptionRepository
                 .findByUserIdAndStatus(parent.getId(), MembershipSubscriptionStatus.AVAILABLE)
@@ -45,10 +44,13 @@ public class ConsultationRequestService implements IConsultationRequestService {
             throw new OutOfPermissionException("You has no permission to create consultation request");
         }
         ConsultationRequest consultationRequest = new ConsultationRequest();
-        consultationRequest.setRequestTitle(title);
+        consultationRequest.setRequestTitle(request.getTitle());
+        consultationRequest.setNote(request.getNotes());
         consultationRequest.setStatus(ConsultationStatus.PENDING);
-        consultationRequest.setParent(parent);
         consultationRequest.setRequestDate(Date.valueOf(LocalDate.now()));
+        consultationRequest.setParent(parent);
+        Children child = childrenRepository.findById(Integer.parseInt(request.getChildId())).get();
+        consultationRequest.setChild(child);
         consultationRequest = consultationRequestRepository.save(consultationRequest);
         return consultationRequestMapper.toConsultationRequestDTO(consultationRequest);
     }
