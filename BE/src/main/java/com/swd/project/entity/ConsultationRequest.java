@@ -1,6 +1,7 @@
 package com.swd.project.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.swd.project.enums.ConsultationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +28,9 @@ public class ConsultationRequest {
 
     @Column(name = "request_date")
     private Date requestDate;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private ConsultationStatus status;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "parent_id")

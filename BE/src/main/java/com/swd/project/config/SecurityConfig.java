@@ -38,7 +38,8 @@ public class SecurityConfig {
             "/user/admin/**",
             "/children/add",
             "/children/info/**",
-            "/children/list/**",
+            "/children/list",
+            "/children/update/**",
             "/membership-package/create",
             "/membership-package/list",
             "/membership-package/update/**",
@@ -50,7 +51,8 @@ public class SecurityConfig {
             "/membership-package/my-package",
             "/grow-tracker/**",
             "/consultation/request",
-            "/slot-time/add"
+            "/slot-time/add",
+            "/admin/**"
     );
 
     @Bean
