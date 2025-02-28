@@ -18,7 +18,6 @@ public class StandardIndexController {
     public ResponseEntity<ApiResponse<?>> getAllStandardIndexData() {
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(200)
                         .message("List of standard tracking data")
                         .data(standardIndexService.getALLStandardIndex())
                         .build()

@@ -31,7 +31,6 @@ public class MembershipPackageController {
         List<MembershipPackageResponse> list = membershipPackageService.getAllMembershipPackages();
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(HttpStatus.OK.value())
                         .message("Membership Package listed successfully")
                         .data(list)
                         .build()
@@ -44,7 +43,6 @@ public class MembershipPackageController {
         MembershipPackageResponse membershipPackage = membershipPackageService.getMembershipPackageById(id);
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(HttpStatus.OK.value())
                         .message("Membership Package detail")
                         .data(membershipPackage)
                         .build()
@@ -59,7 +57,6 @@ public class MembershipPackageController {
         MembershipPackageResponse membershipPackage = membershipPackageService.createMembershipPackage(request);
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(HttpStatus.CREATED.value())
                         .message("Membership Package created successfully")
                         .data(membershipPackage)
                         .build()
@@ -76,7 +73,6 @@ public class MembershipPackageController {
         MembershipPackageResponse membershipPackage = membershipPackageService.updateMembershipPackage(id, request);
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(HttpStatus.OK.value())
                         .message("Membership Package updated successfully")
                         .data(membershipPackage)
                         .build()
@@ -92,7 +88,6 @@ public class MembershipPackageController {
         membershipPackageService.deleteMembershipPackage(id);
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(HttpStatus.OK.value())
                         .message("Membership Package deleted successfully")
                         .build()
         );
@@ -107,7 +102,6 @@ public class MembershipPackageController {
         membershipPackageService.enableMembershipPackage(id);
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(HttpStatus.OK.value())
                         .message("Membership Package enable successfully")
                         .build()
         );
@@ -122,7 +116,6 @@ public class MembershipPackageController {
         membershipPackageService.disableMembershipPackage(id);
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(HttpStatus.OK.value())
                         .message("Membership Package disable successfully")
                         .build()
         );
@@ -133,7 +126,6 @@ public class MembershipPackageController {
     public ApiResponse<PaymentDTO> createMembershipPayment(@PathVariable int membershipId) throws PayPalRESTException {
         PaymentDTO paymentDTO = membershipPackageService.createMembershipPayment(membershipId);
         return ApiResponse.<PaymentDTO>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Payment created successfully")
                 .data(paymentDTO)
                 .build();
@@ -143,7 +135,6 @@ public class MembershipPackageController {
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<?> executePayment(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) throws PayPalRESTException {
         return ApiResponse.builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Payment executed successfully")
                 .data(membershipPackageService.executeMembershipPayment(paymentId, payerId))
                 .build();
@@ -153,7 +144,6 @@ public class MembershipPackageController {
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<?> getUserMembership(){
         return ApiResponse.builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("User Membership Package")
                 .data(membershipPackageService.getUserMembership())
                 .build();
@@ -162,7 +152,6 @@ public class MembershipPackageController {
     @GetMapping("/permissions")
     public ApiResponse<List<PermissionDTO>> getAllPermissions() {
         return ApiResponse.<List<PermissionDTO>>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Permissions listed successfully")
                 .data(permissionService.getAllPermissions())
                 .build();

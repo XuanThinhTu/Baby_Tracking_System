@@ -20,7 +20,6 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ApiResponse<AuthenticationResponse> loginUser(@RequestBody AuthenticationRequest request){
         return ApiResponse.<AuthenticationResponse>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Login successful")
                 .data(authenticationService.login(request))
                 .build();

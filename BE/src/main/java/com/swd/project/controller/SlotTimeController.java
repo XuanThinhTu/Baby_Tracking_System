@@ -25,7 +25,6 @@ public class SlotTimeController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<SlotTimeDTO> createSlotTime(@RequestBody SlotTimeCreationRequest request){
         return ApiResponse.<SlotTimeDTO>builder()
-                .statusCode(HttpStatus.CREATED.value())
                 .message("Slot time created")
                 .data(slotTimeService.addSlotTime(request))
                 .build();
@@ -34,7 +33,6 @@ public class SlotTimeController {
     @GetMapping("/all")
     public ApiResponse<List<SlotTimeDTO>> getAllSlotTimes(){
         return ApiResponse.<List<SlotTimeDTO>>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("All slot times retrieved")
                 .data(slotTimeService.getAllSlotTimes())
                 .build();
