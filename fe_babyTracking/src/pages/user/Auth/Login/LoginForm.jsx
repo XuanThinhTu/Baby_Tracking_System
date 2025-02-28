@@ -14,11 +14,12 @@ const LoginForm = () => {
     try {
       const result = await loginFucntion(email, password);
       const token = result?.data?.accessToken;
-      sessionStorage.setItem("token", token);
-      navigation("/");
+      if (token) {
+        sessionStorage.setItem("token", token);
+        navigation("/");
+      }
     } catch (error) {
-      alert("Login failed!");
-      console.log("Login failed!", error);
+      alert(error?.message);
     }
   };
 

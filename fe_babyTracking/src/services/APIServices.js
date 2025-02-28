@@ -15,7 +15,11 @@ export const loginFucntion = async (mail, pass) => {
     );
     return response.data;
   } catch (error) {
-    console.log(error);
+    if (error.response) {
+      throw new Error(error.response.data.message);
+    } else {
+      throw new Error("Some thing when wrong!");
+    }
   }
 };
 
