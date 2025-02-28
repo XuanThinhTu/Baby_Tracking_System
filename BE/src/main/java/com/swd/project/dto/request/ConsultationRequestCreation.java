@@ -12,5 +12,5 @@ import lombok.experimental.FieldDefaults;
 public class ConsultationRequestCreation {
     String title;
     String notes;
-    String childId;
+    int childId;
 }

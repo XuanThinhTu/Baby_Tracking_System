@@ -51,6 +51,7 @@ public class SecurityConfig {
             "/membership-package/my-package",
             "/grow-tracker/**",
             "/consultation/request",
+            "/consultation/pending-request",
             "/slot-time/add",
             "/admin/**"
     );

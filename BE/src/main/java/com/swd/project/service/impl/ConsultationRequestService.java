@@ -13,6 +13,9 @@ import com.swd.project.service.IConsultationRequestService;
 import com.swd.project.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -44,15 +47,40 @@ public class ConsultationRequestService implements IConsultationRequestService {
             log.error("User has no permission to create consultation request log");
             throw new OutOfPermissionException("You has no permission to create consultation request");
         }
+        Children child = childrenRepository.findById(request.getChildId()).get();
+        if(child.getUser().getId() != parent.getId()){
+            log.error("Child is not belong to user");
+            throw new RuntimeException("You can only create consultation request for your child");
+        }
         ConsultationRequest consultationRequest = new ConsultationRequest();
         consultationRequest.setRequestTitle(request.getTitle());
         consultationRequest.setNote(request.getNotes());
         consultationRequest.setStatus(ConsultationStatus.PENDING);
         consultationRequest.setRequestDate(Date.valueOf(LocalDate.now()));
         consultationRequest.setParent(parent);
-        Children child = childrenRepository.findById(Integer.parseInt(request.getChildId())).get();
         consultationRequest.setChild(child);
         consultationRequest = consultationRequestRepository.save(consultationRequest);
+        return consultationRequestMapper.toConsultationRequestDTO(consultationRequest);
+    }
+
+    @Override
+    public Page<ConsultationRequestDTO> getPendingConsultationRequest(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ConsultationRequest> pendingConsultations = consultationRequestRepository.findAllByStatus(ConsultationStatus.PENDING, pageable);
+        return pendingConsultations.map(consultationRequestMapper::toConsultationRequestDTO);
+    }
+
+    @Override
+    public Page<ConsultationRequestDTO> getAllConsultationRequest(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ConsultationRequest> consultations = consultationRequestRepository.findAll(pageable);
+        return consultations.map(consultationRequestMapper::toConsultationRequestDTO);
+    }
+
+    @Override
+    public ConsultationRequestDTO getConsultationRequestById(int id) {
+        ConsultationRequest consultationRequest = consultationRequestRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Consultation request not found"));
         return consultationRequestMapper.toConsultationRequestDTO(consultationRequest);
     }
 }
