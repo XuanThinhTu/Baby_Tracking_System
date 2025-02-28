@@ -34,6 +34,7 @@ public class ConsultationRequestService implements IConsultationRequestService {
     @Override
     public ConsultationRequestDTO createConsultationRequest(ConsultationRequestCreation request) {
         User parent = userService.getAuthenticatedUser();
+        //validate user has membership subscription
         MembershipSubscription userSubscription = membershipSubscriptionRepository
                 .findByUserIdAndStatus(parent.getId(), MembershipSubscriptionStatus.AVAILABLE)
                 .orElseThrow(() -> new RuntimeException("User has no active subscription"));
