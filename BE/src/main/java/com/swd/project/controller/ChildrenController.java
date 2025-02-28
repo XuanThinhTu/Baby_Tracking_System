@@ -63,7 +63,6 @@ public class ChildrenController {
             @RequestParam("gender") String gender){
         ChildrenDTO childrenDTO = childrenService.updateChildren(id, name, birthDate, gender);
         return ApiResponse.<ChildrenDTO>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Children updated")
                 .data(childrenDTO)
                 .build();
