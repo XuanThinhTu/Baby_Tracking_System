@@ -21,7 +21,6 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ApiResponse<AuthenticationResponse> loginUser(@RequestBody AuthenticationRequest request){
         return ApiResponse.<AuthenticationResponse>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Login successful")
                 .data(authenticationService.login(request))
                 .build();
@@ -30,7 +29,6 @@ public class AuthenticationController {
     @PostMapping("/refresh")
     public ApiResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshTokenRequest request){
         return ApiResponse.<AuthenticationResponse>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Token refreshed")
                 .data(authenticationService.refreshToken(request))
                 .build();

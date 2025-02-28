@@ -27,7 +27,6 @@ public class AdminController {
     public ApiResponse<List<ChildrenDTO>> getChildrenByParentId(@PathVariable int parentId){
         List<ChildrenDTO> childrenDTOList = childrenService.getChildrenByParentId(parentId);
         return ApiResponse.<List<ChildrenDTO>>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Children list retrieved")
                 .data(childrenDTOList)
                 .build();

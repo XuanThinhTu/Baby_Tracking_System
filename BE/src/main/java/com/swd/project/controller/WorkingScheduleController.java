@@ -23,7 +23,6 @@ public class WorkingScheduleController {
     public ApiResponse<WorkingScheduleDTO> registerWorkingSchedule(@RequestParam("slotTimeId") String slotTimeId,
                                                                    @RequestParam("date")String date) {
         return ApiResponse.<WorkingScheduleDTO>builder()
-                .statusCode(HttpStatus.CREATED.value())
                 .message("Working schedule registered")
                 .data(workingScheduleService.registerWorkingSchedule(slotTimeId, date))
                 .build();

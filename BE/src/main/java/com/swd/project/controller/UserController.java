@@ -33,7 +33,6 @@ public class UserController {
     public ApiResponse<UserDTO> registerUser(@RequestBody UserCreationRequest request) throws MessagingException {
         UserDTO userDTO = userService.register(request);
         return ApiResponse.<UserDTO>builder()
-                .statusCode(HttpStatus.CREATED.value())
                 .message("User registered")
                 .data(userDTO)
                 .build();
@@ -43,7 +42,6 @@ public class UserController {
     public ApiResponse<UserDTO> verifyUser(@RequestBody VerifyUserRequest request){
         UserDTO userDTO = userService.verifyEmail(request.getToken());
         return ApiResponse.<UserDTO>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("User verified")
                 .data(userDTO)
                 .build();
@@ -55,7 +53,6 @@ public class UserController {
     public ApiResponse<UserDTO> getAuthUser(){
         UserDTO userDTO = userService.getAuthenticatedUserDTO();
         return ApiResponse.<UserDTO>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("User profile retrieved")
                 .data(userDTO)
                 .build();
@@ -72,7 +69,6 @@ public class UserController {
     ) throws IOException {
         UserDTO userDTO = userService.updateUserProfile(firstName, lastName, phone, address, avatar);
         return ApiResponse.<UserDTO>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("User profile updated")
                 .data(userDTO)
                 .build();
@@ -84,7 +80,6 @@ public class UserController {
                                                @RequestParam("newPassword") String newPassword){
         UserDTO userDTO = userService.updatePassword(oldPassword, newPassword);
         return ApiResponse.<UserDTO>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Password updated")
                 .data(userDTO)
                 .build();
@@ -97,7 +92,6 @@ public class UserController {
     public ApiResponse<List<UserDTO>> getAllUsers(){
         List<UserDTO> userDTOs = userService.getAllUsers();
         return ApiResponse.<List<UserDTO>>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Show all users")
                 .data(userDTOs)
                 .build();
@@ -109,7 +103,6 @@ public class UserController {
     public ApiResponse<?> deactivateUser(@RequestParam("user") int id){
         userService.deactivateByUserId(id);
         return ApiResponse.<List<UserDTO>>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Deactivate user successfully")
                 .build();
     }
@@ -120,7 +113,6 @@ public class UserController {
     public ApiResponse<?> activateUser(@RequestParam("user") int id){
         userService.activateByUserId(id);
         return ApiResponse.<List<UserDTO>>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Activate user successfully")
                 .build();
     }
@@ -131,7 +123,6 @@ public class UserController {
     public ApiResponse<?> banUser(@RequestParam("user") int id){
         userService.banByUserId(id);
         return ApiResponse.<List<UserDTO>>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Deactivate user successfully")
                 .build();
     }
@@ -142,7 +133,6 @@ public class UserController {
     public ApiResponse<?> unbanUser(@RequestParam("user") int id){
         userService.unbanByUserId(id);
         return ApiResponse.<List<UserDTO>>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Deactivate user successfully")
                 .build();
     }
@@ -152,7 +142,6 @@ public class UserController {
     public ApiResponse<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) throws MessagingException {
         userService.forgotPassword(request.getEmail());
         return ApiResponse.<Void>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Email sent")
                 .data(null)
                 .build();
@@ -162,7 +151,6 @@ public class UserController {
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<UserDTO> resetPassword(@RequestBody ResetPasswordRequest request){
         return ApiResponse.<UserDTO>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Password reset")
                 .data(userService.resetPassword(request.getToken(), request.getNewPassword()))
                 .build();
@@ -173,7 +161,6 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ApiResponse<UserDTO> addDoctor(@RequestBody UserCreationRequest request){
         return ApiResponse.<UserDTO>builder()
-                .statusCode(HttpStatus.CREATED.value())
                 .message("Doctor added")
                 .data(userService.addDoctor(request))
                 .build();

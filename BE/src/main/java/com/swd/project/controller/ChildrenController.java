@@ -28,7 +28,6 @@ public class ChildrenController {
             @RequestParam("gender") String gender){
         ChildrenDTO childrenDTO = childrenService.addChildren(name, birthDate, gender);
         return ApiResponse.<ChildrenDTO>builder()
-                .statusCode(HttpStatus.CREATED.value())
                 .message("Children added")
                 .data(childrenDTO)
                 .build();
@@ -39,7 +38,6 @@ public class ChildrenController {
     public ApiResponse<ChildrenDTO> getChildrenById(@PathVariable int id){
         ChildrenDTO childrenDTO = childrenService.getChildrenById(id);
         return ApiResponse.<ChildrenDTO>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Children profile retrieved")
                 .data(childrenDTO)
                 .build();
@@ -51,7 +49,6 @@ public class ChildrenController {
     public ApiResponse<List<ChildrenDTO>> getChildrenByCurrentUser(){
         List<ChildrenDTO> childrenDTOList = childrenService.getChildrenByAuthenticatedUser();
         return ApiResponse.<List<ChildrenDTO>>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Children list retrieved")
                 .data(childrenDTOList)
                 .build();
@@ -66,7 +63,6 @@ public class ChildrenController {
             @RequestParam("gender") String gender){
         ChildrenDTO childrenDTO = childrenService.updateChildren(id, name, birthDate, gender);
         return ApiResponse.<ChildrenDTO>builder()
-                .statusCode(HttpStatus.OK.value())
                 .message("Children updated")
                 .data(childrenDTO)
                 .build();

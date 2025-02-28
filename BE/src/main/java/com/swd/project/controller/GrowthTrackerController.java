@@ -23,7 +23,6 @@ public class GrowthTrackerController {
     public ResponseEntity<ApiResponse<?>> getAllGrowTrackerData(@PathVariable int childId) {
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(200)
                         .message("List of id: " + childId + " tracking data")
                         .data(growTrackerService.showAllGrowthTracker(childId))
                         .build()
@@ -34,7 +33,6 @@ public class GrowthTrackerController {
     public ResponseEntity<ApiResponse<?>> AddGrowTrackerData(@PathVariable int childId, @RequestBody GrowTrackerRequest growTrackerRequest) {
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(HttpStatus.OK.value())
                         .message("Tracking data added successfully")
                         .data(growTrackerService.addGrowthTracker(childId, growTrackerRequest))
                         .build()
@@ -45,7 +43,6 @@ public class GrowthTrackerController {
     public ResponseEntity<ApiResponse<?>> updateGrowTrackerData(@PathVariable int id, @RequestBody GrowTrackerRequest growTrackerRequest) {
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(HttpStatus.OK.value())
                         .message("Tracking data with id " + id + " added successfully")
                         .data(growTrackerService.updateGrowthTracker(id, growTrackerRequest))
                         .build()
@@ -57,7 +54,6 @@ public class GrowthTrackerController {
         growTrackerService.deleteGrowthTracker(id);
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(HttpStatus.OK.value())
                         .message("Tracking data with id: " + id + " deleted successfully")
                         .build()
         );
@@ -71,7 +67,6 @@ public class GrowthTrackerController {
         List<GrowthPredictionResponse> result = growTrackerService.predictNextNPoints(childId, n);
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .statusCode(200)
                         .message("Predicted " + n + " next points for child " + childId)
                         .data(result)
                         .build()

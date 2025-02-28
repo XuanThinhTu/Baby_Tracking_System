@@ -18,7 +18,6 @@ public class ConsultationRequestController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ConsultationRequestDTO> createConsultationRequest(@RequestParam("title") String title) {
         return ApiResponse.<ConsultationRequestDTO>builder()
-                .statusCode(HttpStatus.CREATED.value())
                 .message("Consultation request created")
                 .data(iConsultationRequestService.createConsultationRequest(title))
                 .build();
