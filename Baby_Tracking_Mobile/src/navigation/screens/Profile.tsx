@@ -1,18 +1,27 @@
 import { Text } from '@react-navigation/elements';
-import { StaticScreenProps } from '@react-navigation/native';
-import { useEffect } from 'react';
+import { StaticScreenProps, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { testSecureStore } from '../../utility/Helper';
+import { getToken } from '../../utility/Helper';
 
 type Props = StaticScreenProps<{
   user: string;
 }>;
 
 export function Profile() {
+  const navigate = useNavigation();
+  useFocusEffect(
+    useCallback(() => {
+      checkToken();
+    }, [])
+  );
 
-  useEffect(()=>{
-    testSecureStore();
-  });
+  const checkToken = async () => {
+    var token = await getToken();
+    if (token == null) {
+      navigate.navigate("Login");
+    }
+  }
 
   return (
     <View style={styles.container}>

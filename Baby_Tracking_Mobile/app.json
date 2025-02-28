@@ -12,10 +12,10 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.swd.baby_tracking",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff",
-        "package" : "com.swd.baby_tracking"
+        "backgroundColor": "#ffffff"
       }
     },
     "web": {

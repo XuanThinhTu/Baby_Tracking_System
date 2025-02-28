@@ -3,13 +3,11 @@ import { Asset } from 'expo-asset';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Navigation } from './navigation';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from './services/queryClient';
 
 Asset.loadAsync([
   ...NavigationAssets,
-  require('./assets/newspaper.png'),
-  require('./assets/bell.png'),
+  require('./assets/icons/newspaper.png'),
+  require('./assets/icons/bell.png'),
 ]);
 
 SplashScreen.preventAutoHideAsync();

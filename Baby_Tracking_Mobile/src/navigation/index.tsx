@@ -6,15 +6,16 @@ import {
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Image } from 'react-native';
-import person from '../assets/person.png';
-import home from '../assets/home.png'
-import search from "../assets/bell.png"
+import person from '../assets/icons/person.png';
+import home from '../assets/icons/home.png'
+import search from "../assets/icons/bell.png"
 import { Home } from './screens/Home';
 import { Profile } from './screens/Profile';
 import { Settings } from './screens/Settings';
 import { NotFound } from './screens/NotFound';
 import { Notifications } from './screens/Notifications';
 import Login from './screens/Login';
+import { Register } from './screens/Register';
 
 const HomeTabs = createBottomTabNavigator({
   screenOptions: ({ navigation }) => ({
@@ -99,11 +100,24 @@ const RootStack = createNativeStackNavigator({
         ),
       }),
     },
+    Home: {
+      screen: Home,
+      options: {
+        title: "Home"
+      }
+    },
     Login: {
       screen: Login,
       options: {
-        headerShown: false,
+        headerShown: true,
         title: "Login"
+      }
+    },
+    Register: {
+      screen: Register,
+      options: {
+        headerShown: false,
+        title: "Register"
       }
     },
     Notifications: {
