@@ -22,9 +22,17 @@ import BookingPage from "../pages/user/Calendar";
 function UserLayout() {
   const location = useLocation(); // Lấy đường dẫn hiện tại
 
-  const isContentPage = ["/login", "/register", "/forgot-password", "/my-family", "/baby-details", "/add-baby-info", "/consultation-request", "/booking-meeting"].includes(
-    location.pathname
-  );
+  const isContentPage =
+    [
+      "/login",
+      "/register",
+      "/forgot-password",
+      "/my-family",
+      "/add-baby-info",
+      "/consultation-request",
+      "/booking-meeting",
+    ].includes(location.pathname) ||
+    location.pathname.startsWith("/baby-details/");
 
   return (
     <>
@@ -36,9 +44,12 @@ function UserLayout() {
             <Route path="/register" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/my-family" element={<MyFamily />} />
-            <Route path="/baby-details" element={<BabyOverview />} />
+            <Route path="/baby-details/:babyId" element={<BabyOverview />} />
             <Route path="/add-baby-info" element={<AddBabyInfo />} />
-            <Route path="/consultation-request" element={<ConsultationRequest />} />
+            <Route
+              path="/consultation-request"
+              element={<ConsultationRequest />}
+            />
             <Route path="/booking-meeting" element={<BookingPage />} />
           </Routes>
         </div>

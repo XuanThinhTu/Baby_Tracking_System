@@ -134,10 +134,7 @@ function AppointmentManagement() {
         <div
           style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}
         >
-          <Button
-            onClick={handleUpdateAppointment}
-            style={{ backgroundColor: "cyan", color: "gray" }}
-          >
+          <Button onClick={handleUpdateAppointment} type="primary">
             {editing ? "Save Change" : "Edit Information"}
           </Button>
           <Popconfirm
