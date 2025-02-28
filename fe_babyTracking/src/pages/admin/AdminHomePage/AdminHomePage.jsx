@@ -22,6 +22,7 @@ import Standard from "../content/Standard";
 import Mail from "../content/Mail";
 import Overview from "../content/Overview";
 import { useNavigate } from "react-router-dom";
+import AccountManagement from "../content/AccountManagement";
 
 const items1 = [
   { key: "home", label: "Home" },
@@ -115,6 +116,8 @@ function AdminHomePage() {
         return <Mail />;
       case "overview":
         return <Overview />;
+      case "users":
+        return <AccountManagement />;
     }
   };
 
@@ -130,6 +133,7 @@ function AdminHomePage() {
           defaultSelectedKeys={["home"]}
           items={items1}
           style={{ flex: 1 }}
+          onClick={({ key }) => setSelectedKey(key)}
         />
 
         <Dropdown overlay={profileMenu} trigger={["click"]}>

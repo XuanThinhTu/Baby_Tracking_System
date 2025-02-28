@@ -1,10 +1,28 @@
 import { useNavigate } from "react-router-dom";
 import LinkToGoogle from "../Google/LinkToGoogle";
+import { useEffect, useState } from "react";
+import { loginFucntion } from "../../../../services/APIServices";
 // import { fetchLogin } from "../../../data/api.jsx";
 // import { toast, Toaster } from "react-hot-toast";
 
 const LoginForm = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const fetchLogin = async () => {
+    try {
+      const result = await loginFucntion(email, password);
+      const token = result?.data?.accessToken;
+      if (token) {
+        sessionStorage.setItem("token", token);
+        navigation("/");
+      }
+    } catch (error) {
+      alert(error?.message);
+    }
+  };
+
   // const [formValues, setFormValues] = useState({
   //   email: sessionStorage.getItem('email') || "",
   //   password: sessionStorage.getItem('password') || "",
@@ -88,7 +106,8 @@ const LoginForm = () => {
               className="w-full border-2 border-[rgba(0,0,0,0.2)] rounded-xl p-4 mt-1 bg-transparent"
               type="email"
               placeholder="Nhập email..."
-            // disabled
+              onChange={(e) => setEmail(e.target.value)}
+              // disabled
             />
           </div>
 
@@ -98,7 +117,8 @@ const LoginForm = () => {
               className="w-full border-2 border-[rgba(0,0,0,0.2)] rounded-xl p-4 mt-1 bg-transparent"
               type="password"
               placeholder="Nhập mật khẩu..."
-            // disabled
+              onChange={(e) => setPassword(e.target.value)}
+              // disabled
             />
           </div>
 
@@ -109,7 +129,10 @@ const LoginForm = () => {
                 Lưu mật khẩu
               </label>
             </div>
-            <a className="font-medium text-base text-violet-500" href="/forgot-password">
+            <a
+              className="font-medium text-base text-violet-500"
+              href="/forgot-password"
+            >
               Quên mật khẩu?
             </a>
           </div>
@@ -117,8 +140,8 @@ const LoginForm = () => {
           <div className="mt-8 flex flex-col gap-y-4">
             <button
               type="button"
-              className="cursor-not-allowed py-4 bg-violet-500 rounded-xl text-white font-bold text-lg"
-              disabled
+              className=" py-4 bg-violet-500 rounded-xl text-white font-bold text-lg"
+              onClick={() => fetchLogin()}
             >
               Đăng Nhập
             </button>
@@ -131,7 +154,10 @@ const LoginForm = () => {
 
         <div className="mt-8 flex justify-center items-center">
           <p className="font-medium text-base">Không có tài khoản?</p>
-          <a href="/register" className="ml-2 font-medium text-base text-violet-500">
+          <a
+            href="/register"
+            className="ml-2 font-medium text-base text-violet-500"
+          >
             Đăng Ký
           </a>
         </div>
