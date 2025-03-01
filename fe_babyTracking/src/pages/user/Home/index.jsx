@@ -4,6 +4,7 @@ import MembershipPage from '../Membership/MembershipPage'
 import BMICalculator from './BMICalculator'
 import DoctorIntro from './DoctorIntro'
 import Testimonial from './Testimonial'
+import FAQ from './FAQ'
 
 function HomePage() {
     return (
@@ -12,6 +13,7 @@ function HomePage() {
             <BMICalculator />
             <DoctorIntro />
             <Testimonial />
+            <FAQ />
             <MembershipPage />
         </>
     )
