@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import App from "../App";
 import AdminHomePage from "../pages/admin/AdminHomePage/AdminHomePage";
-import HomePage from "../pages/user/Home/HomePage";
+import HomePage from "../pages/user/Home/index";
 import SignIn from "../pages/user/Auth/Login";
 import UserHeader from "../components/header/UserHeader";
 import SignUp from "../pages/user/Auth/Register";
