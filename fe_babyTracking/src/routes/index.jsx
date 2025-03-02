@@ -19,11 +19,12 @@ import AddBabyInfo from "../pages/user/BabyDetails/Info/AddBabyInfo";
 import ConsultationRequest from "../pages/user/BabyDetails/Info/ConsultationRequest";
 import BookingPage from "../pages/user/Calendar";
 import DoctorPage from "../pages/user/Doctor";
+import DoctorDetail from "../pages/user/Doctor/DoctorDetail";
 
 function UserLayout() {
   const location = useLocation(); // Lấy đường dẫn hiện tại
 
-  const isContentPage = ["/login", "/register", "/forgot-password", "/my-family", "/baby-details", "/add-baby-info", "/consultation-request", "/booking-meeting"].includes(
+  const isContentPage = ["/login", "/register", "/forgot-password", "/my-family", "/baby-details", "/add-baby-info", "/consultation-request", "/booking-meeting", "/doctor"].includes(
     location.pathname
   );
 
@@ -41,12 +42,13 @@ function UserLayout() {
             <Route path="/add-baby-info" element={<AddBabyInfo />} />
             <Route path="/consultation-request" element={<ConsultationRequest />} />
             <Route path="/booking-meeting" element={<BookingPage />} />
+            <Route path="/doctor" element={<DoctorPage />} />
+            <Route path="/doctor/:id" element={<DoctorDetail />} />
           </Routes>
         </div>
       ) : (
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/doctor" element={<DoctorPage />} />
         </Routes>
       )}
       <MainFooter />
