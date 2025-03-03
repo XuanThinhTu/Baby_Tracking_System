@@ -1,8 +1,11 @@
 package com.swd.project.service.impl;
 
 import com.swd.project.dto.response.BookingAvailableResponse;
+import com.swd.project.dto.response.BookingResponse;
 import com.swd.project.entity.*;
+import com.swd.project.enums.BookingStatus;
 import com.swd.project.exception.ResourceNotFoundException;
+import com.swd.project.mapper.BookingMapper;
 import com.swd.project.repository.*;
 import com.swd.project.service.IBookingService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,8 @@ public class BookingService implements IBookingService {
     private final WorkingScheduleRepository workingScheduleRepository;
 
     private final BookingRepository bookingRepository;
+
+    private final BookingMapper bookingMapper;
 
     private final EmailService emailService;
 
@@ -44,15 +49,30 @@ public class BookingService implements IBookingService {
                 .sorted()
                 .collect(Collectors.toList());
     }
-//
-//    public BookingAvailableResponse getAvailableBookingResponse(YearMonth month) {
-//        List<LocalDate> availableDates = getAvailableBookingDates(month);
-//        List<SlotTime> availableSlotTimes = availableDates.stream()
-//                .map(this::getAvailableSlotsByDate)
-//                .collect(Collectors.toList());
-//
-//        return new BookingAvailableResponse(month.toString(), localDates);
-//    }
+
+    @Override
+    public BookingAvailableResponse getAvailableBookingResponse(YearMonth month) {
+        return BookingAvailableResponse.builder()
+                .yearMonth(month.toString())
+                .availableDates(
+                        getAvailableBookingDates(month).stream()
+                                .map(date -> BookingAvailableResponse.LocalDate.builder()
+                                        .date(date.toString())
+                                        .slotTimes(
+                                                getAvailableSlotsByDate(date).stream()
+                                                        .map(slot -> BookingAvailableResponse.LocalDate.SlotTime.builder()
+                                                                .slotTimeId(slot.getId())
+                                                                .startTime(slot.getStartTime().toString())
+                                                                .endTime(slot.getEndTime().toString())
+                                                                .build())
+                                                        .collect(Collectors.toList())
+                                        )
+                                        .build())
+                                .collect(Collectors.toList())
+                )
+                .build();
+    }
+
 
     @Override
     public List<SlotTime> getAvailableSlotsByDate(LocalDate date) {
@@ -91,14 +111,14 @@ public class BookingService implements IBookingService {
         booking.setDoctor(availableSchedule.getDoctor());
         booking.setSlotTime(availableSchedule.getSlotTime());
         booking.setContent(note);
-        booking.setStatus(BookingStatus.CONFIRMED);  // Giả sử trạng thái CONFIRMED có trong enum
+        booking.setStatus(BookingStatus.PROCESSING);
         booking.setCreatedAt(LocalDateTime.now());
         booking.setMeetingLink(generateGoogleMeetLink());
 
         bookingRepository.save(booking);
 
         // Gửi email xác nhận kèm link Google Meet
-        emailService.sendBookingConfirmation(member.getEmail(), booking);
+        emailService.sendBookingConfirmation(member, booking);
 
         return booking;
     }
@@ -106,5 +126,27 @@ public class BookingService implements IBookingService {
     @Override
     public String generateGoogleMeetLink() {
         return "";
+    }
+
+    @Override
+    public List<BookingResponse> getAllBookings() {
+        return bookingRepository.findAll().stream()
+                .map(bookingMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void cancelBooking(int bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy booking với id: " + bookingId));
+
+        // Nếu booking đã hủy hoặc hoàn thành thì không cho phép hủy nữa (tùy nghiệp vụ)
+        if (booking.getStatus() == BookingStatus.CANCELLED || booking.getStatus() == BookingStatus.CLOSED) {
+            throw new RuntimeException("Booking đã ở trạng thái không thể hủy");
+        }
+
+        booking.setStatus(BookingStatus.CANCELLED);
+        bookingRepository.save(booking);
+
     }
 }

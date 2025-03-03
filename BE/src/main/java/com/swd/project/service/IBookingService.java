@@ -1,5 +1,7 @@
 package com.swd.project.service;
 
+import com.swd.project.dto.response.BookingAvailableResponse;
+import com.swd.project.dto.response.BookingResponse;
 import com.swd.project.entity.Booking;
 import com.swd.project.entity.SlotTime;
 
@@ -11,5 +13,8 @@ public interface IBookingService {
     List<LocalDate> getAvailableBookingDates(YearMonth month);
     List<SlotTime> getAvailableSlotsByDate(LocalDate date);
     Booking createBooking(int memberId, int childrenId, LocalDate date, int slotTimeId, String note);
+    BookingAvailableResponse getAvailableBookingResponse(YearMonth month);
     String generateGoogleMeetLink();
+    List<BookingResponse> getAllBookings();
+    void cancelBooking(int bookingId);
 }
