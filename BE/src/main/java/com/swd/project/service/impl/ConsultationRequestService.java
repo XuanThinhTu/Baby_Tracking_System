@@ -1,5 +1,6 @@
 package com.swd.project.service.impl;
 
+import com.swd.project.dto.request.ConsultationRequestCreation;
 import com.swd.project.dto.response.ConsultationRequestDTO;
 import com.swd.project.entity.*;
 import com.swd.project.enums.ConsultationStatus;
@@ -7,14 +8,14 @@ import com.swd.project.enums.MembershipSubscriptionStatus;
 import com.swd.project.enums.PermissionName;
 import com.swd.project.exception.OutOfPermissionException;
 import com.swd.project.mapper.ConsultationRequestMapper;
-import com.swd.project.repository.ConsultationRequestRepository;
-import com.swd.project.repository.MembershipPackageRepository;
-import com.swd.project.repository.MembershipSubscriptionRepository;
-import com.swd.project.repository.PermissionRepository;
+import com.swd.project.repository.*;
 import com.swd.project.service.IConsultationRequestService;
 import com.swd.project.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -30,11 +31,13 @@ public class ConsultationRequestService implements IConsultationRequestService {
     private final MembershipPackageRepository membershipPackageRepository;
     private final MembershipSubscriptionRepository membershipSubscriptionRepository;
     private final PermissionRepository permissionRepository;
+    private final ChildrenRepository childrenRepository;
     private final ConsultationRequestMapper consultationRequestMapper;
 
     @Override
-    public ConsultationRequestDTO createConsultationRequest(String title) {
+    public ConsultationRequestDTO createConsultationRequest(ConsultationRequestCreation request) {
         User parent = userService.getAuthenticatedUser();
+        //validate user has membership subscription
         MembershipSubscription userSubscription = membershipSubscriptionRepository
                 .findByUserIdAndStatus(parent.getId(), MembershipSubscriptionStatus.AVAILABLE)
                 .orElseThrow(() -> new RuntimeException("User has no active subscription"));
@@ -44,12 +47,40 @@ public class ConsultationRequestService implements IConsultationRequestService {
             log.error("User has no permission to create consultation request log");
             throw new OutOfPermissionException("You has no permission to create consultation request");
         }
+        Children child = childrenRepository.findById(request.getChildId()).get();
+        if(child.getUser().getId() != parent.getId()){
+            log.error("Child is not belong to user");
+            throw new RuntimeException("You can only create consultation request for your child");
+        }
         ConsultationRequest consultationRequest = new ConsultationRequest();
-        consultationRequest.setRequestTitle(title);
+        consultationRequest.setRequestTitle(request.getTitle());
+        consultationRequest.setNote(request.getNotes());
         consultationRequest.setStatus(ConsultationStatus.PENDING);
-        consultationRequest.setParent(parent);
         consultationRequest.setRequestDate(Date.valueOf(LocalDate.now()));
+        consultationRequest.setParent(parent);
+        consultationRequest.setChild(child);
         consultationRequest = consultationRequestRepository.save(consultationRequest);
+        return consultationRequestMapper.toConsultationRequestDTO(consultationRequest);
+    }
+
+    @Override
+    public Page<ConsultationRequestDTO> getPendingConsultationRequest(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ConsultationRequest> pendingConsultations = consultationRequestRepository.findAllByStatus(ConsultationStatus.PENDING, pageable);
+        return pendingConsultations.map(consultationRequestMapper::toConsultationRequestDTO);
+    }
+
+    @Override
+    public Page<ConsultationRequestDTO> getAllConsultationRequest(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ConsultationRequest> consultations = consultationRequestRepository.findAll(pageable);
+        return consultations.map(consultationRequestMapper::toConsultationRequestDTO);
+    }
+
+    @Override
+    public ConsultationRequestDTO getConsultationRequestById(int id) {
+        ConsultationRequest consultationRequest = consultationRequestRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Consultation request not found"));
         return consultationRequestMapper.toConsultationRequestDTO(consultationRequest);
     }
 }

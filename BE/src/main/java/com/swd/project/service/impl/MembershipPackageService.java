@@ -129,6 +129,11 @@ public class MembershipPackageService implements IMembershipPackageService {
         Payment payment = executePayment(paymentId, payerId);
         if (payment.getState().equals("approved")) {
             User user = userService.getAuthenticatedUser();
+            //disable older subscription
+            MembershipSubscription olderSubscription = membershipSubscriptionRepository.findByUserIdAndStatus(user.getId(), MembershipSubscriptionStatus.AVAILABLE).get();
+            olderSubscription.setStatus(MembershipSubscriptionStatus.UNAVAILABLE);
+            membershipSubscriptionRepository.save(olderSubscription);
+            //create new subscription
             MembershipSubscription membershipSubscription = membershipSubscriptionRepository
                     .findByUserIdAndPaymentStatusAndStatus(user.getId(), PaymentStatus.PENDING, MembershipSubscriptionStatus.UNAVAILABLE);
             membershipSubscription.setPaymentStatus(PaymentStatus.SUCCESS);

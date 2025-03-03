@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface MembershipSubscriptionRepository extends JpaRepository<MembershipSubscription, Integer> {
 
-    <Optional> MembershipSubscription findByUserIdAndPaymentStatusAndStatus(int userId, PaymentStatus paymentStatus, MembershipSubscriptionStatus status);
+    MembershipSubscription findByUserIdAndPaymentStatusAndStatus(int userId, PaymentStatus paymentStatus, MembershipSubscriptionStatus status);
 
     Optional<MembershipSubscription> findByUserIdAndStatus(int userId, MembershipSubscriptionStatus status);
 

@@ -15,10 +15,15 @@ public class ConsultationRequestDTO {
 
     private int id;
     private String requestTitle;
+    private String note;
     private Date requestDate;
     private int parentId;
     private String parentName;
     private Integer doctorId;
     private String doctorName;
+    private String status;
+    private int childId;
+    private String childName;
+    private String childGender;
 
 }
