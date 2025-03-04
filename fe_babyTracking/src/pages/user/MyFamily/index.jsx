@@ -5,6 +5,7 @@ import EditBabyForm from "./EditBabyForm";
 import BabyForm from "./AddBabyForm";
 import Breadcrumbs from "../../../components/elements/Breadcrumb";
 import { getAllBabies } from "../../../services/APIServices";
+import dayjs from "dayjs";
 
 const MyFamily = () => {
   const [babies, setBabies] = useState([]);
@@ -41,7 +42,10 @@ const MyFamily = () => {
               >
                 <div>
                   <p className="text-lg font-semibold">{baby.name}</p>
-                  <p className="text-gray-500">{baby.birthday}</p>
+                  <p className="text-gray-500">
+                    {dayjs(baby.birthDate).format("DD/MM/YYYY")}
+                  </p>
+                  <p className="text-gray-500">Gender: {baby.gender}</p>
                 </div>
               </Link>
               <button className="p-2 text-blue-500 hover:text-blue-700">

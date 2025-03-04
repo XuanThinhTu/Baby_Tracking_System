@@ -1,8 +1,8 @@
+import { Dropdown, Menu } from "antd";
 import React, { useEffect, useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { getUserInformation } from "../../services/APIServices";
 import { AiOutlineUser } from "react-icons/ai";
-import { Dropdown, Menu } from "antd";
-import { Link, NavLink, useNavigate } from "react-router-dom";
 
 function UserHeader() {
     const token = sessionStorage.getItem("token");
@@ -11,10 +11,10 @@ function UserHeader() {
 
     const handleLogout = () => {
         sessionStorage.removeItem("token");
+        sessionStorage.removeItem("userId");
         setUser(null);
         navigation("/login");
     };
-
     const menu = (
         <Menu>
             <Menu.Item key="profile">
@@ -29,10 +29,11 @@ function UserHeader() {
     useEffect(() => {
         const fetchUserInfo = async () => {
             if (!token) return;
-
             try {
-                const result = await getUserInformation(token);
-                setUser(result.data);
+                const result = await getUserInformation();
+                if (result?.data) {
+                    setUser(result.data);
+                }
             } catch (error) {
                 console.error("Failed to fetch user info:", error);
             }
@@ -46,14 +47,14 @@ function UserHeader() {
         <header>
             <nav className="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
                 <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
-                    <a href="https://flowbite.com" className="flex items-center">
+                    <a href="/" className="flex items-center">
                         <img
                             src="https://flowbite.com/docs/images/logo.svg"
                             className="mr-3 h-6 sm:h-9"
                             alt="Flowbite Logo"
                         />
                         <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-                            Flowbite
+                            Baby Tracking
                         </span>
                     </a>
                     <div className="flex items-center lg:order-2">
@@ -111,9 +112,9 @@ function UserHeader() {
                                         xmlns="http://www.w3.org/2000/svg"
                                     >
                                         <path
-                                            fill-rule="evenodd"
+                                            fillRule="evenodd"
                                             d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                                            clip-rule="evenodd"
+                                            clipRule="evenodd"
                                         ></path>
                                     </svg>
                                     <svg
@@ -123,9 +124,9 @@ function UserHeader() {
                                         xmlns="http://www.w3.org/2000/svg"
                                     >
                                         <path
-                                            fill-rule="evenodd"
+                                            fillRule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"
+                                            clipRule="evenodd"
                                         ></path>
                                     </svg>
                                 </button>
@@ -140,13 +141,12 @@ function UserHeader() {
                             <li>
                                 <NavLink
                                     to="/"
-                                    // Nếu isActive = true => trả về class active, ngược lại trả về class default
                                     className={({ isActive }) =>
                                         isActive
                                             ? "block py-2 pr-4 pl-3 text-white rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0 dark:text-white"
                                             : "block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
                                     }
-                                    end // end để đường dẫn '/' không bị active cho các đường dẫn con
+                                    end
                                 >
                                     Home
                                 </NavLink>
@@ -163,18 +163,20 @@ function UserHeader() {
                                     Doctor
                                 </NavLink>
                             </li>
-                            <li>
-                                <NavLink
-                                    to="/my-family"
-                                    className={({ isActive }) =>
-                                        isActive
-                                            ? "block py-2 pr-4 pl-3 text-white rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0 dark:text-white"
-                                            : "block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
-                                    }
-                                >
-                                    My Family
-                                </NavLink>
-                            </li>
+                            {token && (
+                                <li>
+                                    <NavLink
+                                        to="/my-family"
+                                        className={({ isActive }) =>
+                                            isActive
+                                                ? "block py-2 pr-4 pl-3 text-white rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0 dark:text-white"
+                                                : "block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
+                                        }
+                                    >
+                                        My Family
+                                    </NavLink>
+                                </li>
+                            )}
                             <li>
                                 <NavLink
                                     to="/blogs"

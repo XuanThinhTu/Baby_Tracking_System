@@ -22,11 +22,20 @@ import DoctorPage from "../pages/user/Doctor";
 import DoctorDetail from "../pages/user/Doctor/DoctorDetail";
 
 function UserLayout() {
-  const location = useLocation(); // Lấy đường dẫn hiện tại
+  const location = useLocation();
 
-  const isContentPage = ["/login", "/register", "/forgot-password", "/my-family", "/baby-details", "/add-baby-info", "/consultation-request", "/booking-meeting", "/doctor"].includes(
-    location.pathname
-  );
+  const isContentPage =
+    [
+      "/login",
+      "/register",
+      "/forgot-password",
+      "/my-family",
+      "/add-baby-info",
+      "/consultation-request",
+      "/booking-meeting",
+      "/doctor",
+    ].some((path) => location.pathname.startsWith(path)) ||
+    location.pathname.startsWith("/baby-details/", "/add-baby-info/");
 
   return (
     <>
@@ -39,7 +48,7 @@ function UserLayout() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/my-family" element={<MyFamily />} />
             <Route path="/baby-details/:babyId" element={<BabyOverview />} />
-            <Route path="/add-baby-info" element={<AddBabyInfo />} />
+            <Route path="/add-baby-info/:babyId" element={<AddBabyInfo />} />
             <Route
               path="/consultation-request"
               element={<ConsultationRequest />}
