@@ -22,7 +22,6 @@ const LoginForm = () => {
         sessionStorage.setItem("token", token);
 
         const userInfo = await getUserInformation();
-        console.log(userInfo.data.role);
 
         if (userInfo.data?.role === "ROLE_ADMIN") {
           navigation("/admin");

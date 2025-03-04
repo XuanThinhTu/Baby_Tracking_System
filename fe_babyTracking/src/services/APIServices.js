@@ -39,7 +39,7 @@ export const getUserInformation = async () => {
 
 export const getAllBabies = async () => {
   try {
-    const result = await axios.get(`${baseUrl}/children/list/${userId}`, {
+    const result = await axios.get(`${baseUrl}/children/list`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -98,10 +98,8 @@ export const getAllUserAccounts = async () => {
     const result = await axios.get(`${baseUrl}/user/admin/getAll`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
       },
     });
-    console.log(result.data.data);
     return result.data;
   } catch (error) {
     console.log(error);
