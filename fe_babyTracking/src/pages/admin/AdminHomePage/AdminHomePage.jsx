@@ -11,7 +11,7 @@ import {
 import { Avatar, Dropdown, Layout, Menu, Space } from "antd";
 import { Content, Footer, Header } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UserManagement from "../content/UserManagement";
 import DoctorManagement from "../content/DoctorManagement";
 import AppointmentManagement from "../content/AppointmentManagement";
@@ -23,6 +23,7 @@ import Mail from "../content/Mail";
 import Overview from "../content/Overview";
 import { useNavigate } from "react-router-dom";
 import AccountManagement from "../content/AccountManagement";
+import { getUserInformation } from "../../../services/APIServices";
 
 const items1 = [
   { key: "home", label: "Home" },
@@ -79,6 +80,8 @@ const items2 = [
 function AdminHomePage() {
   const [selectedKey, setSelectedKey] = useState("overview");
   const navigator = useNavigate();
+  const [user, setUser] = useState(null);
+  const token = sessionStorage.getItem("token");
 
   const handleProfileClick = (e) => {
     if (e.key === "logout") {
@@ -121,6 +124,22 @@ function AdminHomePage() {
     }
   };
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (!token) return;
+      try {
+        const result = await getUserInformation();
+        if (result?.data) {
+          setUser(result.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, [token]);
+
   return (
     <Layout style={{ height: "100vh", width: "100vw", overflow: "hidden" }}>
       <Header
@@ -138,7 +157,7 @@ function AdminHomePage() {
 
         <Dropdown overlay={profileMenu} trigger={["click"]}>
           <Space>
-            <span>Welcome, Admin!</span>
+            <span>Welcome, {user?.firstName}!</span>
             <Avatar
               size="small"
               icon={<UserOutlined />}

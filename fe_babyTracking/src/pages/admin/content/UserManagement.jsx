@@ -9,9 +9,10 @@ import {
   Tooltip,
 } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "antd/es/form/Form";
 import { Option } from "antd/es/mentions";
+import { getAllUserAccounts } from "../../../services/APIServices";
 
 function UserManagement() {
   const [showModal, setShowModal] = useState(false);
@@ -28,10 +29,9 @@ function UserManagement() {
     formVar.submit();
     handleCloseModal();
   };
-
-  const handlePostAccount = async (values) => { };
-  const handleDeleteAccount = async () => { };
-  const handleUpdateAccount = async (values) => { };
+  const handlePostAccount = async (values) => {};
+  const handleDeleteAccount = async () => {};
+  const handleUpdateAccount = async (values) => {};
   //=======================
   const dataSource = [
     {
