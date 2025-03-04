@@ -38,9 +38,12 @@ function UserLayout() {
             <Route path="/register" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/my-family" element={<MyFamily />} />
-            <Route path="/baby-details" element={<BabyOverview />} />
+            <Route path="/baby-details/:babyId" element={<BabyOverview />} />
             <Route path="/add-baby-info" element={<AddBabyInfo />} />
-            <Route path="/consultation-request" element={<ConsultationRequest />} />
+            <Route
+              path="/consultation-request"
+              element={<ConsultationRequest />}
+            />
             <Route path="/booking-meeting" element={<BookingPage />} />
             <Route path="/doctor" element={<DoctorPage />} />
             <Route path="/doctor/:id" element={<DoctorDetail />} />
