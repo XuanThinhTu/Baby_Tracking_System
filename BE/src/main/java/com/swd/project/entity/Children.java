@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,4 +28,6 @@ public class Children {
 
     @ManyToOne
     private User user;
+    @OneToMany(mappedBy = "children", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GrowthTracker> growthTrackers;
 }

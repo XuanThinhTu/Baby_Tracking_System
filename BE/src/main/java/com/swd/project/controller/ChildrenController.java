@@ -54,7 +54,7 @@ public class ChildrenController {
                 .build();
     }
 
-    @GetMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<ChildrenDTO> updateChildren(
             @PathVariable int id,

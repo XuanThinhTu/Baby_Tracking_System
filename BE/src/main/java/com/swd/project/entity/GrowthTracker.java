@@ -24,7 +24,7 @@ public class GrowthTracker {
     private Double headCircumference;
     private Double bmi;
     private LocalDateTime measuredAt;
-    @ManyToOne
+    @ManyToOne(cascade =CascadeType.ALL)
     private Children children;
     private boolean deleted = false;
 }

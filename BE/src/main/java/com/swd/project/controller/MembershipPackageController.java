@@ -26,7 +26,6 @@ public class MembershipPackageController {
     private final IPermissionService permissionService;
 
     @GetMapping("/list")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<?>> getAllMembershipPackages() {
         List<MembershipPackageResponse> list = membershipPackageService.getAllMembershipPackages();
         return ResponseEntity.ok(

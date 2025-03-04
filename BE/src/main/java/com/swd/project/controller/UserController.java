@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -166,4 +167,12 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping("/get-doctors")
+    public ApiResponse<Page<UserDTO>> getDoctors(@RequestParam(defaultValue = "0") int page,
+                                                 @RequestParam(defaultValue = "5") int size){
+        return ApiResponse.<Page<UserDTO>>builder()
+                .message("Doctors retrieved")
+                .data(userService.getDoctors(page, size))
+                .build();
+    }
 }

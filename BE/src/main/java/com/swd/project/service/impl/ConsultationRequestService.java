@@ -5,11 +5,13 @@ import com.swd.project.dto.response.ConsultationRequestDTO;
 import com.swd.project.entity.*;
 import com.swd.project.enums.ConsultationStatus;
 import com.swd.project.enums.MembershipSubscriptionStatus;
+import com.swd.project.enums.NotificationType;
 import com.swd.project.enums.PermissionName;
 import com.swd.project.exception.OutOfPermissionException;
 import com.swd.project.mapper.ConsultationRequestMapper;
 import com.swd.project.repository.*;
 import com.swd.project.service.IConsultationRequestService;
+import com.swd.project.service.INotificationService;
 import com.swd.project.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,8 @@ public class ConsultationRequestService implements IConsultationRequestService {
     private final PermissionRepository permissionRepository;
     private final ChildrenRepository childrenRepository;
     private final ConsultationRequestMapper consultationRequestMapper;
+    private final UserRepository userRepository;
+    private final INotificationService notificationService;
 
     @Override
     public ConsultationRequestDTO createConsultationRequest(ConsultationRequestCreation request) {
@@ -81,6 +85,31 @@ public class ConsultationRequestService implements IConsultationRequestService {
     public ConsultationRequestDTO getConsultationRequestById(int id) {
         ConsultationRequest consultationRequest = consultationRequestRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Consultation request not found"));
+        return consultationRequestMapper.toConsultationRequestDTO(consultationRequest);
+    }
+
+    @Override
+    public ConsultationRequestDTO assignDoctor(int consultationRequestId, int doctorId) {
+        ConsultationRequest consultationRequest = consultationRequestRepository.findById(consultationRequestId)
+                .orElseThrow(() -> new RuntimeException("Consultation request not found"));
+        if (!consultationRequest.getStatus().name().equals(ConsultationStatus.PENDING.name())) {
+            log.error("Consultation request is already assigned");
+            throw new RuntimeException("Consultation request is already assigned");
+        }
+        User doctor = userRepository.findById(doctorId).orElseThrow(() -> new RuntimeException("Doctor not found"));
+        if(!doctor.getRole().getName().equals("ROLE_DOCTOR")){
+            log.error("User is not a doctor");
+            throw new RuntimeException("Only doctor can be assigned to consultation request");
+        }
+        consultationRequest.setDoctor(doctor);
+        consultationRequest.setStatus(ConsultationStatus.ASSIGNED);
+        consultationRequest = consultationRequestRepository.save(consultationRequest);
+        notificationService.sendNotification(
+                doctorId,
+                "Consultation Request Assigned",
+                "You have been assigned to a consultation request",
+                NotificationType.CONSULTATION
+        );
         return consultationRequestMapper.toConsultationRequestDTO(consultationRequest);
     }
 }
