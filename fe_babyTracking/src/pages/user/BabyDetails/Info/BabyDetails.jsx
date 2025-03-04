@@ -2,6 +2,7 @@ import React, { use, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaRuler, FaWeight, FaCalendarAlt, FaUserMd } from "react-icons/fa";
 import { getAllBabies } from "../../../../services/APIServices";
+import dayjs from "dayjs";
 
 const BabyDetails = ({ babyId }) => {
   const [babies, setBabies] = useState([]);
@@ -36,6 +37,19 @@ const BabyDetails = ({ babyId }) => {
     return age;
   };
 
+  const calculateTotalWeeks = (startDate) => {
+    const start = new Date(startDate);
+    const today = new Date();
+
+    const differenceInMilliseconds = today - start;
+
+    const totalWeeks = Math.floor(
+      differenceInMilliseconds / (7 * 24 * 60 * 60 * 1000)
+    );
+
+    return totalWeeks;
+  };
+
   return (
     <div className="w-full flex flex-col items-center text-center px-4">
       {/* Background Cover */}
@@ -54,12 +68,14 @@ const BabyDetails = ({ babyId }) => {
       <div className="w-full max-w-7xl flex flex-col items-center justify-center py-6">
         <h3 className="text-4xl font-semibold text-gray-900">{baby?.name}</h3>
         <p className="text-gray-600 text-lg mt-2">
-          Ngày sinh: {baby?.birthDate}
+          Ngày sinh: {dayjs(baby?.birthDate).format("DD/MM/YYYY")}
         </p>
         <p className="text-gray-600 text-lg">
           Tuổi: {calculateAge(baby?.birthDate)}
         </p>
-        <p className="text-gray-600 text-lg">Tuần WW: {baby?.wwWeek}</p>
+        <p className="text-gray-600 text-lg">
+          Tuần: {calculateTotalWeeks(baby?.birthDate)} tuần tuổi
+        </p>
       </div>
 
       {/* Growth Stats */}
@@ -75,8 +91,8 @@ const BabyDetails = ({ babyId }) => {
           <p className="text-gray-600 text-lg">Cân nặng</p>
         </div>
         <div className="flex flex-col items-center">
-          <p className="text-3xl font-semibold text-purple-500">{baby?.bmi}</p>
-          <p className="text-gray-600 text-lg">BMI</p>
+          <p className="text-7xl text-gray-600 font-montserrat">BMI</p>
+          <p className="text-gray-600 text-lg">BMI: 12.5</p>
         </div>
       </div>
 
@@ -86,7 +102,7 @@ const BabyDetails = ({ babyId }) => {
       </h4>
       <div className="grid grid-cols-3 gap-8 w-full max-w-full px-4 mt-6">
         <Link
-          to="/add-baby-info"
+          to={`/add-baby-info/${babyId}`}
           className="flex flex-col items-center cursor-pointer"
         >
           <FaRuler className="text-blue-500 text-7xl" />
