@@ -13,6 +13,9 @@ import com.swd.project.repository.UserRepository;
 import com.swd.project.service.IUserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -213,5 +216,12 @@ public class UserService implements IUserService {
         User savedUser = userRepository.save(user);
 
         return userMapper.toUserDTO(savedUser);
+    }
+
+    @Override
+    public Page<UserDTO> getDoctors(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> doctors = userRepository.findByRoleName("ROLE_DOCTOR", pageable);
+        return doctors.map(userMapper::toUserDTO);
     }
 }

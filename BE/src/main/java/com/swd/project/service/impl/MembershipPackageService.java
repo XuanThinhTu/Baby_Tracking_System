@@ -193,8 +193,8 @@ public class MembershipPackageService implements IMembershipPackageService {
         payment.setTransactions(transactions);
 
         RedirectUrls redirectUrls = new RedirectUrls();
-        redirectUrls.setCancelUrl(clientDomain+"/paypal/cancel");
-        redirectUrls.setReturnUrl(clientDomain+"/paypal/success");
+        redirectUrls.setCancelUrl(clientDomain+"paypal/cancel");
+        redirectUrls.setReturnUrl(clientDomain+"paypal/success");
 
         payment.setRedirectUrls(redirectUrls);
 

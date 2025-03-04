@@ -14,4 +14,6 @@ public interface IConsultationRequestService {
     Page<ConsultationRequestDTO> getAllConsultationRequest(int page, int size);
 
     ConsultationRequestDTO getConsultationRequestById(int id);
+
+    ConsultationRequestDTO assignDoctor(int consultationRequestId, int doctorId);
 }

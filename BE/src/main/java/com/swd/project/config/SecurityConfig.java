@@ -53,7 +53,8 @@ public class SecurityConfig {
             "/consultation/request",
             "/consultation/pending-request",
             "/slot-time/add",
-            "/admin/**"
+            "/admin/**",
+            "/consultation-response/**"
     );
 
     @Bean
