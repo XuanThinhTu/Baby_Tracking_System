@@ -14,11 +14,20 @@ const LoginForm = () => {
     try {
       const result = await loginFucntion(email, password);
       const token = result?.data?.accessToken;
+<<<<<<< HEAD
       sessionStorage.setItem("token", token);
       navigation("/");
     } catch (error) {
       alert("Login failed!");
       console.log("Login failed!", error);
+=======
+      if (token) {
+        sessionStorage.setItem("token", token);
+        navigation("/");
+      }
+    } catch (error) {
+      alert(error?.message);
+>>>>>>> 490dc9ed790cad55ffa6092bde8e7f3cf05cf814
     }
   };
 
@@ -106,7 +115,11 @@ const LoginForm = () => {
               type="email"
               placeholder="Nhập email..."
               onChange={(e) => setEmail(e.target.value)}
+<<<<<<< HEAD
             // disabled
+=======
+              // disabled
+>>>>>>> 490dc9ed790cad55ffa6092bde8e7f3cf05cf814
             />
           </div>
 
@@ -117,7 +130,11 @@ const LoginForm = () => {
               type="password"
               placeholder="Nhập mật khẩu..."
               onChange={(e) => setPassword(e.target.value)}
+<<<<<<< HEAD
             // disabled
+=======
+              // disabled
+>>>>>>> 490dc9ed790cad55ffa6092bde8e7f3cf05cf814
             />
           </div>
 

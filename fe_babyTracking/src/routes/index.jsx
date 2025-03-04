@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import App from "../App";
 import AdminHomePage from "../pages/admin/AdminHomePage/AdminHomePage";
-import HomePage from "../pages/user/Home/HomePage";
+import HomePage from "../pages/user/Home/index";
 import SignIn from "../pages/user/Auth/Login";
 import UserHeader from "../components/header/UserHeader";
 import SignUp from "../pages/user/Auth/Register";
@@ -18,11 +18,13 @@ import BabyOverview from "../pages/user/BabyDetails";
 import AddBabyInfo from "../pages/user/BabyDetails/Info/AddBabyInfo";
 import ConsultationRequest from "../pages/user/BabyDetails/Info/ConsultationRequest";
 import BookingPage from "../pages/user/Calendar";
+import DoctorPage from "../pages/user/Doctor";
+import DoctorDetail from "../pages/user/Doctor/DoctorDetail";
 
 function UserLayout() {
   const location = useLocation(); // Lấy đường dẫn hiện tại
 
-  const isContentPage = ["/login", "/register", "/forgot-password", "/my-family", "/baby-details", "/add-baby-info", "/consultation-request", "/booking-meeting"].includes(
+  const isContentPage = ["/login", "/register", "/forgot-password", "/my-family", "/baby-details", "/add-baby-info", "/consultation-request", "/booking-meeting", "/doctor"].includes(
     location.pathname
   );
 
@@ -36,10 +38,15 @@ function UserLayout() {
             <Route path="/register" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/my-family" element={<MyFamily />} />
-            <Route path="/baby-details" element={<BabyOverview />} />
+            <Route path="/baby-details/:babyId" element={<BabyOverview />} />
             <Route path="/add-baby-info" element={<AddBabyInfo />} />
-            <Route path="/consultation-request" element={<ConsultationRequest />} />
+            <Route
+              path="/consultation-request"
+              element={<ConsultationRequest />}
+            />
             <Route path="/booking-meeting" element={<BookingPage />} />
+            <Route path="/doctor" element={<DoctorPage />} />
+            <Route path="/doctor/:id" element={<DoctorDetail />} />
           </Routes>
         </div>
       ) : (

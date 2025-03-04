@@ -1,8 +1,8 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Modal, Select, Table, Tag, Tooltip } from "antd";
+import { Button, Form, Input, Modal, Select, Table, Tooltip } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { Option } from "antd/es/mentions";
-import React, { useState } from "react";
+import { useState } from "react";
 
 function DoctorManagement() {
   const [showModal, setShowModal] = useState(false);
