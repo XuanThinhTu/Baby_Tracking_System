@@ -33,6 +33,8 @@ public class BookingService implements IBookingService {
 
     private final ChildrenRepository childrenRepository;
 
+    private final UserService userService;
+
     @Override
     public List<LocalDate> getAvailableBookingDates(YearMonth month) {
         LocalDate start = month.atDay(1);
@@ -89,7 +91,7 @@ public class BookingService implements IBookingService {
     }
 
     @Override
-    public Booking createBooking(int memberId, int childrenId, LocalDate date, int slotTimeId, String note) {
+    public BookingResponse createBooking(int childrenId, LocalDate date, int slotTimeId, String note) {
         List<WorkingSchedule> schedules = workingScheduleRepository.findByDateAndSlotTimeId(date, slotTimeId);
         WorkingSchedule availableSchedule = schedules.stream()
                 .filter(ws -> !bookingRepository.existsByDateAndDoctorAndSlotTime(
@@ -99,8 +101,8 @@ public class BookingService implements IBookingService {
                 .findAny()
                 .orElseThrow(() -> new ResourceNotFoundException("No more available doctor for this slot."));
 
-        User member = userRepository.findById(memberId)
-                .orElseThrow(() -> new ResourceNotFoundException("Member with id: " + memberId + " not found"));
+        User member = userService.getAuthenticatedUser();
+        User doctor = availableSchedule.getDoctor();
         Children child = childrenRepository.findById(childrenId)
                 .orElseThrow(() -> new ResourceNotFoundException("Children with id: " + childrenId + " not found"));
 
@@ -108,24 +110,24 @@ public class BookingService implements IBookingService {
         booking.setDate(date);
         booking.setMember(member);
         booking.setChildren(child);
-        booking.setDoctor(availableSchedule.getDoctor());
+        booking.setDoctor(doctor);
         booking.setSlotTime(availableSchedule.getSlotTime());
         booking.setContent(note);
         booking.setStatus(BookingStatus.PROCESSING);
         booking.setCreatedAt(LocalDateTime.now());
-        booking.setMeetingLink(generateGoogleMeetLink());
+        booking.setMeetingLink(generateGoogleMeetLink(member, doctor));
 
         bookingRepository.save(booking);
 
         // Gửi email xác nhận kèm link Google Meet
         emailService.sendBookingConfirmation(member, booking);
 
-        return booking;
+        return bookingMapper.toDto(booking);
     }
 
     @Override
-    public String generateGoogleMeetLink() {
-        return "";
+    public String generateGoogleMeetLink(User member, User doctor) {
+        return GoogleMeetService.generateGoogleMeetLink(member, doctor);
     }
 
     @Override

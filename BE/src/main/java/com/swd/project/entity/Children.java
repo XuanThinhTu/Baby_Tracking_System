@@ -18,6 +18,7 @@ import java.sql.Date;
 public class Children {
 
     @Id
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;

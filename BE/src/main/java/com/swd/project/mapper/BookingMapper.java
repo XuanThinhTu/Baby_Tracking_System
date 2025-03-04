@@ -2,7 +2,9 @@ package com.swd.project.mapper;
 
 import com.swd.project.dto.response.BookingResponse;
 import com.swd.project.entity.Booking;
+import org.springframework.stereotype.Component;
 
+@Component
 public class BookingMapper {
     public BookingResponse toDto(Booking booking) {
         if (booking == null) {

@@ -23,4 +23,14 @@ public class StandardIndexController {
                         .build()
         );
     }
+
+    @GetMapping("/pro")
+    public ResponseEntity<ApiResponse<?>> getAllStandardIndexDataStoredProcedure() {
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .message("List of standard tracking data")
+                        .data(standardIndexService.getStandardIndexStoredProcedure())
+                        .build()
+        );
+    }
 }

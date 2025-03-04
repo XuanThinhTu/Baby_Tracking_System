@@ -1,5 +1,6 @@
 package com.swd.project.controller;
 
+import com.swd.project.dto.request.CreateBookingNoteRequest;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.BookingAvailableResponse;
 import com.swd.project.dto.response.BookingResponse;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -28,7 +30,20 @@ public class BookingController {
         );
     }
 
-
+    @PostMapping("/{childId}")
+    public ResponseEntity<ApiResponse<?>> createBookingSchedule(
+            @PathVariable int childId,
+            @RequestParam LocalDate date,
+            @RequestParam int slotTimeId,
+            @RequestBody CreateBookingNoteRequest note
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .message("Booking schedule")
+                        .data(bookingService.createBooking(childId, date, slotTimeId, note.note()))
+                        .build()
+        );
+    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllBookings() {
