@@ -2,6 +2,7 @@ import axios from "axios";
 
 const token = sessionStorage.getItem("token");
 const userId = sessionStorage.getItem("userId");
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 export const loginFucntion = async (mail, pass) => {
   try {
@@ -9,10 +10,7 @@ export const loginFucntion = async (mail, pass) => {
       email: mail,
       password: pass,
     };
-    const response = await axios.post(
-      "https://azbtsappdp.livelydesert-5fef761c.eastasia.azurecontainerapps.io/auth/login",
-      loginData
-    );
+    const response = await axios.post(`${baseUrl}/auth/login`, loginData);
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -25,8 +23,37 @@ export const loginFucntion = async (mail, pass) => {
 
 export const getUserInformation = async () => {
   try {
-    const result = await axios.get(
-      "https://azbtsappdp.livelydesert-5fef761c.eastasia.azurecontainerapps.io/user/p",
+    const result = await axios.get(`${baseUrl}/user/p`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return result.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const getAllBabies = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/children/list/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data;
+  } catch (error) {
+    console.log("API Call Error:", error);
+  }
+};
+
+export const addNewBaby = async (babyName, birthday, gender) => {
+  try {
+    const result = await axios.post(
+      `${baseUrl}/children/add?name=${babyName}&birthDate=${birthday}&gender=${gender}`,
+      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -37,37 +64,26 @@ export const getUserInformation = async () => {
     return result.data;
   } catch (error) {
     console.log(error);
-    return null;
   }
 };
 
-export const getAllBabies = async () => {
+export const addBabyGrowthData = async (
+  babyId,
+  height,
+  weight,
+  headCir,
+  date
+) => {
   try {
-    const result = await axios.get(
-      `https://azbtsappdp.livelydesert-5fef761c.eastasia.azurecontainerapps.io/children/list/${userId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return result.data;
-  } catch (error) {
-    console.log("API Call Error:", error);
-  }
-};
-
-export const addNewBaby = async (babyName, birthday, gender) => {
-  try {
-    const result = await axios.post(
-      `https://azbtsappdp.livelydesert-5fef761c.eastasia.azurecontainerapps.io/children/add?name=${babyName}&birthDate=${birthday}&gender=${gender}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
+    const growthData = {
+      height: height,
+      weight: weight,
+      headCircumference: headCir,
+      measuredAt: date,
+    };
+    const result = axios.post(
+      `${baseUrl}/api/grow-tracker/${babyId}`,
+      growthData
     );
     return result.data;
   } catch (error) {

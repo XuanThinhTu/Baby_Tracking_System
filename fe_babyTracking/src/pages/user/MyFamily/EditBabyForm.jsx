@@ -68,7 +68,7 @@ const EditBabyForm = ({ baby, onClose }) => {
           <div className="relative">
             <input
               type="date"
-              value={updatedBaby.birthday}
+              value={updatedBaby.birthDate}
               className="w-full p-2 pl-10 rounded-md bg-gray-100 text-black border border-gray-300 focus:outline-none"
               onChange={(e) =>
                 setUpdatedBaby({ ...updatedBaby, birthday: e.target.value })
