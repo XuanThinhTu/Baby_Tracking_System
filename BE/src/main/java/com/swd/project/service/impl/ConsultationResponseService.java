@@ -11,6 +11,9 @@ import com.swd.project.repository.ConsultationResponseRepository;
 import com.swd.project.service.IConsultationResponseService;
 import com.swd.project.service.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,5 +43,12 @@ public class ConsultationResponseService implements IConsultationResponseService
         }else{
             throw new RuntimeException("You are not allowed to add response to this consultation request");
         }
+    }
+
+    @Override
+    public Page<ConsultationResponseDTO> getConsultationResponsesByConsultationId(int consultationId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ConsultationResponse> responses = consultationResponseRepository.findByConsultationRequestId(consultationId,pageable);
+        return responses.map(consultationResponseMapper::toConsultationResponseDTO);
     }
 }
