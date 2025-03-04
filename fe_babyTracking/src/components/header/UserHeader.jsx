@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { getUserInformation } from "../../services/APIServices";
 import { AiOutlineUser } from "react-icons/ai";
 import { Dropdown, Menu } from "antd";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 function UserHeader() {
     const token = sessionStorage.getItem("token");
