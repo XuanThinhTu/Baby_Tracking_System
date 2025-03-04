@@ -84,10 +84,10 @@ public class GoogleMeetService {
                 }
             }
             // Nếu không tìm thấy, trả về một link dự phòng
-            return "https://meet.google.com/fallback-link1";
+            return "https://meet.google.com/cdr-unpt-bhi";
         } catch (Exception e) {
             e.printStackTrace();
-            return "https://meet.google.com/fallback-link2";
+            return "https://meet.google.com/cdr-unpt-bhi";
         }
     }
 }
