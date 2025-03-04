@@ -23,6 +23,7 @@ export const loginFucntion = async (mail, pass) => {
 
 export const getUserInformation = async () => {
   try {
+    const token = sessionStorage.getItem("token");
     const result = await axios.get(`${baseUrl}/user/p`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -85,6 +86,22 @@ export const addBabyGrowthData = async (
       `${baseUrl}/api/grow-tracker/${babyId}`,
       growthData
     );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//============ADMIN API ================
+export const getAllUserAccounts = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/user/admin/getAll`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log(result.data.data);
     return result.data;
   } catch (error) {
     console.log(error);
