@@ -54,7 +54,6 @@ const HeightChart = ({ userData, babyId }) => {
         }));
 
         setGrowthData(formattedData);
-        console.log(formattedData);
       } catch (error) {
         console.log(error);
       }
