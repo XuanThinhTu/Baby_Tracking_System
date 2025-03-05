@@ -2,37 +2,50 @@ import React, { useState } from "react";
 import DatePicker from "./DatePicker";
 
 export default function BookingPage() {
-    const [duration] = useState("30 min");
+    const [duration] = useState("15 min");
     const [selectedDay, setSelectedDay] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
 
+    // Thời gian trống
     const availableTimes = ["09:00", "09:15", "09:30", "09:45"];
 
     return (
         <div className="flex w-full h-screen">
-            {/* Cột trái (1/3) */}
-            <div className="w-1/3 border-r p-6 space-y-4">
-                <h1 className="text-2xl font-bold text-black">Dubby Rosner</h1>
-                <h2 className="text-xl text-gray-700">Meeting</h2>
-                <p className="text-gray-500">{duration}</p>
+            {/* Cột trái (bác sĩ) */}
+            <div className="w-1/3 bg-white border-r border-gray-300 p-6 flex flex-col items-center text-center space-y-4">
+                {/* Ảnh đại diện bác sĩ (tùy ý) */}
+                <img
+                    src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
+                    alt="Doctor Avatar"
+                    className="w-24 h-24 rounded-full shadow"
+                />
+
+                {/* Thông tin bác sĩ */}
+                <h1 className="text-2xl font-bold text-gray-800">Dr. Dubby Rosner</h1>
+                <p className="text-sm text-gray-500 italic">Senior Pediatrician</p>
+
+                {/* Thông tin meeting */}
+                <div className="bg-blue-50 w-full p-4 rounded-lg shadow-sm">
+                    <h2 className="text-lg font-semibold text-gray-700">Meeting</h2>
+                    <p className="text-gray-600">{duration} session</p>
+                </div>
             </div>
 
-            {/* Cột phải (2/3) */}
+
+            {/* Cột phải */}
             <div className="w-2/3 p-6">
                 <h2 className="text-xl font-semibold mb-4">Select a Date &amp; Time</h2>
 
                 <div className="flex h-full">
-                    {/* 
-            Nếu chưa chọn day => w-full (chiếm 100% cột phải), 
-            nếu đã chọn => w-2/3, chừa 1/3 cho khung giờ 
-          */}
-                    <div className={`${selectedDay ? "w-2/3" : "w-full"} h-full border-r pr-4 flex flex-col`}>
-                        <div className="flex-1">
+                    {/* Lịch */}
+                    <div
+                        className={`${selectedDay ? "w-2/3" : "w-full"
+                            } h-full pr-4 flex flex-col`}
+                    >
+                        <div className="flex-1 min-w-[600px]">
                             <DatePicker
-                                availableDays={[24, 28, 30, 31]}
-                                onSelectDay={(day) => {
-                                    setSelectedDay(day);
-                                }}
+                                availableDays={[24, 28, 30, 31]} // ví dụ
+                                onSelectDay={(day) => setSelectedDay(day)}
                             />
                         </div>
                     </div>
@@ -41,7 +54,7 @@ export default function BookingPage() {
                     {selectedDay && (
                         <div className="w-1/3 pl-4 flex flex-col">
                             <h3 className="text-lg font-semibold mb-2">
-                                January {selectedDay}, 2025
+                                {selectedDay.year} - {selectedDay.month + 1} - {selectedDay.day}
                             </h3>
 
                             <div className="flex flex-col space-y-3">
