@@ -50,6 +50,19 @@ export const getAllBabies = async () => {
   }
 };
 
+export const getBabyInfo = async (babyId) => {
+  try {
+    const result = await axios.get(`${baseUrl}/children/info/${babyId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const addNewBaby = async (babyName, birthday, gender) => {
   try {
     const result = await axios.post(
@@ -87,6 +100,28 @@ export const addBabyGrowthData = async (
       growthData
     );
     return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getBoyStandardIndex = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/api/standard-index`);
+    const standard = result.data.data;
+    const boyStandard = standard.filter((item) => item.gender === "boys");
+    return boyStandard;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getGirlStandardIndex = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/api/standard-index`);
+    const standard = result.data.data;
+    const girlStandard = standard.filter((item) => item.gender === "girl");
+    return girlStandard;
   } catch (error) {
     console.log(error);
   }
