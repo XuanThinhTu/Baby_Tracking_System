@@ -81,6 +81,24 @@ export const addNewBaby = async (babyName, birthday, gender) => {
   }
 };
 
+export const updateBabyProfile = async (babyId, name, birthday, gender) => {
+  try {
+    const result = await axios.put(
+      `${baseUrl}/children/update/${babyId}?name=${name}&birthDate=${birthday}&gender=${gender}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const addBabyGrowthData = async (
   babyId,
   height,
@@ -122,6 +140,15 @@ export const getGirlStandardIndex = async () => {
     const standard = result.data.data;
     const girlStandard = standard.filter((item) => item.gender === "girl");
     return girlStandard;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getAllDoctors = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/user/get-doctors?page=0&size=5`);
+    return result.data.data.content;
   } catch (error) {
     console.log(error);
   }
