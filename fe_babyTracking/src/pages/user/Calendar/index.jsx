@@ -1,77 +1,91 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import DatePicker from "./DatePicker";
 
 export default function BookingPage() {
-    const [selectedOption, setSelectedOption] = useState(null);
-    const [selectedDate, setSelectedDate] = useState(null);
-    const [currentMonth, setCurrentMonth] = useState("January 2025");
+    const [duration] = useState("15 min");
+    const [selectedDay, setSelectedDay] = useState(null);
+    const [selectedTime, setSelectedTime] = useState(null);
 
-    const availableDates = [24, 28, 30, 31];
+    // Thời gian trống
     const availableTimes = ["09:00", "09:15", "09:30", "09:45"];
 
     return (
-        <div className="flex flex-col items-center p-6 w-full">
-            {/* Doctor's Name */}
-            <h1 className="text-4xl font-bold text-black text-center">Dubby Rosner</h1>
+        <div className="flex w-full h-screen">
+            {/* Cột trái (bác sĩ) */}
+            <div className="w-1/3 bg-white border-r border-gray-300 p-6 flex flex-col items-center text-center space-y-4">
+                {/* Ảnh đại diện bác sĩ (tùy ý) */}
+                <img
+                    src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
+                    alt="Doctor Avatar"
+                    className="w-24 h-24 rounded-full shadow"
+                />
 
-            {/* Doctor's Note */}
-            <p className="text-gray-500 text-center mt-2 max-w-lg text-lg">
-                Welcome to my scheduling page. Please follow the instructions to add an event to my calendar.
-            </p>
+                {/* Thông tin bác sĩ */}
+                <h1 className="text-2xl font-bold text-gray-800">Dr. Dubby Rosner</h1>
+                <p className="text-sm text-gray-500 italic">Senior Pediatrician</p>
 
-            {/* Meeting Options */}
-            <div className="flex w-full max-w-5xl mt-6 space-x-6">
-                {/* Left Column: Options */}
-                <div className={`flex flex-col ${selectedOption ? 'w-1/4' : 'w-1/2'} space-y-6`}>
-                    <div
-                        className="flex items-center cursor-pointer p-6 bg-gray-100 rounded-lg text-xl"
-                        onClick={() => setSelectedOption('15 min')}
-                    >
-                        <span className="w-6 h-6 bg-yellow-500 rounded-full mr-4"></span>
-                        <span className="font-semibold text-black">15 Minute Meeting</span>
-                    </div>
-
-                    <div
-                        className="flex items-center cursor-pointer p-6 bg-gray-100 rounded-lg text-xl"
-                        onClick={() => setSelectedOption('30 min')}
-                    >
-                        <span className="w-6 h-6 bg-blue-500 rounded-full mr-4"></span>
-                        <span className="font-semibold text-black">30 Minute Meeting</span>
-                    </div>
+                {/* Thông tin meeting */}
+                <div className="bg-blue-50 w-full p-4 rounded-lg shadow-sm">
+                    <h2 className="text-lg font-semibold text-gray-700">Meeting</h2>
+                    <p className="text-gray-600">{duration} session</p>
                 </div>
+            </div>
 
-                {/* Right Column: Calendar */}
-                {selectedOption && (
-                    <div className="w-3/4 bg-white p-6 rounded-lg shadow-lg">
-                        <h2 className="text-2xl font-semibold text-black mb-4">Select a Date</h2>
-                        <div className="flex justify-between items-center text-xl">
-                            <button className="text-gray-600">&#9665;</button>
-                            <span className="font-bold">{currentMonth}</span>
-                            <button className="text-gray-600">&#9655;</button>
-                        </div>
-                        <div className="grid grid-cols-7 gap-4 text-center mt-4 text-lg">
-                            {[...Array(31)].map((_, i) => (
-                                <div
-                                    key={i}
-                                    className={`p-4 rounded-lg cursor-pointer ${availableDates.includes(i + 1) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'}`}
-                                    onClick={() => availableDates.includes(i + 1) && setSelectedDate(i + 1)}
-                                >
-                                    {i + 1}
-                                </div>
-                            ))}
-                        </div>
 
-                        {selectedDate && (
-                            <div className="mt-6 space-y-3">
-                                <h3 className="text-xl font-semibold text-black">Available Time Slots</h3>
-                                {availableTimes.map(time => (
-                                    <div key={time} className="p-4 bg-gray-100 rounded-lg text-lg cursor-pointer hover:bg-gray-200">
-                                        {time}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+            {/* Cột phải */}
+            <div className="w-2/3 p-6">
+                <h2 className="text-xl font-semibold mb-4">Select a Date &amp; Time</h2>
+
+                <div className="flex h-full">
+                    {/* Lịch */}
+                    <div
+                        className={`${selectedDay ? "w-2/3" : "w-full"
+                            } h-full pr-4 flex flex-col`}
+                    >
+                        <div className="flex-1 min-w-[600px]">
+                            <DatePicker
+                                availableDays={[24, 28, 30, 31]} // ví dụ
+                                onSelectDay={(day) => setSelectedDay(day)}
+                            />
+                        </div>
                     </div>
-                )}
+
+                    {/* Khung giờ (1/3) nếu đã chọn day */}
+                    {selectedDay && (
+                        <div className="w-1/3 pl-4 flex flex-col">
+                            <h3 className="text-lg font-semibold mb-2">
+                                {selectedDay.year} - {selectedDay.month + 1} - {selectedDay.day}
+                            </h3>
+
+                            <div className="flex flex-col space-y-3">
+                                {availableTimes.map((time) => {
+                                    const isChosen = selectedTime === time;
+                                    if (isChosen) {
+                                        return (
+                                            <div key={time} className="flex gap-2 w-full">
+                                                <button className="flex-1 bg-gray-500 text-white text-center py-2 rounded">
+                                                    {time}
+                                                </button>
+                                                <button className="flex-1 bg-blue-500 text-white text-center py-2 rounded">
+                                                    Next
+                                                </button>
+                                            </div>
+                                        );
+                                    }
+                                    return (
+                                        <button
+                                            key={time}
+                                            onClick={() => setSelectedTime(time)}
+                                            className="border border-blue-500 bg-white text-blue-500 text-center py-2 rounded cursor-pointer hover:bg-blue-50"
+                                        >
+                                            {time}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

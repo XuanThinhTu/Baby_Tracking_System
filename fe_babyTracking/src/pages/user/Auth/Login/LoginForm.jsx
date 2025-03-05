@@ -50,7 +50,7 @@ const LoginForm = () => {
               type="email"
               placeholder="Nhập email..."
               onChange={(e) => setEmail(e.target.value)}
-              // disabled
+            // disabled
             />
           </div>
 
@@ -61,7 +61,7 @@ const LoginForm = () => {
               type="password"
               placeholder="Nhập mật khẩu..."
               onChange={(e) => setPassword(e.target.value)}
-              // disabled
+            // disabled
             />
           </div>
 
