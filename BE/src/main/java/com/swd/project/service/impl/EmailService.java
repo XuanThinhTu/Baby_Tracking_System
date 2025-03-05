@@ -205,6 +205,11 @@ public class EmailService {
                 + "</html>";
     }
 
+    public String subjectCreateBooking(){
+        return "Appointment Information";
+    }
+
+
     public String sendBookingConfirmation(User member, Booking booking) {
         return "<!DOCTYPE html>\n"
                 + "<html lang=\"en\">\n"
@@ -270,12 +275,12 @@ public class EmailService {
                 + "    <div class=\"content\">\n"
                 + "      <h3>Your appointment information:</h3>\n"
                 + "      <p>Appointment date : " + booking.getDate() + "</p>\n"
-                + "      <p>Doctor name : Dr." + booking.getDoctor().getFirstName() + booking.getDoctor().getLastName() + "</p>\n"
-                + "      <p>Booked for : " + booking.getChildren() + "</p>\n"
+                + "      <p>Doctor name : Dr." + booking.getDoctor().getFirstName() + " " + booking.getDoctor().getLastName() + "</p>\n"
+                + "      <p>Booked for : " + booking.getChildren().getName() + "</p>\n"
                 + "      <p>Reason : " + booking.getContent() + "</p>\n"
                 + "      <p>Meeting time : " + booking.getSlotTime().getStartTime().toString() + " - " + booking.getSlotTime().getEndTime().toString() + "</p>\n"
                 + "      <p>Please enter the meeting room on time as scheduled to ensure you enjoy the full appointment experience.</p>\n"
-                + "      <a class=\"button\" href=\" " + booking.getMeetingLink() + "\">VERIFY</a>\n"
+                + "      <a class=\"button\" href=\" " + booking.getMeetingLink() + "\">CLICK TO JOIN</a>\n"
                 + "      <p>We are ready support</p>\n"
                 + "    </div>\n"
                 + "    <div class=\"footer\">\n"

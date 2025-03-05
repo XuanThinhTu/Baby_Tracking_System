@@ -5,6 +5,7 @@ import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.BookingAvailableResponse;
 import com.swd.project.dto.response.BookingResponse;
 import com.swd.project.service.impl.BookingService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,7 @@ public class BookingController {
             @RequestParam LocalDate date,
             @RequestParam int slotTimeId,
             @RequestBody CreateBookingNoteRequest note
-    ) {
+    ) throws MessagingException {
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .message("Booking schedule")

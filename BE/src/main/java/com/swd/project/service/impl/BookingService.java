@@ -8,11 +8,13 @@ import com.swd.project.exception.ResourceNotFoundException;
 import com.swd.project.mapper.BookingMapper;
 import com.swd.project.repository.*;
 import com.swd.project.service.IBookingService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,6 +36,8 @@ public class BookingService implements IBookingService {
     private final ChildrenRepository childrenRepository;
 
     private final UserService userService;
+
+    private final GoogleMeetService googleMeetService;
 
     @Override
     public List<LocalDate> getAvailableBookingDates(YearMonth month) {
@@ -91,7 +95,11 @@ public class BookingService implements IBookingService {
     }
 
     @Override
-    public BookingResponse createBooking(int childrenId, LocalDate date, int slotTimeId, String note) {
+    public BookingResponse createBooking(int childrenId, LocalDate date, int slotTimeId, String note) throws MessagingException {
+        // Kiểm tra nếu ngày đặt lịch trước ngày hiện tại
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Cannot book a time in the past.");
+        }
         List<WorkingSchedule> schedules = workingScheduleRepository.findByDateAndSlotTimeId(date, slotTimeId);
         WorkingSchedule availableSchedule = schedules.stream()
                 .filter(ws -> !bookingRepository.existsByDateAndDoctorAndSlotTime(
@@ -100,6 +108,10 @@ public class BookingService implements IBookingService {
                         ))
                 .findAny()
                 .orElseThrow(() -> new ResourceNotFoundException("No more available doctor for this slot."));
+
+        if (LocalTime.now().isAfter(availableSchedule.getSlotTime().getStartTime())) {
+            throw new IllegalArgumentException("Cannot book: the slot time has already passed.");
+        }
 
         User member = userService.getAuthenticatedUser();
         User doctor = availableSchedule.getDoctor();
@@ -115,19 +127,20 @@ public class BookingService implements IBookingService {
         booking.setContent(note);
         booking.setStatus(BookingStatus.PROCESSING);
         booking.setCreatedAt(LocalDateTime.now());
-        booking.setMeetingLink(generateGoogleMeetLink(member, doctor));
+        booking.setMeetingLink(generateGoogleMeetLink(member, doctor, date, availableSchedule.getSlotTime()));
 
         bookingRepository.save(booking);
 
         // Gửi email xác nhận kèm link Google Meet
-        emailService.sendBookingConfirmation(member, booking);
+//        emailService.sendBookingConfirmation(member, booking);
+        emailService.sendEmail(member.getEmail(), emailService.subjectCreateBooking(), emailService.sendBookingConfirmation(member, booking));
 
         return bookingMapper.toDto(booking);
     }
 
     @Override
-    public String generateGoogleMeetLink(User member, User doctor) {
-        return GoogleMeetService.generateGoogleMeetLink(member, doctor);
+    public String generateGoogleMeetLink(User member, User doctor, LocalDate bookingDate, SlotTime bookingSlotTime) {
+        return googleMeetService.generateGoogleMeetLink(member, doctor, bookingDate, bookingSlotTime);
     }
 
     @Override
