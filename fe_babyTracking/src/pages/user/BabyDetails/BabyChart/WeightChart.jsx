@@ -70,7 +70,13 @@ const WeightChart = ({ userData, babyId }) => {
       </div>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={growthData}>
-          <XAxis dataKey="day" tickFormatter={(m) => `${m}day`} />
+          <XAxis
+            dataKey="day"
+            type="number"
+            tickFormatter={(m) => `${m}day`}
+            domain={[0, "dataMax"]}
+            scale="time"
+          />
           <YAxis
             domain={[0, 15]}
             label={{ value: "kg", angle: -90, position: "insideLeft" }}
