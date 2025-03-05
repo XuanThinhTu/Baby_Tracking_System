@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 // Tên tháng
 const MONTH_NAMES = [
@@ -25,40 +25,39 @@ function getDaysInMonth(year, month) {
 }
 
 // Tính offset Monday=0, Tuesday=1,... Sunday=6
-// new Date(year, month, 1).getDay() => 0=Sunday,1=Mon,... => ta cần Monday=0
 function getFirstDayOffset(year, month) {
     const day = new Date(year, month, 1).getDay(); // 0=Sunday,1=Mon,...
-    // => transform Sunday->6, Monday->0, Tuesday->1...
+    // transform Sunday->6, Monday->0, ...
     return (day + 6) % 7;
 }
 
 export default function DatePicker({
     onSelectDay,
-    availableDays = [], // array dayNumber, tuỳ
+    availableDays = [], // ví dụ: [24, 28, 30, 31]
+    selectedDay,
 }) {
-    // State month/year
-    const [year, setYear] = useState(2025);
-    const [month, setMonth] = useState(0); // 0=Jan,1=Feb,...
+    // Giữ local state cho năm/tháng
+    const [year, setYear] = React.useState(2025);
+    const [month, setMonth] = React.useState(0); // 0=Jan
 
-    // Số ngày trong tháng
+    // Tính số ngày trong tháng và offset
     const DAYS_IN_MONTH = getDaysInMonth(year, month);
-    // Offset Monday=0 => cột offset
     const FIRST_DAY_OFFSET = getFirstDayOffset(year, month);
 
-    // Tạo mảng 42 ô
+    // Tạo mảng 42 ô (6 hàng x 7 cột)
     const cells = new Array(42).fill(null);
     for (let dayNumber = 1; dayNumber <= DAYS_IN_MONTH; dayNumber++) {
         const index = FIRST_DAY_OFFSET + (dayNumber - 1);
         cells[index] = dayNumber;
     }
 
-    // Cắt 42 ô thành 6 hàng
+    // Cắt thành 6 hàng
     const rows = [];
-    for (let row = 0; row < 5; row++) {
-        rows.push(cells.slice(row * 7, row * 7 + 7));
+    for (let r = 0; r < 6; r++) {
+        rows.push(cells.slice(r * 7, r * 7 + 7));
     }
 
-    // Xử lý Prev/Next
+    // Xử lý Prev/Next tháng
     const handlePrevMonth = () => {
         let newMonth = month - 1;
         let newYear = year;
@@ -81,8 +80,18 @@ export default function DatePicker({
         setYear(newYear);
     };
 
+    // Hàm kiểm tra ngày đang chọn (để highlight)
+    const isSelectedDay = (dayNumber) => {
+        return (
+            selectedDay &&
+            selectedDay.year === year &&
+            selectedDay.month === month &&
+            selectedDay.day === dayNumber
+        );
+    };
+
     return (
-        <div className="w-full h-full flex flex-col bg-white border border-gray-200 shadow-lg rounded-xl overflow-hidden">
+        <div className="w-full flex flex-col bg-white border border-gray-200 shadow-lg rounded-xl overflow-hidden">
             {/* Header tháng/năm */}
             <div className="p-3 border-b flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -92,7 +101,6 @@ export default function DatePicker({
                         value={year}
                         onChange={(e) => setYear(Number(e.target.value))}
                     >
-                        {/* Tuỳ ý range year */}
                         {Array.from({ length: 10 }, (_, i) => 2020 + i).map((y) => (
                             <option key={y} value={y}>
                                 {y}
@@ -116,14 +124,14 @@ export default function DatePicker({
 
                 <div className="flex items-center gap-2">
                     <button
-                        className="size-8 flex justify-center items-center text-gray-600 hover:bg-gray-100 rounded-full p-1"
+                        className="text-gray-600 hover:bg-gray-100 rounded-full p-1"
                         aria-label="Prev Month"
                         onClick={handlePrevMonth}
                     >
                         &lt;
                     </button>
                     <button
-                        className="size-8 flex justify-center items-center text-gray-600 hover:bg-gray-100 rounded-full p-1"
+                        className="text-gray-600 hover:bg-gray-100 rounded-full p-1"
                         aria-label="Next Month"
                         onClick={handleNextMonth}
                     >
@@ -144,8 +152,8 @@ export default function DatePicker({
                 ))}
             </div>
 
-            {/* Các hàng ngày => full */}
-            <div className="flex flex-col flex-grow px-2">
+            {/* Khối hiển thị ngày */}
+            <div className="flex flex-col px-2 pb-2">
                 {rows.map((rowCells, rowIndex) => (
                     <div key={rowIndex} className="flex w-full justify-between">
                         {rowCells.map((dayNumber, colIndex) => {
@@ -153,32 +161,35 @@ export default function DatePicker({
                                 return <div key={colIndex} className="w-14 h-14 m-1" />;
                             }
 
-                            // Kiểm tra dayNumber có trong availableDays
+                            // Kiểm tra có phải ngày đang chọn hay không
+                            const selected = isSelectedDay(dayNumber);
+                            // Kiểm tra có nằm trong availableDays hay không
                             const isAvailable = availableDays.includes(dayNumber);
 
                             let buttonClass =
-                                "m-1 w-14 h-14 flex items-center justify-center rounded-full text-xl ";
+                                "m-1 w-14 h-14 flex items-center justify-center rounded-full text-base font-medium transition ";
 
-                            if (isAvailable) {
+                            if (selected) {
+                                // Ngày đang chọn => nền xanh, chữ trắng
+                                buttonClass += "bg-blue-500 text-white ";
+                            } else if (isAvailable) {
+                                // Có lịch => border xanh, chữ xanh
                                 buttonClass +=
                                     "border border-blue-500 text-blue-500 hover:bg-blue-50 cursor-pointer ";
                             } else {
-                                buttonClass += "text-gray-400 cursor-not-allowed ";
+                                // Không có lịch => border xám, chữ xám
+                                // Vẫn cho phép click để hiển thị "Không có lịch trống"
+                                buttonClass +=
+                                    "border border-gray-300 text-gray-400 hover:bg-gray-50 cursor-pointer ";
                             }
 
                             return (
                                 <button
                                     key={colIndex}
                                     className={buttonClass}
-                                    disabled={!isAvailable}
                                     onClick={() => {
-                                        if (isAvailable && onSelectDay) {
-                                            // Trả về { year, month, day }
-                                            onSelectDay({
-                                                year,
-                                                month,
-                                                day: dayNumber,
-                                            });
+                                        if (onSelectDay) {
+                                            onSelectDay({ year, month, day: dayNumber });
                                         }
                                     }}
                                 >
@@ -192,4 +203,3 @@ export default function DatePicker({
         </div>
     );
 }
-
