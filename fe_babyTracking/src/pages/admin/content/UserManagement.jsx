@@ -9,13 +9,15 @@ import {
   Tooltip,
 } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "antd/es/form/Form";
 import { Option } from "antd/es/mentions";
+import { getAllUserAccounts } from "../../../services/APIServices";
 
 function UserManagement() {
   const [showModal, setShowModal] = useState(false);
   const [formVar] = useForm();
+  const [dataSource, setDataSource] = useState([]);
 
   const handleOpenModal = () => {
     setShowModal(true);
@@ -28,148 +30,37 @@ function UserManagement() {
     formVar.submit();
     handleCloseModal();
   };
-
-  const handlePostAccount = async (values) => { };
-  const handleDeleteAccount = async () => { };
-  const handleUpdateAccount = async (values) => { };
+  const handlePostAccount = async (values) => {};
+  const handleDeleteAccount = async () => {};
+  const handleUpdateAccount = async (values) => {};
   //=======================
-  const dataSource = [
-    {
-      key: "1",
-      id: "U001",
-      username: "mike123",
-      email: "mike123@example.com",
-      password: "hashed_password_1",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "2",
-      id: "U002",
-      username: "john_doe",
-      email: "john.doe@example.com",
-      password: "hashed_password_2",
-      role: "User",
-      status: "inactive",
-    },
-    {
-      key: "3",
-      id: "U003",
-      username: "sarah_99",
-      email: "sarah99@example.com",
-      password: "hashed_password_3",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "4",
-      id: "U004",
-      username: "david_w",
-      email: "david.w@example.com",
-      password: "hashed_password_4",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "5",
-      id: "U005",
-      username: "emma_watson",
-      email: "emma.w@example.com",
-      password: "hashed_password_5",
-      role: "User",
-      status: "inactive",
-    },
-    {
-      key: "6",
-      id: "U006",
-      username: "robert_c",
-      email: "robert.c@example.com",
-      password: "hashed_password_6",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "7",
-      id: "U007",
-      username: "linda_x",
-      email: "linda.x@example.com",
-      password: "hashed_password_7",
-      role: "User",
-      status: "inactive",
-    },
-    {
-      key: "8",
-      id: "U008",
-      username: "will_smith",
-      email: "will.s@example.com",
-      password: "hashed_password_8",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "9",
-      id: "U009",
-      username: "natalie_p",
-      email: "natalie.p@example.com",
-      password: "hashed_password_9",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "10",
-      id: "U010",
-      username: "steve_jobs",
-      email: "steve.jobs@example.com",
-      password: "hashed_password_10",
-      role: "User",
-      status: "inactive",
-    },
-    {
-      key: "11",
-      id: "U011",
-      username: "kevin_m",
-      email: "kevin.m@example.com",
-      password: "hashed_password_11",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "12",
-      id: "U012",
-      username: "laura_b",
-      email: "laura.b@example.com",
-      password: "hashed_password_12",
-      role: "User",
-      status: "inactive",
-    },
-    {
-      key: "13",
-      id: "U013",
-      username: "jason_r",
-      email: "jason.r@example.com",
-      password: "hashed_password_13",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "14",
-      id: "U014",
-      username: "olivia_k",
-      email: "olivia.k@example.com",
-      password: "hashed_password_14",
-      role: "User",
-      status: "active",
-    },
-    {
-      key: "15",
-      id: "U015",
-      username: "brandon_t",
-      email: "brandon.t@example.com",
-      password: "hashed_password_15",
-      role: "User",
-      status: "inactive",
-    },
-  ];
+
+  useEffect(() => {
+    const fecthUserRoleAccounts = async () => {
+      try {
+        const result = await getAllUserAccounts();
+        const userRoleAccounts = result.data.filter(
+          (acc) => acc.role === "ROLE_USER"
+        );
+
+        const formattedData = userRoleAccounts.map((user, index) => ({
+          key: user.id,
+          id: user.id,
+          username: `${user.firstName} ${user.lastName}`,
+          email: user.email,
+          password: "******",
+          role: user.role,
+          status: user.active ? "active" : "inactive",
+        }));
+
+        setDataSource(formattedData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fecthUserRoleAccounts();
+  }, []);
+  console.log(dataSource);
 
   const columns = [
     {

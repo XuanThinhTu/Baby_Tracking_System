@@ -1,26 +1,23 @@
-import React, { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaRuler, FaWeight, FaCalendarAlt, FaUserMd } from "react-icons/fa";
-import { getAllBabies } from "../../../../services/APIServices";
+import { getBabyInfo } from "../../../../services/APIServices";
 import dayjs from "dayjs";
 
 const BabyDetails = ({ babyId }) => {
-  const [babies, setBabies] = useState([]);
+  const [baby, setBaby] = useState(null);
 
   useEffect(() => {
-    const fetchListBabies = async () => {
+    const fetchBabyInfo = async () => {
       try {
-        const babiesData = await getAllBabies();
-        setBabies(babiesData?.data);
+        const result = await getBabyInfo(babyId);
+        setBaby(result);
       } catch (error) {
         console.log(error);
       }
     };
-
-    fetchListBabies();
+    fetchBabyInfo();
   }, []);
-
-  const baby = babies.find((baby) => baby.id === parseInt(babyId));
 
   const calculateAge = (birthDate) => {
     const birth = new Date(birthDate);

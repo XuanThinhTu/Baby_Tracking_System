@@ -1,7 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import LinkToGoogle from "../Google/LinkToGoogle";
 import { useEffect, useState } from "react";
-import { loginFucntion } from "../../../../services/APIServices";
+import {
+  getUserInformation,
+  loginFucntion,
+} from "../../../../services/APIServices";
 // import { fetchLogin } from "../../../data/api.jsx";
 // import { toast, Toaster } from "react-hot-toast";
 
@@ -14,9 +17,17 @@ const LoginForm = () => {
     try {
       const result = await loginFucntion(email, password);
       const token = result?.data?.accessToken;
+
       if (token) {
         sessionStorage.setItem("token", token);
-        navigation("/");
+
+        const userInfo = await getUserInformation();
+
+        if (userInfo.data?.role === "ROLE_ADMIN") {
+          navigation("/admin");
+        } else {
+          navigation("/");
+        }
       }
     } catch (error) {
       alert(error?.message);

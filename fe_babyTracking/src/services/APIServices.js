@@ -23,6 +23,7 @@ export const loginFucntion = async (mail, pass) => {
 
 export const getUserInformation = async () => {
   try {
+    const token = sessionStorage.getItem("token");
     const result = await axios.get(`${baseUrl}/user/p`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -38,7 +39,7 @@ export const getUserInformation = async () => {
 
 export const getAllBabies = async () => {
   try {
-    const result = await axios.get(`${baseUrl}/children/list/${userId}`, {
+    const result = await axios.get(`${baseUrl}/children/list`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -46,6 +47,19 @@ export const getAllBabies = async () => {
     return result.data;
   } catch (error) {
     console.log('API Call Error:', error);
+  }
+};
+
+export const getBabyInfo = async (babyId) => {
+  try {
+    const result = await axios.get(`${baseUrl}/children/info/${babyId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -85,6 +99,42 @@ export const addBabyGrowthData = async (
       `${baseUrl}/api/grow-tracker/${babyId}`,
       growthData
     );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getBoyStandardIndex = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/api/standard-index`);
+    const standard = result.data.data;
+    const boyStandard = standard.filter((item) => item.gender === "boys");
+    return boyStandard;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getGirlStandardIndex = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/api/standard-index`);
+    const standard = result.data.data;
+    const girlStandard = standard.filter((item) => item.gender === "girl");
+    return girlStandard;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//============ADMIN API ================
+export const getAllUserAccounts = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/user/admin/getAll`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return result.data;
   } catch (error) {
     console.log(error);

@@ -2,11 +2,13 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, Select, Table, Tooltip } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { Option } from "antd/es/mentions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getAllUserAccounts } from "../../../services/APIServices";
 
 function DoctorManagement() {
   const [showModal, setShowModal] = useState(false);
   const [formVar] = useForm();
+  const [dataSource, setDataSource] = useState([]);
 
   const handleOpenModal = () => {
     setShowModal(true);
@@ -26,53 +28,32 @@ function DoctorManagement() {
   const handleUpdateAccount = async (values) => {};
 
   //=======================
-  const dataSource = [
-    {
-      key: "1",
-      id: "D001",
-      username: "dr_jones",
-      email: "dr.jones@example.com",
-      password: "hashed_password_11",
-      role: "Doctor",
-      status: "active",
-    },
-    {
-      key: "2",
-      id: "D002",
-      username: "dr_smith",
-      email: "dr.smith@example.com",
-      password: "hashed_password_12",
-      role: "Doctor",
-      status: "active",
-    },
-    {
-      key: "3",
-      id: "D003",
-      username: "dr_emily",
-      email: "dr.emily@example.com",
-      password: "hashed_password_13",
-      role: "Doctor",
-      status: "inactive",
-    },
-    {
-      key: "4",
-      id: "D004",
-      username: "dr_williams",
-      email: "dr.williams@example.com",
-      password: "hashed_password_14",
-      role: "Doctor",
-      status: "active",
-    },
-    {
-      key: "5",
-      id: "D005",
-      username: "dr_clark",
-      email: "dr.clark@example.com",
-      password: "hashed_password_15",
-      role: "Doctor",
-      status: "inactive",
-    },
-  ];
+
+  useEffect(() => {
+    const fetchDoctorRoleAccounts = async () => {
+      try {
+        const result = await getAllUserAccounts();
+        const doctorRoleAccounts = result.data.filter(
+          (acc) => acc.role === "ROLE_DOCTOR"
+        );
+
+        const formattedData = doctorRoleAccounts.map((user, index) => ({
+          key: user.id,
+          id: user.id,
+          username: `${user.firstName} ${user.lastName}`,
+          email: user.email,
+          password: "******",
+          role: user.role,
+          status: user.active ? "active" : "inactive",
+        }));
+
+        setDataSource(formattedData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchDoctorRoleAccounts();
+  }, []);
 
   const columns = [
     {
