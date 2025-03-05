@@ -93,24 +93,41 @@ export default function DatePicker({
     return (
         <div className="w-full flex flex-col bg-white border border-gray-200 shadow-lg rounded-xl overflow-hidden">
             {/* Header tháng/năm */}
-            <div className="p-3 border-b flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    {/* Chọn năm */}
-                    <select
-                        className="border border-gray-300 rounded px-2 py-1 text-gray-700"
-                        value={year}
-                        onChange={(e) => setYear(Number(e.target.value))}
+            <div className="p-3 border-b relative flex items-center justify-center">
+                {/* Nút Prev (trái) */}
+                <button
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 hover:bg-gray-100 rounded-full p-2"
+                    aria-label="Prev Month"
+                    onClick={handlePrevMonth}
+                >
+                    {/* Icon Heroicons: chevron-left */}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
                     >
-                        {Array.from({ length: 10 }, (_, i) => 2020 + i).map((y) => (
-                            <option key={y} value={y}>
-                                {y}
-                            </option>
-                        ))}
-                    </select>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
 
-                    {/* Chọn tháng */}
+                {/* Khối chọn Năm/Tháng (ở chính giữa) */}
+                <div className="flex items-center gap-4">
                     <select
-                        className="border border-gray-300 rounded px-2 py-1 text-gray-700"
+                        className="
+                            appearance-none 
+                            bg-transparent 
+                            text-blue-600 
+                            text-xl 
+                            font-semibold 
+                            cursor-pointer 
+                            focus:outline-none 
+                            focus:ring-0
+                            hover:text-purple-700
+                            px-2
+                        "
                         value={month}
                         onChange={(e) => setMonth(Number(e.target.value))}
                     >
@@ -120,25 +137,51 @@ export default function DatePicker({
                             </option>
                         ))}
                     </select>
+                    <select
+                        className="
+                            appearance-none 
+                            bg-transparent 
+                            text-blue-600 
+                            text-xl 
+                            font-semibold 
+                            cursor-pointer 
+                            focus:outline-none 
+                            focus:ring-0
+                            hover:text-purple-700
+                            px-2
+                        "
+                        value={year}
+                        onChange={(e) => setYear(Number(e.target.value))}
+                    >
+                        {Array.from({ length: 10 }, (_, i) => 2020 + i).map((y) => (
+                            <option key={y} value={y}>
+                                {y}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <button
-                        className="text-gray-600 hover:bg-gray-100 rounded-full p-1"
-                        aria-label="Prev Month"
-                        onClick={handlePrevMonth}
+
+                {/* Nút Next (phải) */}
+                <button
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:bg-gray-100 rounded-full p-2"
+                    aria-label="Next Month"
+                    onClick={handleNextMonth}
+                >
+                    {/* Icon Heroicons: chevron-right */}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
                     >
-                        &lt;
-                    </button>
-                    <button
-                        className="text-gray-600 hover:bg-gray-100 rounded-full p-1"
-                        aria-label="Next Month"
-                        onClick={handleNextMonth}
-                    >
-                        &gt;
-                    </button>
-                </div>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
             </div>
+
 
             {/* Dòng tên thứ (Mon..Sun) */}
             <div className="flex py-2 px-2 w-full justify-between">

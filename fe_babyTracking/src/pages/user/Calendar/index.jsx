@@ -1,6 +1,31 @@
 import React, { useState } from "react";
 import DatePicker from "./DatePicker";
 
+// Định nghĩa mảng tên thứ và tên tháng
+const DAY_NAMES = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+];
+const MONTH_NAMES = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+];
+
 export default function BookingPage() {
     const [duration] = useState("15 min");
     const [selectedDay, setSelectedDay] = useState(null);
@@ -16,11 +41,29 @@ export default function BookingPage() {
     const isDayAvailable =
         selectedDay && availableDays.includes(selectedDay.day);
 
+    // Hàm format ngày theo "Friday, January 24, 2025"
+    const formatSelectedDay = () => {
+        if (!selectedDay) return "";
+        // Tạo Date object từ selectedDay
+        const dateObj = new Date(
+            selectedDay.year,
+            selectedDay.month, // 0=January
+            selectedDay.day
+        );
+        const dayOfWeek = DAY_NAMES[dateObj.getDay()]; // "Friday"
+        const monthName = MONTH_NAMES[dateObj.getMonth()]; // "January"
+        const dayNumber = dateObj.getDate(); // 24
+        const yearNumber = dateObj.getFullYear(); // 2025
+
+        // Ghép chuỗi
+        return `${dayOfWeek}, ${monthName} ${dayNumber}, ${yearNumber}`;
+    };
+
     return (
         <div className="container mx-auto p-6">
-            {/* Khối lớn chia làm 2 cột (theo chiều dọc trên mobile, chiều ngang trên md) */}
+            {/* Bố cục 2 cột: 1/3 & 2/3 */}
             <div className="flex flex-col md:flex-row gap-6">
-                {/* Cột trái (thông tin bác sĩ) */}
+                {/* Cột trái (1/3) - Thông tin meeting/bác sĩ */}
                 <div className="md:w-1/3 bg-white border border-gray-300 p-6 flex flex-col items-center text-center space-y-4 rounded">
                     <img
                         src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
@@ -36,13 +79,16 @@ export default function BookingPage() {
                     </div>
                 </div>
 
-                {/* Cột phải (chọn ngày giờ) */}
+                {/* Cột phải (2/3) */}
                 <div className="md:w-2/3 bg-white border border-gray-300 p-6 rounded">
                     <h2 className="text-xl font-semibold mb-4">Select a Date &amp; Time</h2>
 
+                    {/* Bên trong cột phải:
+              - Nếu chưa chọn ngày => 100% cho DatePicker
+              - Nếu đã chọn ngày => 2/3 DatePicker, 1/3 danh sách giờ
+          */}
                     <div className="flex flex-col md:flex-row gap-4">
-                        {/* Lịch */}
-                        <div className="md:w-2/3 w-full">
+                        <div className={`${selectedDay ? "md:w-2/3" : "w-full"} w-full`}>
                             <DatePicker
                                 availableDays={availableDays}
                                 selectedDay={selectedDay}
@@ -53,11 +99,12 @@ export default function BookingPage() {
                             />
                         </div>
 
-                        {/* Khung giờ hoặc thông báo, chỉ hiện khi đã chọn ngày */}
+                        {/* Nếu đã chọn ngày, hiển thị cột 1/3 cho giờ trống */}
                         {selectedDay && (
                             <div className="md:w-1/3 w-full">
+                                {/* Thay thế đoạn cũ bằng hàm formatSelectedDay() */}
                                 <h3 className="text-lg font-semibold mb-2">
-                                    {selectedDay.year} - {selectedDay.month + 1} - {selectedDay.day}
+                                    {formatSelectedDay()}
                                 </h3>
 
                                 {isDayAvailable ? (
