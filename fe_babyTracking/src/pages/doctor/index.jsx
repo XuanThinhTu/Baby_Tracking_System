@@ -8,6 +8,7 @@ import DoctorProfile from "./DoctorProfile/DoctorProfile";
 import ConsultationRequests from "./ConsultationRequests/ConsultationRequests";
 import BookingManagement from "./BookingManagement/BookingManagement";
 import BlogCreation from "./BlogCreation/BlogCreation";
+import WorkSchedule from "./WorkSchedule/WorkSchedule";
 
 export default function DoctorDashboard() {
     // State dropdown header
@@ -26,6 +27,8 @@ export default function DoctorDashboard() {
                 return <BookingManagement />;
             case "blog":
                 return <BlogCreation />;
+            case "workSchedule":
+                return <WorkSchedule />;
             default:
                 return <DoctorProfile />;
         }
