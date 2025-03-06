@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.swd</groupId>
 	<artifactId>project</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>baby-tracking-system</name>
 	<description>Spring Boot project for SWD392 Child Growth Tracking System</description>
 	<url/>

@@ -109,7 +109,7 @@ public class BookingService implements IBookingService {
                 .findAny()
                 .orElseThrow(() -> new ResourceNotFoundException("No more available doctor for this slot."));
 
-        if (LocalTime.now().isAfter(availableSchedule.getSlotTime().getStartTime())) {
+        if (LocalDateTime.now().isAfter(LocalDateTime.of(date, availableSchedule.getSlotTime().getStartTime()))) {
             throw new IllegalArgumentException("Cannot book: the slot time has already passed.");
         }
 
