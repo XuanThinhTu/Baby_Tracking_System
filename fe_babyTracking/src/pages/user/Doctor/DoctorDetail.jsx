@@ -1,91 +1,102 @@
-import React from "react";
-import { AiOutlinePlus } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
-import Breadcrumbs from "../../../components/elements/Breadcrumb";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { getAllDoctors } from "../../../services/APIServices";
 
-const doctors = [
-  {
-    id: 1,
-    name: "Julian Sims",
-    specialty: "Cardiology",
-    image:
-      "https://static.vecteezy.com/system/resources/thumbnails/026/375/249/small_2x/ai-generative-portrait-of-confident-male-doctor-in-white-coat-and-stethoscope-standing-with-arms-crossed-and-looking-at-camera-photo.jpg",
-  },
-  {
-    id: 2,
-    name: "Owen Cox",
-    specialty: "Cardiology",
-    image:
-      "https://img.freepik.com/free-photo/woman-doctor-wearing-lab-coat-with-stethoscope-isolated_1303-29791.jpg",
-  },
-  {
-    id: 3,
-    name: "Sia Morgan",
-    specialty: "Cardiology",
-    image:
-      "https://static.vecteezy.com/system/resources/thumbnails/028/287/555/small_2x/an-indian-young-female-doctor-isolated-on-green-ai-generated-photo.jpg",
-  },
-  {
-    id: 4,
-    name: "Andy Grant",
-    specialty: "Cardiology",
-    image:
-      "https://img.freepik.com/free-photo/woman-doctor-wearing-lab-coat-with-stethoscope-isolated_1303-29791.jpg",
-  },
-  {
-    id: 5,
-    name: "Alice Brown",
-    specialty: "Neurology",
-    image:
-      "https://static.vecteezy.com/system/resources/thumbnails/028/287/555/small_2x/an-indian-young-female-doctor-isolated-on-green-ai-generated-photo.jpg",
-  },
-  {
-    id: 6,
-    name: "John Doe",
-    specialty: "Pediatrics",
-    image:
-      "https://img.freepik.com/free-photo/woman-doctor-wearing-lab-coat-with-stethoscope-isolated_1303-29791.jpg",
-  },
-];
+const DoctorDetail = () => {
+  const { doctorId } = useParams();
+  const [doctor, setDoctor] = useState(null);
 
-const DoctorPage = () => {
-  const navigate = useNavigate();
+  useEffect(() => {
+    const getDocotorInfo = async () => {
+      try {
+        const doctors = await getAllDoctors();
+        const selectedDoctor = doctors.find(
+          (doc) => doc.id === parseInt(doctorId)
+        );
+        setDoctor(selectedDoctor);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getDocotorInfo();
+  }, []);
+  console.log(doctor);
 
   return (
-    <>
-      <Breadcrumbs headline="Our Doctors" />
-      <div className="w-full py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {doctors.map((doc) => (
-            <div
-              key={doc.id}
-              className="bg-white shadow-md rounded-lg overflow-hidden group relative"
-            >
-              <div className="relative w-full h-80 overflow-hidden">
-                <img
-                  src={doc.image}
-                  alt={doc.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-105"
-                />
-              </div>
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      {/* Phần hiển thị tổng quan */}
+      <div className="flex flex-col md:flex-row md:space-x-8">
+        {/* Cột trái: Ảnh & Thông tin liên hệ */}
+        <div className="md:w-1/3 w-full mb-6 md:mb-0 flex flex-col items-center border p-4 rounded shadow-sm">
+          <img
+            src="https://via.placeholder.com/150" // Thay bằng link ảnh bác sĩ
+            alt="Doctor"
+            className="w-36 h-36 object-cover rounded-full mb-4"
+          />
+          <h2 className="text-2xl font-semibold mb-2 text-gray-800">
+            Dr. {doctor?.firstName} {doctor?.lastName}
+          </h2>
+          <p className="text-gray-600 text-sm mb-2">Cardiology</p>
+          <p className="text-gray-600 text-sm mb-1">{doctor?.phone}</p>
+          <p className="text-blue-600 text-sm mb-4">{doctor?.email}</p>
+          <button className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">
+            Book Appointment
+          </button>
+        </div>
 
-              <div className="p-4 flex flex-col items-center text-center">
-                <h2 className="text-xl font-semibold">{doc.name}</h2>
-                <p className="text-gray-500">{doc.specialty}</p>
-              </div>
+        {/* Cột phải: Mô tả & Thông tin chi tiết */}
+        <div className="md:w-2/3 w-full">
+          <p className="text-gray-700 mb-6 leading-relaxed">
+            Execrt taion ullamcorper suscipit lobortis nisl ut aliquip ex ea
+            commodo. Non habent claritatem insitamcon quat est usus. Eodem modo
+            typi qui nunc nobis eleifend option congue nihil imperdiet doming.
+            <br />
+            <br />
+            Lorem ipsum nunc vel risus suscipit nulla rutrum vel in ultrices
+            enim. Hendrerit in vulputate velit esse molestie consequat, vel
+            illum dolore eu feugiat nulla facilisis at vero eros et accumsan.
+          </p>
 
-              <button
-                className="absolute bottom-4 right-4 bg-white p-2 rounded-full shadow group-hover:bg-blue-100 transition-colors"
-                onClick={() => navigate(`/doctor/${doc.id}`)}
-              >
-                <AiOutlinePlus className="text-xl text-gray-600" />
-              </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Specialty */}
+            <div>
+              <h3 className="text-lg font-semibold mb-1 text-gray-800">
+                Specialty
+              </h3>
+              <p className="text-gray-700">Cardiology</p>
             </div>
-          ))}
+
+            {/* Degrees */}
+            <div>
+              <h3 className="text-lg font-semibold mb-1 text-gray-800">
+                Degrees
+              </h3>
+              <p className="text-gray-700">M.D. of Medicine</p>
+            </div>
+
+            {/* Training */}
+            <div>
+              <h3 className="text-lg font-semibold mb-1 text-gray-800">
+                Training
+              </h3>
+              <p className="text-gray-700">
+                Graduated from Harvard Medical School, specialized in advanced
+                cardiac care.
+              </p>
+            </div>
+
+            {/* Work Days */}
+            <div>
+              <h3 className="text-lg font-semibold mb-1 text-gray-800">
+                Work Days
+              </h3>
+              <p className="text-gray-700">Mon - Fri (8:00 - 16:00)</p>
+            </div>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default DoctorPage;
+export default DoctorDetail;

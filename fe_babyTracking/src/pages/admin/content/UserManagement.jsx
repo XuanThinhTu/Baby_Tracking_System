@@ -48,6 +48,7 @@ function UserManagement() {
           id: user.id,
           username: `${user.firstName} ${user.lastName}`,
           email: user.email,
+          phone: user.phone,
           password: "******",
           role: user.role,
           status: user.active ? "active" : "inactive",
@@ -82,6 +83,11 @@ function UserManagement() {
       title: "Email",
       dataIndex: "email",
       key: "email",
+    },
+    {
+      title: "Phone number",
+      dataIndex: "phone",
+      key: "phone",
     },
     {
       title: "Password",

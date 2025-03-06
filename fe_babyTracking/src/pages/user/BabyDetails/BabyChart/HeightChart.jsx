@@ -8,15 +8,24 @@ import {
   CartesianGrid,
 } from "recharts";
 import {
+  getBabyGrowthData,
   getBabyInfo,
   getBoyStandardIndex,
   getGirlStandardIndex,
 } from "../../../../services/APIServices";
+import dayjs from "dayjs";
 
-const HeightChart = ({ userData, babyId }) => {
+const HeightChart = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
   const [growthData, setGrowthData] = useState([]);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [userData, setUserData] = useState([]);
+
+  const calculateDays = (birthDate, measuredAt) => {
+    const birth = dayjs(birthDate);
+    const measured = dayjs(measuredAt);
+    return measured.diff(birth, "day"); // Trả về số ngày
+  };
 
   useEffect(() => {
     const fetchBabyInfo = async () => {
@@ -27,8 +36,29 @@ const HeightChart = ({ userData, babyId }) => {
         console.log(error);
       }
     };
+
     fetchBabyInfo();
   }, [babyId]);
+
+  useEffect(() => {
+    const fetchGrowthData = async () => {
+      try {
+        const result = await getBabyGrowthData(babyId);
+
+        const formattedUserData = result.map((item) => ({
+          day: calculateDays(baby.birthDate, item.measuredAt),
+          height: item.height,
+          weight: item.weight,
+        }));
+
+        setUserData(formattedUserData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchGrowthData();
+  }, [baby]);
 
   useEffect(() => {
     const fetchHeightData = async () => {
@@ -80,7 +110,6 @@ const HeightChart = ({ userData, babyId }) => {
           label={{ value: "cm", angle: -90, position: "insideLeft" }}
         />
 
-
         {growthData.length > 0 &&
           Object.keys(growthData[0])
             .slice(1)
@@ -96,10 +125,10 @@ const HeightChart = ({ userData, babyId }) => {
               />
             ))}
 
-        {userData && userData.length > 0 && (
+        {userData.length > 0 && (
           <Line
             type="monotone"
-            dataKey="weight"
+            dataKey="height"
             data={userData}
             stroke="#007bff"
             dot={{ r: 4 }}
@@ -128,9 +157,7 @@ const HeightChart = ({ userData, babyId }) => {
         </div>
 
         {/* Tăng chiều cao chart ở đây */}
-        <div style={{ width: "100%", height: 600 }}>
-          {renderChart()}
-        </div>
+        <div style={{ width: "100%", height: 600 }}>{renderChart()}</div>
 
         <div className="flex justify-center items-center mt-6 text-lg text-purple-500">
           <a
@@ -183,9 +210,7 @@ const HeightChart = ({ userData, babyId }) => {
                 </svg>
               </button>
             </div>
-            <div className="flex-1 p-4">
-              {renderChart()}
-            </div>
+            <div className="flex-1 p-4">{renderChart()}</div>
           </div>
         </div>
       )}

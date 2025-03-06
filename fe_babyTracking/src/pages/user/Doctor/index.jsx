@@ -4,52 +4,9 @@ import { useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../../components/elements/Breadcrumb";
 import { getAllDoctors } from "../../../services/APIServices";
 
-// const doctors = [
-//   {
-//     id: 1,
-//     name: "Julian Sims",
-//     specialty: "Cardiology",
-//     image:
-//       "https://static.vecteezy.com/system/resources/thumbnails/026/375/249/small_2x/ai-generative-portrait-of-confident-male-doctor-in-white-coat-and-stethoscope-standing-with-arms-crossed-and-looking-at-camera-photo.jpg",
-//   },
-//   {
-//     name: "Owen Cox",
-//     specialty: "Cardiology",
-//     image:
-//       "https://img.freepik.com/free-photo/woman-doctor-wearing-lab-coat-with-stethoscope-isolated_1303-29791.jpg",
-//   },
-//   {
-//     id: 2,
-//     name: "Sia Morgan",
-//     specialty: "Cardiology",
-//     image:
-//       "https://static.vecteezy.com/system/resources/thumbnails/028/287/555/small_2x/an-indian-young-female-doctor-isolated-on-green-ai-generated-photo.jpg",
-//   },
-//   {
-//     id: 3,
-//     name: "Andy Grant",
-//     specialty: "Cardiology",
-//     image:
-//       "https://img.freepik.com/free-photo/woman-doctor-wearing-lab-coat-with-stethoscope-isolated_1303-29791.jpg",
-//   },
-//   {
-//     id: 4,
-//     name: "Alice Brown",
-//     specialty: "Neurology",
-//     image:
-//       "https://static.vecteezy.com/system/resources/thumbnails/028/287/555/small_2x/an-indian-young-female-doctor-isolated-on-green-ai-generated-photo.jpg",
-//   },
-//   {
-//     id: 5,
-//     name: "John Doe",
-//     specialty: "Pediatrics",
-//     image:
-//       "https://img.freepik.com/free-photo/woman-doctor-wearing-lab-coat-with-stethoscope-isolated_1303-29791.jpg",
-//   },
-// ];
-
 const DoctorPage = () => {
   const [doctors, setDoctors] = useState([]);
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchAllDoctors = async () => {
       try {
@@ -62,7 +19,6 @@ const DoctorPage = () => {
     fetchAllDoctors();
   }, []);
 
-  console.log(doctors);
   return (
     <>
       <Breadcrumbs headline="Our Doctors" />

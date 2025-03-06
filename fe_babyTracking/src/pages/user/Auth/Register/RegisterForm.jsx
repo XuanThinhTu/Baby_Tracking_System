@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LinkToGoogle from "../Google/LinkToGoogle";
 import axios from "axios";
+import { registerFunction } from "../../../../services/APIServices";
 // import { registerFunction } from "../../../../services/APIServices";
 
 const RegisterForm = () => {
@@ -15,8 +16,6 @@ const RegisterForm = () => {
     address: "",
   });
 
-  const [errorList, setErrorList] = useState([]);
-
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormValues({
@@ -25,33 +24,23 @@ const RegisterForm = () => {
     });
   };
 
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
-  //   try {
-  //     // 1. Gọi API đăng ký
-  //     const res = await registerFunction(formValues);
-
-  //     // 2. Giả sử API trả về token => lưu token
-  //     if (res?.token) {
-  //       sessionStorage.setItem("token", res.token);
-  //       toast.success("Đăng ký thành công!");
-  //       navigate("/my-family");
-  //     } else {
-  //       // Nếu không có token trả về, gọi loginFunction
-  //       const loginRes = await loginFucntion(formValues.email, formValues.password);
-  //       if (loginRes?.token) {
-  //         sessionStorage.setItem("token", loginRes.token);
-  //         toast.success("Đăng ký thành công!");
-  //         navigate("/my-family");
-  //       } else {
-  //         toast.error("Đăng ký xong nhưng không tự động đăng nhập được!");
-  //       }
-  //     }
-  //   } catch (error) {
-  //     toast.error("Có lỗi xảy ra khi đăng ký.");
-  //     console.error(error);
-  //   }
-  // };
+  const handleRegister = async (event) => {
+    event.preventDefault();
+    try {
+      const result = await registerFunction(
+        formValues.email,
+        formValues.password,
+        formValues.firstName,
+        formValues.lastName,
+        formValues.phone,
+        formValues.address
+      );
+      console.log(result);
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="w-full px-10 py-12 rounded-3xl border-solid border-2 border-[rgba(0,0,0,0.1)] shadow-2xl">
@@ -142,6 +131,7 @@ const RegisterForm = () => {
           <button
             type="submit"
             className="py-4 bg-violet-500 rounded-xl text-white font-bold text-lg"
+            onClick={handleRegister}
           >
             Đăng Ký
           </button>
