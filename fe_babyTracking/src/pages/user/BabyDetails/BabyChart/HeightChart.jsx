@@ -59,7 +59,6 @@ const HeightChart = ({ babyId }) => {
 
     fetchGrowthData();
   }, [baby]);
-  console.log(userData);
 
   useEffect(() => {
     const fetchHeightData = async () => {

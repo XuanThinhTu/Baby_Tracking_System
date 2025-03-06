@@ -21,6 +21,35 @@ export const loginFucntion = async (mail, pass) => {
   }
 };
 
+export const registerFunction = async (
+  email,
+  password,
+  firstName,
+  lastName,
+  phone,
+  address
+) => {
+  try {
+    const regisData = {
+      email: email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      phone: phone,
+      address: address,
+    };
+    const result = await axios.post(`${baseUrl}/user/register`, regisData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log(result.data);
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const getUserInformation = async () => {
   try {
     const token = sessionStorage.getItem("token");
