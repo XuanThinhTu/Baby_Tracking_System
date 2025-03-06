@@ -6,7 +6,7 @@ import {
   YAxis,
   ResponsiveContainer,
   CartesianGrid,
-  Brush,
+  Tooltip,
 } from "recharts";
 import {
   getBabyGrowthData,
@@ -18,11 +18,11 @@ import dayjs from "dayjs";
 
 const HeightChart = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
-  const [growthData, setGrowthData] = useState([]); // Dữ liệu chuẩn
-  const [userData, setUserData] = useState([]);     // Dữ liệu của bé
+  const [growthData, setGrowthData] = useState([]); // Dữ liệu chuẩn (SD lines)
+  const [userData, setUserData] = useState([]);     // Dữ liệu bé
   const [isFullScreen, setIsFullScreen] = useState(false);
 
-  // Tính số ngày từ ngày sinh đến ngày đo
+  // Hàm tính số ngày từ ngày sinh
   const calculateDays = (birthDate, measuredAt) => {
     const birth = dayjs(birthDate);
     const measured = dayjs(measuredAt);
@@ -47,12 +47,12 @@ const HeightChart = ({ babyId }) => {
       if (!baby) return;
       try {
         const result = await getBabyGrowthData(babyId);
-        const formattedUserData = result.map((item) => ({
-          day: calculateDays(baby.birthDate, item.measuredAt), // số ngày
+        const formatted = result.map((item) => ({
+          day: calculateDays(baby.birthDate, item.measuredAt),
           height: item.height,
           weight: item.weight,
         }));
-        setUserData(formattedUserData);
+        setUserData(formatted);
       } catch (error) {
         console.log(error);
       }
@@ -70,8 +70,8 @@ const HeightChart = ({ babyId }) => {
             ? await getBoyStandardIndex()
             : await getGirlStandardIndex();
 
-        const formattedData = result?.map((item) => ({
-          day: item.period, // vẫn tính theo ngày
+        const formatted = result?.map((item) => ({
+          day: item.period, // ngày
           SD4neg: item.heightNeg4Sd,
           SD3neg: item.heightNeg3Sd,
           SD2neg: item.heightNeg2Sd,
@@ -82,7 +82,7 @@ const HeightChart = ({ babyId }) => {
           SD3: item.heightPos3Sd,
           SD4: item.heightPos4Sd,
         }));
-        setGrowthData(formattedData);
+        setGrowthData(formatted);
       } catch (error) {
         console.log(error);
       }
@@ -90,54 +90,80 @@ const HeightChart = ({ babyId }) => {
     fetchHeightData();
   }, [baby]);
 
-  // Tính domain X
+  // === Tính domain X ===
+  // Lấy ngày lớn nhất của bé + 60
   const userMaxDay = userData.length
     ? Math.max(...userData.map((d) => d.day))
     : 0;
-  const domainMax = userMaxDay + 60; // Dư 60 ngày (~2 tháng)
+  const domainMax = userMaxDay + 60; // Dư 60 ngày
 
-  // Tạo mảng ticks bội số 30 (1 tháng, 2 tháng...)
-  // => 30 -> "1", 60 -> "2", ...
+  // Tạo mảng tick bội số 30 => hiển thị "tháng"
   const ticks = [];
-  // Bắt đầu từ 30, cứ +30, đến khi >= domainMax
   for (let i = 30; i <= domainMax; i += 30) {
     ticks.push(i);
   }
 
-  // Hàm render chart
+  // === Tính domain Y “center” quanh dữ liệu bé (bỏ qua SD lines) ===
+  let yMin = 0;
+  let yMax = 130; // fallback nếu userData rỗng
+
+  if (userData.length > 0) {
+    const userMin = Math.min(...userData.map((d) => d.height));
+    const userMax = Math.max(...userData.map((d) => d.height));
+    const mid = (userMin + userMax) / 2;
+    let range = userMax - userMin;
+    if (range < 1) range = 1; // tránh chia 0
+
+    // factor=12 => 50..55 => domain ~ [20..80]
+    const factor = 4;
+    const half = (range * factor) / 4;
+
+    yMin = mid - half;
+    yMax = mid + half;
+
+    // Không âm
+    if (yMin < 0) yMin = 0;
+  }
+
+  // Render chart
   const renderChart = () => (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={growthData} margin={{ right: 20 }}>
         <CartesianGrid stroke="#ccc" strokeDasharray="" />
 
+        {/* Trục X */}
         <XAxis
           dataKey="day"
           type="number"
           domain={[0, domainMax]}
-          // scale linear
           scale="linear"
-          // Gán ticks bội số 30
           ticks={ticks}
-          // Format: 30 => "1", 60 => "2", ...
-          tickFormatter={(dayValue) => `${dayValue / 30}`}
-          // Thêm label trục X, nếu muốn
-          label={{
-            value: "Tháng",
-            position: "insideBottomRight",
-            offset: 0,
-          }}
+          tickFormatter={(val) => `${val / 30}`}
+          label={{ value: "Tháng", position: "insideBottomRight", offset: 0 }}
         />
 
+        {/* Trục Y */}
         <YAxis
-          domain={[0, 130]}
-          ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130]}
+          domain={[yMin, yMax]}
           label={{ value: "cm", angle: -90, position: "insideLeft" }}
         />
 
-        {/* Các đường chuẩn (SD lines) */}
+        {/* Tooltip */}
+        <Tooltip
+          labelFormatter={(dayValue) => `Ngày: ${dayValue}`}
+          formatter={(value, name) => {
+            if (name === "height") {
+              return [`${value} cm`, "Chiều cao Bé"];
+            }
+            // SD lines => hiển thị raw
+            return [value, name];
+          }}
+        />
+
+        {/* Đường SD */}
         {growthData.length > 0 &&
           Object.keys(growthData[0])
-            .filter((key) => key !== "day") // Bỏ cột day
+            .filter((key) => key !== "day")
             .map((key, index) => (
               <Line
                 key={key}
@@ -150,7 +176,7 @@ const HeightChart = ({ babyId }) => {
               />
             ))}
 
-        {/* Đường dữ liệu của bé */}
+        {/* Đường dữ liệu bé */}
         {userData.length > 0 && (
           <Line
             type="monotone"
@@ -159,11 +185,9 @@ const HeightChart = ({ babyId }) => {
             stroke="#007bff"
             dot={{ r: 4 }}
             activeDot={{ r: 6 }}
+            isAnimationActive={false}
           />
         )}
-
-        {/* Brush để kéo vùng xem (tùy chọn) */}
-        <Brush dataKey="day" height={30} stroke="#8884d8" />
       </LineChart>
     </ResponsiveContainer>
   );
