@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaCamera, FaTimes, FaCalendarAlt } from "react-icons/fa";
+import { updateBabyProfile } from "../../../services/APIServices";
 
 const EditBabyForm = ({ baby, onClose }) => {
   const [updatedBaby, setUpdatedBaby] = useState({ ...baby });
@@ -15,6 +16,20 @@ const EditBabyForm = ({ baby, onClose }) => {
         setUpdatedBaby({ ...updatedBaby, avatar: reader.result });
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUpdateBabyProfile = async () => {
+    try {
+      const result = await updateBabyProfile(
+        updatedBaby.id,
+        updatedBaby.name,
+        updatedBaby.birthDate,
+        updatedBaby.gender
+      );
+      onClose();
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -106,7 +121,10 @@ const EditBabyForm = ({ baby, onClose }) => {
           </div>
 
           <div className="flex justify-center mt-5">
-            <button className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition">
+            <button
+              className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition"
+              onClick={() => handleUpdateBabyProfile()}
+            >
               Save
             </button>
           </div>

@@ -25,7 +25,7 @@ const MyFamily = () => {
     };
 
     fetchBabies();
-  }, []);
+  }, [babies]);
 
   return (
     <>

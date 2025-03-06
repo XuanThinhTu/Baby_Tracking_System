@@ -1,6 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { getAllDoctors } from "../../../services/APIServices";
 
 const DoctorDetail = () => {
+  const { doctorId } = useParams();
+  const [doctor, setDoctor] = useState(null);
+
+  useEffect(() => {
+    const getDocotorInfo = async () => {
+      try {
+        const doctors = await getAllDoctors();
+        const selectedDoctor = doctors.find(
+          (doc) => doc.id === parseInt(doctorId)
+        );
+        setDoctor(selectedDoctor);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getDocotorInfo();
+  }, []);
+  console.log(doctor);
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Phần hiển thị tổng quan */}
@@ -13,11 +34,11 @@ const DoctorDetail = () => {
             className="w-36 h-36 object-cover rounded-full mb-4"
           />
           <h2 className="text-2xl font-semibold mb-2 text-gray-800">
-            Dr. Julian Sims
+            Dr. {doctor?.firstName} {doctor?.lastName}
           </h2>
           <p className="text-gray-600 text-sm mb-2">Cardiology</p>
-          <p className="text-gray-600 text-sm mb-1">+1 (800) 599-1238</p>
-          <p className="text-blue-600 text-sm mb-4">julian.sims@example.com</p>
+          <p className="text-gray-600 text-sm mb-1">{doctor?.phone}</p>
+          <p className="text-blue-600 text-sm mb-4">{doctor?.email}</p>
           <button className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">
             Book Appointment
           </button>
