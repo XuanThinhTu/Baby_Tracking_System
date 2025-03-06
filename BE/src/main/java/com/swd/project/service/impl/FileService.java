@@ -31,7 +31,6 @@ public class FileService implements IFileService {
 
     @Override
     public void saveDataForUnder5YearsOld(MultipartFile file, boolean isGreaterFiveYearsOld) {
-
         try {
             String fileName = file.getOriginalFilename();
             String dataType = fileName.substring(0, fileName.indexOf("-"));
@@ -41,96 +40,198 @@ public class FileService implements IFileService {
             Sheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rows = sheet.iterator();
 
-            if(!rows.hasNext()){
+            if (!rows.hasNext()) {
                 throw new RuntimeException("File is empty");
             }
-            //Read the header row
+            // Đọc header và ánh xạ các cột
             Row headerRow = rows.next();
             Map<String, Integer> columnIndexMap = new HashMap<>();
-            for (Cell cell: headerRow){
+            for (Cell cell : headerRow) {
                 columnIndexMap.put(cell.getStringCellValue(), cell.getColumnIndex());
             }
-            // Required column names
+            // Các cột cần thiết
             List<String> requiredColumns = Arrays.asList(
-                    "Day", "SD4neg", "SD3neg", "SD2neg", "SD1neg", "SD0", "SD1", "SD2", "SD3", "SD4"
+                    "SD4neg", "SD3neg", "SD2neg", "SD1neg", "SD0", "SD1", "SD2", "SD3", "SD4"
             );
-            //Validate if all required columns exist
-            for(String column : requiredColumns){
-                if(!columnIndexMap.containsKey(column)){
+            // Kiểm tra nếu thiếu cột nào
+            for (String column : requiredColumns) {
+                if (!columnIndexMap.containsKey(column)) {
                     throw new RuntimeException("Missing column: " + column);
                 }
             }
-            List<BmiStandard> bmiStandards = new ArrayList<>();
-            while(rows.hasNext()){
+            List<BmiStandard> bmiStandardsToSave = new ArrayList<>();
+            while (rows.hasNext()) {
                 Row row = rows.next();
-                BmiStandard bmiStandard = new BmiStandard();
-                bmiStandard.setGender(gender);
-                bmiStandard.setPeriod(getIntegerCellValue(row.getCell(isGreaterFiveYearsOld ? columnIndexMap.get("Month") : columnIndexMap.get("Day"))));
-                bmiStandard.setPeriodType(isGreaterFiveYearsOld ? PeriodType.MONTH : PeriodType.DAY);
+
+                // Lấy thông tin period và periodType
+                Integer period = getIntegerCellValue(row.getCell(isGreaterFiveYearsOld ? columnIndexMap.get("Month") : columnIndexMap.get("Day")));
+                PeriodType periodType = isGreaterFiveYearsOld ? PeriodType.MONTH : PeriodType.DAY;
+
+                // Tạo đối tượng tạm thời từ file
+                BmiStandard tempStandard = new BmiStandard();
+                tempStandard.setGender(gender);
+                tempStandard.setPeriod(period);
+                tempStandard.setPeriodType(periodType);
+
+                // Gán các trường theo dataType từ file
                 switch (dataType) {
                     case WEIGHT_FOR_AGE -> {
-                        bmiStandard.setWeightNeg4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4neg"))));
-                        bmiStandard.setWeightNeg3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3neg"))));
-                        bmiStandard.setWeightNeg2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2neg"))));
-                        bmiStandard.setWeightNeg1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1neg"))));
-                        bmiStandard.setWeightMedian(getNumericCellValue(row.getCell(columnIndexMap.get("SD0"))));
-                        bmiStandard.setWeightPos1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1"))));
-                        bmiStandard.setWeightPos2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2"))));
-                        bmiStandard.setWeightPos3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3"))));
-                        bmiStandard.setWeightPos4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4"))));
+                        tempStandard.setWeightNeg4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4neg"))));
+                        tempStandard.setWeightNeg3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3neg"))));
+                        tempStandard.setWeightNeg2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2neg"))));
+                        tempStandard.setWeightNeg1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1neg"))));
+                        tempStandard.setWeightMedian(getNumericCellValue(row.getCell(columnIndexMap.get("SD0"))));
+                        tempStandard.setWeightPos1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1"))));
+                        tempStandard.setWeightPos2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2"))));
+                        tempStandard.setWeightPos3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3"))));
+                        tempStandard.setWeightPos4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4"))));
                     }
                     case LENGTH_HEIGHT_FOR_AGE, HEIGHT_FOR_AGE_5_TO_19 -> {
-                        bmiStandard.setHeightNeg4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4neg"))));
-                        bmiStandard.setHeightNeg3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3neg"))));
-                        bmiStandard.setHeightNeg2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2neg"))));
-                        bmiStandard.setHeightNeg1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1neg"))));
-                        bmiStandard.setHeightMedian(getNumericCellValue(row.getCell(columnIndexMap.get("SD0"))));
-                        bmiStandard.setHeightPos1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1"))));
-                        bmiStandard.setHeightPos2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2"))));
-                        bmiStandard.setHeightPos3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3"))));
-                        bmiStandard.setHeightPos4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4"))));
-                    } case HEAD_CIRCUMFERENCE_FOR_AGE -> {
-                        bmiStandard.setHeadCircumferenceNeg4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4neg"))));
-                        bmiStandard.setHeadCircumferenceNeg3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3neg"))));
-                        bmiStandard.setHeadCircumferenceNeg2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2neg"))));
-                        bmiStandard.setHeadCircumferenceNeg1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1neg"))));
-                        bmiStandard.setHeadCircumferenceMedian(getNumericCellValue(row.getCell(columnIndexMap.get("SD0"))));
-                        bmiStandard.setHeadCircumferencePos1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1"))));
-                        bmiStandard.setHeadCircumferencePos2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2"))));
-                        bmiStandard.setHeadCircumferencePos3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3"))));
-                        bmiStandard.setHeadCircumferencePos4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4"))));
+                        tempStandard.setHeightNeg4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4neg"))));
+                        tempStandard.setHeightNeg3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3neg"))));
+                        tempStandard.setHeightNeg2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2neg"))));
+                        tempStandard.setHeightNeg1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1neg"))));
+                        tempStandard.setHeightMedian(getNumericCellValue(row.getCell(columnIndexMap.get("SD0"))));
+                        tempStandard.setHeightPos1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1"))));
+                        tempStandard.setHeightPos2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2"))));
+                        tempStandard.setHeightPos3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3"))));
+                        tempStandard.setHeightPos4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4"))));
+                    }
+                    case HEAD_CIRCUMFERENCE_FOR_AGE -> {
+                        tempStandard.setHeadCircumferenceNeg4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4neg"))));
+                        tempStandard.setHeadCircumferenceNeg3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3neg"))));
+                        tempStandard.setHeadCircumferenceNeg2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2neg"))));
+                        tempStandard.setHeadCircumferenceNeg1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1neg"))));
+                        tempStandard.setHeadCircumferenceMedian(getNumericCellValue(row.getCell(columnIndexMap.get("SD0"))));
+                        tempStandard.setHeadCircumferencePos1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1"))));
+                        tempStandard.setHeadCircumferencePos2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2"))));
+                        tempStandard.setHeadCircumferencePos3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3"))));
+                        tempStandard.setHeadCircumferencePos4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4"))));
                     }
                     case BMI_FOR_AGE, BMI_FOR_AGE_5_TO_19 -> {
-                        bmiStandard.setBmiNeg4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4neg"))));
-                        bmiStandard.setBmiNeg3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3neg"))));
-                        bmiStandard.setBmiNeg2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2neg"))));
-                        bmiStandard.setBmiNeg1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1neg"))));
-                        bmiStandard.setBmiMedian(getNumericCellValue(row.getCell(columnIndexMap.get("SD0"))));
-                        bmiStandard.setBmiPos1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1"))));
-                        bmiStandard.setBmiPos2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2"))));
-                        bmiStandard.setBmiPos3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3"))));
-                        bmiStandard.setBmiPos4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4"))));
+                        tempStandard.setBmiNeg4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4neg"))));
+                        tempStandard.setBmiNeg3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3neg"))));
+                        tempStandard.setBmiNeg2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2neg"))));
+                        tempStandard.setBmiNeg1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1neg"))));
+                        tempStandard.setBmiMedian(getNumericCellValue(row.getCell(columnIndexMap.get("SD0"))));
+                        tempStandard.setBmiPos1Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD1"))));
+                        tempStandard.setBmiPos2Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD2"))));
+                        tempStandard.setBmiPos3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3"))));
+                        tempStandard.setBmiPos4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4"))));
                     }
+                    default -> throw new RuntimeException("Unknown data type: " + dataType);
                 }
-                bmiStandards.add(bmiStandard);
+
+                // Kiểm tra xem record đã tồn tại chưa dựa vào các trường khóa (gender, period, periodType)
+                Optional<BmiStandard> optionalExisting = bmiStandardsRepository.findByGenderAndPeriodAndPeriodType(gender, period, periodType);
+                if (optionalExisting.isPresent()) {
+                    BmiStandard existingRecord = updateBmiStandardDataIfExist(optionalExisting, dataType, tempStandard);
+                    bmiStandardsToSave.add(existingRecord);
+                } else {
+                    // Nếu record chưa tồn tại thì thêm mới
+                    bmiStandardsToSave.add(tempStandard);
+                }
             }
-            bmiStandardsRepository.saveAll(bmiStandards);
+            bmiStandardsRepository.saveAll(bmiStandardsToSave);
             workbook.close();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Failed to import data: " + e.getMessage());
         }
+    }
+
+    private BmiStandard updateBmiStandardDataIfExist(Optional<BmiStandard> optionalExisting, String dataType, BmiStandard tempStandard) {
+        BmiStandard existingRecord = optionalExisting.get();
+        // Cập nhật các cột theo dataType nếu giá trị hiện tại đang là null
+        if (dataType.equals(WEIGHT_FOR_AGE)) {
+            if(existingRecord.getWeightNeg4Sd() == null)
+                existingRecord.setWeightNeg4Sd(tempStandard.getWeightNeg4Sd());
+            if(existingRecord.getWeightNeg3Sd() == null)
+                existingRecord.setWeightNeg3Sd(tempStandard.getWeightNeg3Sd());
+            if(existingRecord.getWeightNeg2Sd() == null)
+                existingRecord.setWeightNeg2Sd(tempStandard.getWeightNeg2Sd());
+            if(existingRecord.getWeightNeg1Sd() == null)
+                existingRecord.setWeightNeg1Sd(tempStandard.getWeightNeg1Sd());
+            if(existingRecord.getWeightMedian() == null)
+                existingRecord.setWeightMedian(tempStandard.getWeightMedian());
+            if(existingRecord.getWeightPos1Sd() == null)
+                existingRecord.setWeightPos1Sd(tempStandard.getWeightPos1Sd());
+            if(existingRecord.getWeightPos2Sd() == null)
+                existingRecord.setWeightPos2Sd(tempStandard.getWeightPos2Sd());
+            if(existingRecord.getWeightPos3Sd() == null)
+                existingRecord.setWeightPos3Sd(tempStandard.getWeightPos3Sd());
+            if(existingRecord.getWeightPos4Sd() == null)
+                existingRecord.setWeightPos4Sd(tempStandard.getWeightPos4Sd());
+        } else if (dataType.equals(LENGTH_HEIGHT_FOR_AGE) || dataType.equals(HEIGHT_FOR_AGE_5_TO_19)) {
+            if(existingRecord.getHeightNeg4Sd() == null)
+                existingRecord.setHeightNeg4Sd(tempStandard.getHeightNeg4Sd());
+            if(existingRecord.getHeightNeg3Sd() == null)
+                existingRecord.setHeightNeg3Sd(tempStandard.getHeightNeg3Sd());
+            if(existingRecord.getHeightNeg2Sd() == null)
+                existingRecord.setHeightNeg2Sd(tempStandard.getHeightNeg2Sd());
+            if(existingRecord.getHeightNeg1Sd() == null)
+                existingRecord.setHeightNeg1Sd(tempStandard.getHeightNeg1Sd());
+            if(existingRecord.getHeightMedian() == null)
+                existingRecord.setHeightMedian(tempStandard.getHeightMedian());
+            if(existingRecord.getHeightPos1Sd() == null)
+                existingRecord.setHeightPos1Sd(tempStandard.getHeightPos1Sd());
+            if(existingRecord.getHeightPos2Sd() == null)
+                existingRecord.setHeightPos2Sd(tempStandard.getHeightPos2Sd());
+            if(existingRecord.getHeightPos3Sd() == null)
+                existingRecord.setHeightPos3Sd(tempStandard.getHeightPos3Sd());
+            if(existingRecord.getHeightPos4Sd() == null)
+                existingRecord.setHeightPos4Sd(tempStandard.getHeightPos4Sd());
+        } else if (dataType.equals(HEAD_CIRCUMFERENCE_FOR_AGE)) {
+            if(existingRecord.getHeadCircumferenceNeg4Sd() == null)
+                existingRecord.setHeadCircumferenceNeg4Sd(tempStandard.getHeadCircumferenceNeg4Sd());
+            if(existingRecord.getHeadCircumferenceNeg3Sd() == null)
+                existingRecord.setHeadCircumferenceNeg3Sd(tempStandard.getHeadCircumferenceNeg3Sd());
+            if(existingRecord.getHeadCircumferenceNeg2Sd() == null)
+                existingRecord.setHeadCircumferenceNeg2Sd(tempStandard.getHeadCircumferenceNeg2Sd());
+            if(existingRecord.getHeadCircumferenceNeg1Sd() == null)
+                existingRecord.setHeadCircumferenceNeg1Sd(tempStandard.getHeadCircumferenceNeg1Sd());
+            if(existingRecord.getHeadCircumferenceMedian() == null)
+                existingRecord.setHeadCircumferenceMedian(tempStandard.getHeadCircumferenceMedian());
+            if(existingRecord.getHeadCircumferencePos1Sd() == null)
+                existingRecord.setHeadCircumferencePos1Sd(tempStandard.getHeadCircumferencePos1Sd());
+            if(existingRecord.getHeadCircumferencePos2Sd() == null)
+                existingRecord.setHeadCircumferencePos2Sd(tempStandard.getHeadCircumferencePos2Sd());
+            if(existingRecord.getHeadCircumferencePos3Sd() == null)
+                existingRecord.setHeadCircumferencePos3Sd(tempStandard.getHeadCircumferencePos3Sd());
+            if(existingRecord.getHeadCircumferencePos4Sd() == null)
+                existingRecord.setHeadCircumferencePos4Sd(tempStandard.getHeadCircumferencePos4Sd());
+        } else if (dataType.equals(BMI_FOR_AGE) || dataType.equals(BMI_FOR_AGE_5_TO_19)) {
+            if(existingRecord.getBmiNeg4Sd() == null)
+                existingRecord.setBmiNeg4Sd(tempStandard.getBmiNeg4Sd());
+            if(existingRecord.getBmiNeg3Sd() == null)
+                existingRecord.setBmiNeg3Sd(tempStandard.getBmiNeg3Sd());
+            if(existingRecord.getBmiNeg2Sd() == null)
+                existingRecord.setBmiNeg2Sd(tempStandard.getBmiNeg2Sd());
+            if(existingRecord.getBmiNeg1Sd() == null)
+                existingRecord.setBmiNeg1Sd(tempStandard.getBmiNeg1Sd());
+            if(existingRecord.getBmiMedian() == null)
+                existingRecord.setBmiMedian(tempStandard.getBmiMedian());
+            if(existingRecord.getBmiPos1Sd() == null)
+                existingRecord.setBmiPos1Sd(tempStandard.getBmiPos1Sd());
+            if(existingRecord.getBmiPos2Sd() == null)
+                existingRecord.setBmiPos2Sd(tempStandard.getBmiPos2Sd());
+            if(existingRecord.getBmiPos3Sd() == null)
+                existingRecord.setBmiPos3Sd(tempStandard.getBmiPos3Sd());
+            if(existingRecord.getBmiPos4Sd() == null)
+                existingRecord.setBmiPos4Sd(tempStandard.getBmiPos4Sd());
+        }
+        return existingRecord;
     }
 
     private Integer getIntegerCellValue(Cell cell) {
         if (cell == null) return null;
         if (cell.getCellType() == CellType.NUMERIC) {
-            return (int) cell.getNumericCellValue(); // Convert double to int
+            return (int) cell.getNumericCellValue();
         } else if (cell.getCellType() == CellType.STRING) {
             try {
-                return Integer.parseInt(cell.getStringCellValue().trim()); // Convert string to int
+                return Integer.parseInt(cell.getStringCellValue().trim());
             } catch (NumberFormatException e) {
-                return null; // Handle invalid values
+                return null;
             }
         }
         return null;
