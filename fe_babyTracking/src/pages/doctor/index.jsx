@@ -8,7 +8,7 @@ import DoctorProfile from "./DoctorProfile/DoctorProfile";
 import ConsultationRequests from "./ConsultationRequests/ConsultationRequests";
 import BookingManagement from "./BookingManagement/BookingManagement";
 import BlogCreation from "./BlogCreation/BlogCreation";
-import WorkSchedule from "./WorkSchedule/WorkSchedule";
+import WorkSchedule from "./WorkSchedule.jsx/WorkSchedule";
 
 export default function DoctorDashboard() {
     // State dropdown header

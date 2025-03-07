@@ -1,6 +1,6 @@
 import React from "react";
 
-const ConsultationRequests = () => {
+const ConsultationForm = () => {
     // Mock data ví dụ
     const requests = [
         {
@@ -43,4 +43,4 @@ const ConsultationRequests = () => {
     );
 };
 
-export default ConsultationRequests;
+export default ConsultationForm;

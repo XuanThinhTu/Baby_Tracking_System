@@ -16,7 +16,7 @@ import MainFooter from "../components/Footer";
 import MyFamily from "../pages/user/MyFamily";
 import BabyOverview from "../pages/user/BabyDetails";
 import AddBabyInfo from "../pages/user/BabyDetails/Info/AddBabyInfo";
-import ConsultationRequest from "../pages/user/BabyDetails/Consultation/ConsultationForm";
+import ConsultationRequest from "../pages/user/BabyDetails/Consultation/index";
 import BookingPage from "../pages/user/Calendar";
 import DoctorPage from "../pages/user/Doctor";
 import DoctorDetail from "../pages/user/Doctor/DoctorDetail";
