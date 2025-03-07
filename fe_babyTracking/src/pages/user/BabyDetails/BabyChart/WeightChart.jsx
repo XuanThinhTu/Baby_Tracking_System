@@ -6,7 +6,7 @@ import {
   YAxis,
   ResponsiveContainer,
   CartesianGrid,
-  Brush,
+  Tooltip,
 } from "recharts";
 import {
   getBabyGrowthData,
@@ -18,9 +18,10 @@ import dayjs from "dayjs";
 
 const WeightChart = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
-  const [growthData, setGrowthData] = useState([]);
-  const [userData, setUserData] = useState([]);
+  const [growthData, setGrowthData] = useState([]); // Dữ liệu chuẩn (SD lines)
+  const [userData, setUserData] = useState([]);     // Dữ liệu bé
 
+  // Tính ngày so với birthDate
   const calculateDays = (birthDate, measuredAt) => {
     const birth = dayjs(birthDate);
     const measured = dayjs(measuredAt);
@@ -40,7 +41,7 @@ const WeightChart = ({ babyId }) => {
     fetchBabyInfo();
   }, [babyId]);
 
-  // Lấy dữ liệu chuẩn (weight) theo giới tính
+  // Lấy dữ liệu thực (weight) của bé
   useEffect(() => {
     const fetchGrowthData = async () => {
       if (!baby) return;
@@ -48,10 +49,9 @@ const WeightChart = ({ babyId }) => {
         const result = await getBabyGrowthData(babyId);
         const formattedData = result.map((item) => ({
           day: calculateDays(baby.birthDate, item.measuredAt),
-          height: item.height,
           weight: item.weight,
+          height: item.height,
         }));
-
         setUserData(formattedData);
       } catch (error) {
         console.log(error);
@@ -60,6 +60,7 @@ const WeightChart = ({ babyId }) => {
     fetchGrowthData();
   }, [baby, babyId]);
 
+  // Lấy dữ liệu chuẩn (weight)
   useEffect(() => {
     const fetchWeightData = async () => {
       if (!baby) return;
@@ -69,9 +70,8 @@ const WeightChart = ({ babyId }) => {
             ? await getBoyStandardIndex()
             : await getGirlStandardIndex();
 
-        // Format data: { day, SD4neg, SD3neg, ... SD4 }
         const formattedData = result.map((item) => ({
-          day: item.period, // ngày
+          day: item.period,
           SD4neg: item.weightNeg4Sd,
           SD3neg: item.weightNeg3Sd,
           SD2neg: item.weightNeg2Sd,
@@ -91,17 +91,36 @@ const WeightChart = ({ babyId }) => {
     fetchWeightData();
   }, [baby]);
 
-  // Xác định domain X quanh data user (nếu có)
-  const userMaxDay = userData && userData.length
+  // === Tính domain X ===
+  const userMaxDay = userData.length
     ? Math.max(...userData.map((d) => d.day))
     : 0;
-  // Cho dư 60 ngày (~2 tháng)
-  const domainMax = userMaxDay + 60;
+  const domainMax = userMaxDay + 60; // Dư 60 ngày
 
-  // Tạo mảng tick bội số 30 => hiển thị tháng
+  // Tạo mảng tick bội số 30 => hiển thị "tháng"
   const ticks = [];
   for (let i = 30; i <= domainMax; i += 30) {
     ticks.push(i);
+  }
+
+  // === Tính domain Y “center” quanh dữ liệu bé (bỏ qua SD lines) ===
+  let yMin = 0;
+  let yMax = 30; // fallback nếu userData rỗng
+
+  if (userData.length > 0) {
+    const userMin = Math.min(...userData.map((d) => d.weight));
+    const userMax = Math.max(...userData.map((d) => d.weight));
+    const mid = (userMin + userMax) / 2;
+    let range = userMax - userMin;
+    if (range < 1) range = 1; // tránh chia 0
+
+    // factor=6 => domain rộng hơn
+    const factor = 6;
+    const half = (range * factor) / 2;
+
+    yMin = mid - half;
+    if (yMin < 0) yMin = 0;
+    yMax = mid + half;
   }
 
   // Render chart
@@ -110,27 +129,36 @@ const WeightChart = ({ babyId }) => {
       <LineChart data={growthData} margin={{ right: 20 }}>
         <CartesianGrid stroke="#ccc" strokeDasharray="" />
 
+        {/* Trục X */}
         <XAxis
           dataKey="day"
           type="number"
           domain={[0, domainMax]}
           scale="linear"
           ticks={ticks}
-          tickFormatter={(dayValue) => `${dayValue / 30}`} // 30 => "1", 60 => "2", ...
-          label={{
-            value: "Tháng",
-            position: "insideBottomRight",
-            offset: 0,
-          }}
+          tickFormatter={(val) => `${val / 30}`}
+          label={{ value: "Tháng", position: "insideBottomRight", offset: 0 }}
         />
 
+        {/* Trục Y */}
         <YAxis
-          domain={[0, 30]} // Giả sử hiển thị đến 30 kg
-          ticks={[0, 5, 10, 15, 20, 25, 30]}
+          domain={[yMin, yMax]}
           label={{ value: "kg", angle: -90, position: "insideLeft" }}
         />
 
-        {/* Các đường chuẩn (SD lines) */}
+        {/* Tooltip */}
+        <Tooltip
+          labelFormatter={(dayValue) => `Ngày: ${dayValue}`}
+          formatter={(value, name) => {
+            if (name === "weight") {
+              return [`${value} kg`, "Cân nặng Bé"];
+            }
+            // SD lines => hiển thị raw
+            return [value, name];
+          }}
+        />
+
+        {/* Đường SD */}
         {growthData.length > 0 &&
           Object.keys(growthData[0])
             .filter((key) => key !== "day")
@@ -146,8 +174,8 @@ const WeightChart = ({ babyId }) => {
               />
             ))}
 
-        {/* Đường dữ liệu thực của bé */}
-        {userData && userData.length > 0 && (
+        {/* Đường dữ liệu Bé */}
+        {userData.length > 0 && (
           <Line
             type="monotone"
             dataKey="weight"
@@ -155,91 +183,35 @@ const WeightChart = ({ babyId }) => {
             stroke="#007bff"
             dot={{ r: 4 }}
             activeDot={{ r: 6 }}
+            isAnimationActive={false}
           />
         )}
-
-        {/* Brush để kéo vùng xem */}
-        <Brush dataKey="day" height={30} stroke="#8884d8" />
       </LineChart>
     </ResponsiveContainer>
   );
 
   return (
-    <div>
-      <div className="w-full px-4 py-12">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-2xl font-bold">Cân nặng</h3>
-          <a
-            href="#"
-            className="text-blue-500 text-lg hover:underline"
-            onClick={(e) => {
-              e.preventDefault();
-              setIsFullScreen(true);
-            }}
-          >
-            Chỉ số tiêu chuẩn
-          </a>
-        </div>
-
-        {/* Chart container */}
-        <div style={{ width: "100%", height: 600 }}>{renderChart()}</div>
-
-        {/* Link Xem chi tiết / Xem toàn màn hình */}
-        <div className="flex justify-center items-center mt-6 text-lg text-purple-500">
-          <a
-            href="#"
-            className="hover:underline flex items-center"
-            onClick={(e) => {
-              e.preventDefault();
-              setIsFullScreen(true);
-            }}
-          >
-            Xem chi tiết <span className="ml-1">&gt;</span>
-          </a>
-          <span className="mx-4 border-l border-gray-300 h-5"></span>
-          <a
-            href="#"
-            className="hover:underline flex items-center"
-            onClick={(e) => {
-              e.preventDefault();
-              setIsFullScreen(true);
-            }}
-          >
-            Xem toàn màn hình <span className="ml-1">&gt;</span>
-          </a>
-        </div>
+    <div className="w-full px-4 py-12">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-2xl font-bold">Cân nặng</h3>
+        <a href="#" className="text-blue-500 text-lg hover:underline">
+          Chỉ số tiêu chuẩn
+        </a>
       </div>
 
-      {/* Modal toàn màn hình */}
-      {isFullScreen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
-          <div className="bg-white w-full h-full flex flex-col">
-            <div className="relative border-b p-4 flex items-center justify-center">
-              <span className="font-bold text-lg">Biểu đồ Cân Nặng</span>
-              <button
-                className="absolute right-4 text-gray-600 hover:text-gray-800"
-                onClick={() => setIsFullScreen(false)}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 fill-current"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 9.293l4.646-4.647a.5.5 0 01.708.708L10.707 
-                    10l4.647 4.646a.5.5 0 01-.708.708L10 10.707l-4.646 
-                    4.647a.5.5 0 01-.708-.708L9.293 10 4.646 
-                    5.354a.5.5 0 01.708-.708L10 9.293z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div className="flex-1 p-4">{renderChart()}</div>
-          </div>
-        </div>
-      )}
+      {/* Chart container */}
+      <div style={{ width: "100%", height: 600 }}>{renderChart()}</div>
+
+      {/* Link Xem chi tiết / Xem toàn màn hình */}
+      <div className="flex justify-center items-center mt-6 text-lg text-purple-500">
+        <a href="#" className="hover:underline flex items-center">
+          Xem chi tiết <span className="ml-1">&gt;</span>
+        </a>
+        <span className="mx-4 border-l border-gray-300 h-5"></span>
+        <a href="#" className="hover:underline flex items-center">
+          Xem toàn màn hình <span className="ml-1">&gt;</span>
+        </a>
+      </div>
     </div>
   );
 };
