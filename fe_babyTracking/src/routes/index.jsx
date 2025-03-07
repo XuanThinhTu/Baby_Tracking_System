@@ -16,10 +16,11 @@ import MainFooter from "../components/Footer";
 import MyFamily from "../pages/user/MyFamily";
 import BabyOverview from "../pages/user/BabyDetails";
 import AddBabyInfo from "../pages/user/BabyDetails/Info/AddBabyInfo";
-import ConsultationRequest from "../pages/user/BabyDetails/Consultation/ConsultationRequest";
+import ConsultationRequest from "../pages/user/BabyDetails/Consultation/ConsultationForm";
 import BookingPage from "../pages/user/Calendar";
 import DoctorPage from "../pages/user/Doctor";
 import DoctorDetail from "../pages/user/Doctor/DoctorDetail";
+import DoctorDashboard from "../pages/doctor";
 
 function UserLayout() {
   const location = useLocation();
@@ -81,12 +82,24 @@ function AdminLayout() {
     </div>
   );
 }
+
+function DoctorLayout() {
+  return (
+    <div className="w-full min-h-screen bg-gray-100">
+      <Routes>
+        <Route path="/" element={<DoctorDashboard />} />
+      </Routes>
+    </div>
+  );
+}
+
 function AppRouter() {
   return (
     <Router>
       <Routes>
         <Route path="/*" element={<UserLayout />} />
         <Route path="/admin" element={<AdminLayout />} />
+        <Route path="/doctor-dashboard" element={<DoctorLayout />} />
       </Routes>
     </Router>
   );

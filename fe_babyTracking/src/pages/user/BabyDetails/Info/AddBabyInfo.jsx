@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { addBabyGrowthData } from "../../../../services/APIServices";
+import {
+  addBabyGrowthData,
+  getBabyInfo,
+} from "../../../../services/APIServices";
 
 const AddBabyInfo = () => {
   const { babyId } = useParams();
   const navigate = useNavigate();
+  const [baby, setBaby] = useState(null);
   const [babyData, setBabyData] = useState({
     weight: "",
     height: "",
@@ -15,6 +19,18 @@ const AddBabyInfo = () => {
   const handleChange = (e) => {
     setBabyData({ ...babyData, [e.target.name]: e.target.value });
   };
+
+  useEffect(() => {
+    const fetchBabyInfo = async () => {
+      try {
+        const result = await getBabyInfo(babyId);
+        setBaby(result);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchBabyInfo();
+  }, []);
 
   const handleAddGrowthData = async (e) => {
     e.preventDefault();
@@ -65,7 +81,9 @@ const AddBabyInfo = () => {
                 alt="Baby Avatar"
                 className="w-12 h-12 rounded-full mr-4"
               />
-              <span className="text-gray-800 font-medium text-lg">Moon</span>
+              <span className="text-gray-800 font-medium text-lg">
+                {baby.name}
+              </span>
             </div>
           </div>
 

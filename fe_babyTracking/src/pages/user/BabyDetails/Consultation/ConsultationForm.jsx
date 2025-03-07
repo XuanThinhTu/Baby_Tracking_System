@@ -1,7 +1,7 @@
 import Breadcrumbs from "../../../../components/elements/Breadcrumb";
 import React, { useState } from "react";
 
-const ConsultationRequest = () => {
+const ConsultationForm = () => {
     // Bỏ các trường babyName, birthDate, gender khỏi state nếu không còn dùng
     const [formData, setFormData] = useState({
         weight: "",
@@ -149,4 +149,4 @@ const ConsultationRequest = () => {
     );
 };
 
-export default ConsultationRequest;
+export default ConsultationForm;

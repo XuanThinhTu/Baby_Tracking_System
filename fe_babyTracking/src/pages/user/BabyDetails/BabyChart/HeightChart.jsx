@@ -6,6 +6,7 @@ import {
   YAxis,
   ResponsiveContainer,
   CartesianGrid,
+  Tooltip,
 } from "recharts";
 import {
   getBabyGrowthData,
@@ -17,14 +18,15 @@ import dayjs from "dayjs";
 
 const HeightChart = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
-  const [growthData, setGrowthData] = useState([]);
+  const [growthData, setGrowthData] = useState([]); // Dữ liệu chuẩn (SD lines)
+  const [userData, setUserData] = useState([]);     // Dữ liệu bé
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [userData, setUserData] = useState([]);
 
+  // Hàm tính số ngày từ ngày sinh
   const calculateDays = (birthDate, measuredAt) => {
     const birth = dayjs(birthDate);
     const measured = dayjs(measuredAt);
-    return measured.diff(birth, "day"); // Trả về số ngày
+    return measured.diff(birth, "day");
   };
 
   useEffect(() => {
@@ -36,41 +38,40 @@ const HeightChart = ({ babyId }) => {
         console.log(error);
       }
     };
-
     fetchBabyInfo();
   }, [babyId]);
 
+  // Lấy dữ liệu thực của bé
   useEffect(() => {
     const fetchGrowthData = async () => {
+      if (!baby) return;
       try {
         const result = await getBabyGrowthData(babyId);
-
-        const formattedUserData = result.map((item) => ({
+        const formatted = result.map((item) => ({
           day: calculateDays(baby.birthDate, item.measuredAt),
           height: item.height,
           weight: item.weight,
         }));
-
-        setUserData(formattedUserData);
+        setUserData(formatted);
       } catch (error) {
         console.log(error);
       }
     };
-
     fetchGrowthData();
-  }, [baby]);
+  }, [baby, babyId]);
 
+  // Lấy dữ liệu chuẩn
   useEffect(() => {
     const fetchHeightData = async () => {
+      if (!baby) return;
       try {
-        if (!baby) return;
         const result =
-          baby?.gender === "Boy"
+          baby.gender === "Boy"
             ? await getBoyStandardIndex()
             : await getGirlStandardIndex();
 
-        const formattedData = result?.map((item) => ({
-          day: item.period,
+        const formatted = result?.map((item) => ({
+          day: item.period, // ngày
           SD4neg: item.heightNeg4Sd,
           SD3neg: item.heightNeg3Sd,
           SD2neg: item.heightNeg2Sd,
@@ -81,8 +82,7 @@ const HeightChart = ({ babyId }) => {
           SD3: item.heightPos3Sd,
           SD4: item.heightPos4Sd,
         }));
-
-        setGrowthData(formattedData);
+        setGrowthData(formatted);
       } catch (error) {
         console.log(error);
       }
@@ -90,29 +90,80 @@ const HeightChart = ({ babyId }) => {
     fetchHeightData();
   }, [baby]);
 
+  // === Tính domain X ===
+  // Lấy ngày lớn nhất của bé + 60
+  const userMaxDay = userData.length
+    ? Math.max(...userData.map((d) => d.day))
+    : 0;
+  const domainMax = userMaxDay + 60; // Dư 60 ngày
+
+  // Tạo mảng tick bội số 30 => hiển thị "tháng"
+  const ticks = [];
+  for (let i = 30; i <= domainMax; i += 30) {
+    ticks.push(i);
+  }
+
+  // === Tính domain Y “center” quanh dữ liệu bé (bỏ qua SD lines) ===
+  let yMin = 0;
+  let yMax = 130; // fallback nếu userData rỗng
+
+  if (userData.length > 0) {
+    const userMin = Math.min(...userData.map((d) => d.height));
+    const userMax = Math.max(...userData.map((d) => d.height));
+    const mid = (userMin + userMax) / 2;
+    let range = userMax - userMin;
+    if (range < 1) range = 1; // tránh chia 0
+
+    // factor=12 => 50..55 => domain ~ [20..80]
+    const factor = 4;
+    const half = (range * factor) / 4;
+
+    yMin = mid - half;
+    yMax = mid + half;
+
+    // Không âm
+    if (yMin < 0) yMin = 0;
+  }
+
+  // Render chart
   const renderChart = () => (
     <ResponsiveContainer width="100%" height="100%">
-      <LineChart data={growthData}>
+      <LineChart data={growthData} margin={{ right: 20 }}>
         <CartesianGrid stroke="#ccc" strokeDasharray="" />
 
+        {/* Trục X */}
         <XAxis
           dataKey="day"
           type="number"
+          domain={[0, domainMax]}
           scale="linear"
-          domain={[0, "dataMax"]}
-          tickFormatter={(dayValue) => `${(dayValue / 365).toFixed(1)} năm`}
+          ticks={ticks}
+          tickFormatter={(val) => `${val / 30}`}
+          label={{ value: "Tháng", position: "insideBottomRight", offset: 0 }}
         />
 
+        {/* Trục Y */}
         <YAxis
-          domain={[0, 130]}
-          // Quy định rõ ràng các vị trí tick
-          ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130]}
+          domain={[yMin, yMax]}
           label={{ value: "cm", angle: -90, position: "insideLeft" }}
         />
 
+        {/* Tooltip */}
+        <Tooltip
+          labelFormatter={(dayValue) => `Ngày: ${dayValue}`}
+          formatter={(value, name) => {
+            if (name === "height") {
+              return [`${value} cm`, "Chiều cao Bé"];
+            }
+            // SD lines => hiển thị raw
+            return [value, name];
+          }}
+        />
+
+        {/* Đường SD */}
         {growthData.length > 0 &&
           Object.keys(growthData[0])
-            .slice(1)
+            .filter((key) => key !== "day")
             .map((key, index) => (
               <Line
                 key={key}
@@ -125,6 +176,7 @@ const HeightChart = ({ babyId }) => {
               />
             ))}
 
+        {/* Đường dữ liệu bé */}
         {userData.length > 0 && (
           <Line
             type="monotone"
@@ -133,6 +185,7 @@ const HeightChart = ({ babyId }) => {
             stroke="#007bff"
             dot={{ r: 4 }}
             activeDot={{ r: 6 }}
+            isAnimationActive={false}
           />
         )}
       </LineChart>
@@ -156,7 +209,7 @@ const HeightChart = ({ babyId }) => {
           </a>
         </div>
 
-        {/* Tăng chiều cao chart ở đây */}
+        {/* Chart */}
         <div style={{ width: "100%", height: 600 }}>{renderChart()}</div>
 
         <div className="flex justify-center items-center mt-6 text-lg text-purple-500">
@@ -202,9 +255,9 @@ const HeightChart = ({ babyId }) => {
                   <path
                     fillRule="evenodd"
                     d="M10 9.293l4.646-4.647a.5.5 0 01.708.708L10.707 
-                    10l4.647 4.646a.5.5 0 01-.708.708L10 10.707l-4.646 
-                    4.647a.5.5 0 01-.708-.708L9.293 10 4.646 
-                    5.354a.5.5 0 01.708-.708L10 9.293z"
+                      10l4.647 4.646a.5.5 0 01-.708.708L10 10.707l-4.646 
+                      4.647a.5.5 0 01-.708-.708L9.293 10 4.646 
+                      5.354a.5.5 0 01.708-.708L10 9.293z"
                     clipRule="evenodd"
                   />
                 </svg>
