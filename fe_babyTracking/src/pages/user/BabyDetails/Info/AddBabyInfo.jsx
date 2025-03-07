@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { addBabyGrowthData } from "../../../../services/APIServices";
 
@@ -15,6 +15,11 @@ const AddBabyInfo = () => {
   const handleChange = (e) => {
     setBabyData({ ...babyData, [e.target.name]: e.target.value });
   };
+
+  useEffect(() => {
+    const fetchBabyInfo = async () => {};
+    fetchBabyInfo();
+  }, [babyId]);
 
   const handleAddGrowthData = async (e) => {
     e.preventDefault();
