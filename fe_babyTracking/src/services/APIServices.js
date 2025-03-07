@@ -1,4 +1,5 @@
 import axios from "axios";
+import dayjs from "dayjs";
 
 const token = sessionStorage.getItem("token");
 const userId = sessionStorage.getItem("userId");
@@ -196,6 +197,38 @@ export const getAllDoctors = async () => {
 export const getAllUserAccounts = async () => {
   try {
     const result = await axios.get(`${baseUrl}/user/admin/getAll`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getAllSlotTimes = async () => {
+  try {
+    const result = await axios(`${baseUrl}/slot-time/all`);
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const addNewSlotTimes = async (startTime, endTime) => {
+  try {
+    const slots = await getAllSlotTimes();
+    const isDup = slots.some(
+      (slot) => dayjs(slot.startTime, "HH:mm:ss").format("HH:mm") === startTime
+    );
+    if (isDup) return;
+
+    const data = {
+      startTime: startTime,
+      endTime: endTime,
+    };
+    const result = await axios.post(`${baseUrl}/slot-time/add`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
