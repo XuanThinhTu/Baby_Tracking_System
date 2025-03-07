@@ -13,6 +13,7 @@ export default function DoctorSidebar({ activeTab, setActiveTab }) {
         { id: "consultation", label: "Consultation Request", icon: ChatAlt2Icon },
         { id: "booking", label: "Booking Management", icon: CalendarIcon },
         { id: "blog", label: "Blog Creation", icon: PencilAltIcon },
+        { id: "workSchedule", label: "Work Schedule", icon: CalendarIcon }
     ];
 
     return (

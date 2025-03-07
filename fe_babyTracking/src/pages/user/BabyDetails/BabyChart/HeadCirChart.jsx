@@ -6,7 +6,7 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  Legend,
+  CartesianGrid,
 } from "recharts";
 import {
   getBabyGrowthData,
@@ -16,30 +16,19 @@ import {
 } from "../../../../services/APIServices";
 import dayjs from "dayjs";
 
-// Nhóm màu mới
-const colorMap = {
-  SD4neg: "#FF0000", // Đỏ - Nhóm SD1neg - SD4neg (Ngưỡng dưới)
-  SD3neg: "#FF0000",
-  SD2neg: "#FF0000",
-  SD1neg: "#FF0000",
-  SD0: "#008000", // Xanh lá - Ngưỡng trung bình (SD0)
-  SD1: "#1E90FF", // Xanh dương - Nhóm SD1 - SD4 (Ngưỡng trên)
-  SD2: "#1E90FF",
-  SD3: "#1E90FF",
-  SD4: "#1E90FF",
-};
-
 const HeadCirChart = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
-  const [userData, setUserData] = useState([]);
-  const [growthData, setGrowthData] = useState([]);
+  const [growthData, setGrowthData] = useState([]); // SD lines
+  const [userData, setUserData] = useState([]);     // data bé
 
+  // Lấy ngày (so với birthDate)
   const calculateDays = (birthDate, measuredAt) => {
     const birth = dayjs(birthDate);
     const measured = dayjs(measuredAt);
     return measured.diff(birth, "day");
   };
 
+  // Lấy thông tin bé
   useEffect(() => {
     const fetchBabyInfo = async () => {
       try {
@@ -50,27 +39,29 @@ const HeadCirChart = ({ babyId }) => {
       }
     };
     fetchBabyInfo();
-  }, []);
+  }, [babyId]);
 
+  // Lấy dữ liệu thực bé (headCircumference)
   useEffect(() => {
-    const fecthGrowthData = async () => {
+    const fetchGrowthData = async () => {
       if (!baby) return;
       try {
         const result = await getBabyGrowthData(babyId);
-        console.log(result);
-        const formattedData = result.map((item) => ({
-          day: calculateDays(baby.birthDate, item.measureAt),
+        // Thay measureAt nếu API là measureAt, 
+        // hoặc item.measuredAt nếu đó là field chuẩn
+        const formatted = result.map((item) => ({
+          day: calculateDays(baby.birthDate, item.measuredAt),
           headCir: item.headCircumference,
         }));
-
-        setUserData(formattedData);
+        setUserData(formatted);
       } catch (error) {
         console.log(error);
       }
     };
-    fecthGrowthData();
+    fetchGrowthData();
   }, [baby, babyId]);
 
+  // Lấy dữ liệu chuẩn (headCircumference)
   useEffect(() => {
     const fetchHeadCirData = async () => {
       if (!baby) return;
@@ -80,7 +71,7 @@ const HeadCirChart = ({ babyId }) => {
             ? await getBoyStandardIndex()
             : await getGirlStandardIndex();
 
-        const formattedData = result.map((item) => ({
+        const formatted = result.map((item) => ({
           day: item.period,
           SD4neg: item.headCircumferenceNeg4Sd,
           SD3neg: item.headCircumferenceNeg3Sd,
@@ -92,8 +83,7 @@ const HeadCirChart = ({ babyId }) => {
           SD3: item.headCircumferencePos3Sd,
           SD4: item.headCircumferencePos4Sd,
         }));
-
-        setGrowthData(formattedData);
+        setGrowthData(formatted);
       } catch (error) {
         console.log(error);
       }
@@ -101,9 +91,107 @@ const HeadCirChart = ({ babyId }) => {
     fetchHeadCirData();
   }, [baby]);
 
+  // === Tính domain X ===
+  const userMaxDay = userData.length
+    ? Math.max(...userData.map((d) => d.day))
+    : 0;
+  const domainMax = userMaxDay + 60; // Dư 60 ngày
+
+  // Tạo mảng tick bội số 30 => hiển thị "tháng"
+  const ticks = [];
+  for (let i = 30; i <= domainMax; i += 30) {
+    ticks.push(i);
+  }
+
+  // === Tính domain Y “center” quanh userData (bỏ qua SD lines) ===
+  let yMin = 0;
+  let yMax = 60; // fallback nếu userData rỗng
+
+  if (userData.length > 0) {
+    const userMin = Math.min(...userData.map((d) => d.headCir));
+    const userMax = Math.max(...userData.map((d) => d.headCir));
+    const mid = (userMin + userMax) / 2;
+    let range = userMax - userMin;
+    if (range < 1) range = 1; // tránh chia 0
+
+    // Tăng factor => domain rộng hơn
+    const factor = 6; // tuỳ ý
+    const half = (range * factor) / 2;
+
+    yMin = mid - half;
+    if (yMin < 0) yMin = 0;
+    yMax = mid + half;
+  }
+
+  // Render chart
+  const renderChart = () => (
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart data={growthData} margin={{ right: 20 }}>
+        <CartesianGrid stroke="#ccc" strokeDasharray="" />
+
+        {/* Trục X */}
+        <XAxis
+          dataKey="day"
+          type="number"
+          domain={[0, domainMax]}
+          scale="linear"
+          ticks={ticks}
+          tickFormatter={(val) => `${val / 30}`}
+          label={{ value: "Tháng", position: "insideBottomRight", offset: 0 }}
+        />
+
+        {/* Trục Y */}
+        <YAxis
+          domain={[yMin, yMax]}
+          label={{ value: "cm", angle: -90, position: "insideLeft" }}
+        />
+
+        {/* Tooltip */}
+        <Tooltip
+          labelFormatter={(dayValue) => `Ngày: ${dayValue}`}
+          formatter={(value, name) => {
+            if (name === "headCir") {
+              return [`${value} cm`, "Chu vi đầu Bé"];
+            }
+            // SD lines => hiển thị raw
+            return [value, name];
+          }}
+        />
+
+        {/* Đường SD */}
+        {growthData.length > 0 &&
+          Object.keys(growthData[0])
+            .filter((key) => key !== "day")
+            .map((key, index) => (
+              <Line
+                key={key}
+                type="monotone"
+                dataKey={key}
+                stroke={index < 3 ? "#000" : index < 6 ? "#f00" : "#0a0"}
+                strokeDasharray={index === 4 ? "5 5" : ""}
+                activeDot={false}
+                dot={false}
+              />
+            ))}
+
+        {/* Đường dữ liệu bé */}
+        {userData.length > 0 && (
+          <Line
+            type="monotone"
+            dataKey="headCir"
+            data={userData}
+            stroke="#007bff"
+            dot={{ r: 4 }}
+            activeDot={{ r: 6 }}
+            isAnimationActive={false}
+          />
+        )}
+      </LineChart>
+    </ResponsiveContainer>
+  );
+
   return (
     <div className="w-full px-4 py-12">
-      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-2xl font-bold">Chu vi đầu</h3>
         <a href="#" className="text-blue-500 text-lg hover:underline">
@@ -112,52 +200,8 @@ const HeadCirChart = ({ babyId }) => {
       </div>
 
       {/* Chart */}
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={growthData}>
-          <XAxis
-            dataKey="day"
-            type="number"
-            tickFormatter={(m) => `${m} day`}
-          />
-          <YAxis
-            domain={[0, 15]}
-            label={{ value: "cm", angle: -90, position: "insideLeft" }}
-          />
-          <Tooltip />
-          <Legend />
-          {growthData.length > 0 &&
-            Object.keys(growthData[0])
-              .slice(1)
-              .map((key) => (
-                <Line
-                  key={key}
-                  type="monotone"
-                  dataKey={key}
-                  stroke={colorMap[key]}
-                  strokeWidth={2}
-                  dot={false}
-                />
-              ))}
-        </LineChart>
-      </ResponsiveContainer>
+      <div style={{ width: "100%", height: 600 }}>{renderChart()}</div>
 
-      {/* Chú thích màu sắc */}
-      <div className="flex justify-center mt-4 text-sm">
-        <div className="flex items-center mx-4">
-          <span className="w-3 h-3 bg-red-500 rounded-full inline-block mr-2"></span>
-          Ngưỡng dưới (SD1neg - SD4neg)
-        </div>
-        <div className="flex items-center mx-4">
-          <span className="w-3 h-3 bg-green-500 rounded-full inline-block mr-2"></span>
-          Ngưỡng trung bình (SD0)
-        </div>
-        <div className="flex items-center mx-4">
-          <span className="w-3 h-3 bg-blue-500 rounded-full inline-block mr-2"></span>
-          Ngưỡng trên (SD1 - SD4)
-        </div>
-      </div>
-
-      {/* Links */}
       <div className="flex justify-center items-center mt-6 text-lg text-purple-500">
         <a href="#" className="hover:underline flex items-center">
           Xem chi tiết <span className="ml-1">&gt;</span>
