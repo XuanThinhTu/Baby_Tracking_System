@@ -15,7 +15,7 @@ const BabyOverview = () => {
       <BabyGeneralChart />
       <WeightChart babyId={babyId} />
       <HeightChart babyId={babyId} />
-      <HeadCirChart />
+      <HeadCirChart babyId={babyId} />
     </>
   );
 };

@@ -8,14 +8,23 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import {
+  getBabyGrowthData,
   getBabyInfo,
   getBoyStandardIndex,
   getGirlStandardIndex,
 } from "../../../../services/APIServices";
+import dayjs from "dayjs";
 
-const WeightChart = ({ userData, babyId }) => {
+const WeightChart = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
   const [growthData, setGrowthData] = useState([]);
+  const [userData, setUserData] = useState([]);
+
+  const calculateDays = (birthDate, measuredAt) => {
+    const birth = dayjs(birthDate);
+    const measured = dayjs(measuredAt);
+    return measured.diff(birth, "day");
+  };
 
   useEffect(() => {
     const fetchBabyInfo = async () => {
@@ -28,6 +37,25 @@ const WeightChart = ({ userData, babyId }) => {
     };
     fetchBabyInfo();
   }, []);
+
+  useEffect(() => {
+    const fetchGrowthData = async () => {
+      if (!baby) return;
+      try {
+        const result = await getBabyGrowthData(babyId);
+        const formattedData = result.map((item) => ({
+          day: calculateDays(baby.birthDate, item.measuredAt),
+          height: item.height,
+          weight: item.weight,
+        }));
+
+        setUserData(formattedData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchGrowthData();
+  }, [baby, babyId]);
 
   useEffect(() => {
     const fetchWeightData = async () => {

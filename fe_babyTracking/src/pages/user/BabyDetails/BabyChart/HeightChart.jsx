@@ -19,7 +19,7 @@ import dayjs from "dayjs";
 const HeightChart = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
   const [growthData, setGrowthData] = useState([]); // Dữ liệu chuẩn
-  const [userData, setUserData] = useState([]);     // Dữ liệu của bé
+  const [userData, setUserData] = useState([]); // Dữ liệu của bé
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   // Tính số ngày từ ngày sinh đến ngày đo
