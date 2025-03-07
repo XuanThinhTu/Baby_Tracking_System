@@ -6,6 +6,7 @@ import {
   MailOutlined,
   PieChartOutlined,
   ProfileOutlined,
+  ScheduleOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Dropdown, Layout, Menu, Space } from "antd";
@@ -24,6 +25,7 @@ import Overview from "../content/Overview";
 import { useNavigate } from "react-router-dom";
 import AccountManagement from "../content/AccountManagement";
 import { getUserInformation } from "../../../services/APIServices";
+import Schedule from "../content/Schedule";
 
 const items1 = [
   { key: "home", label: "Home" },
@@ -75,6 +77,11 @@ const items2 = [
     icon: <CalendarOutlined />,
     label: "Appointment",
   },
+  {
+    key: "working-schedule",
+    icon: <ScheduleOutlined />,
+    label: "Working Schedule",
+  },
 ];
 
 function AdminHomePage() {
@@ -121,6 +128,8 @@ function AdminHomePage() {
         return <Overview />;
       case "users":
         return <AccountManagement />;
+      case "working-schedule":
+        return <Schedule />;
     }
   };
 

@@ -1,78 +1,218 @@
-import React from "react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import React, { useEffect, useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
+import {
+  getBabyGrowthData,
+  getBabyInfo,
+  getBoyStandardIndex,
+  getGirlStandardIndex,
+} from "../../../../services/APIServices";
+import dayjs from "dayjs";
 
-const growthData = [
-    { month: 0, SD4neg: 1.915, SD3neg: 2.303, SD2neg: 2.690, SD1neg: 3.126, SD0: 3.614, SD1: 4.157, SD2: 4.761, SD3: 5.431, SD4: 6.100 },
-    { month: 1, SD4neg: 2.618, SD3neg: 3.080, SD2neg: 3.541, SD1neg: 4.061, SD0: 4.646, SD1: 5.303, SD2: 6.038, SD3: 6.861, SD4: 7.684 },
-    { month: 2, SD4neg: 3.183, SD3neg: 3.701, SD2neg: 4.219, SD1neg: 4.804, SD0: 5.464, SD1: 6.207, SD2: 7.043, SD3: 7.983, SD4: 8.923 },
-    { month: 3, SD4neg: 3.627, SD3neg: 4.189, SD2neg: 4.751, SD1neg: 5.387, SD0: 6.106, SD1: 6.919, SD2: 7.837, SD3: 8.875, SD4: 9.913 },
-    { month: 4, SD4neg: 3.987, SD3neg: 4.585, SD2neg: 5.183, SD1neg: 5.861, SD0: 6.630, SD1: 7.502, SD2: 8.492, SD3: 9.615, SD4: 10.739 },
-];
+const HeadCirChart = ({ babyId }) => {
+  const [baby, setBaby] = useState(null);
+  const [growthData, setGrowthData] = useState([]); // SD lines
+  const [userData, setUserData] = useState([]);     // data bé
 
-// Nhóm màu mới
-const colorMap = {
-    SD4neg: "#FF0000", // Đỏ - Nhóm SD1neg - SD4neg (Ngưỡng dưới)
-    SD3neg: "#FF0000",
-    SD2neg: "#FF0000",
-    SD1neg: "#FF0000",
-    SD0: "#008000", // Xanh lá - Ngưỡng trung bình (SD0)
-    SD1: "#1E90FF", // Xanh dương - Nhóm SD1 - SD4 (Ngưỡng trên)
-    SD2: "#1E90FF",
-    SD3: "#1E90FF",
-    SD4: "#1E90FF",
-};
+  // Lấy ngày (so với birthDate)
+  const calculateDays = (birthDate, measuredAt) => {
+    const birth = dayjs(birthDate);
+    const measured = dayjs(measuredAt);
+    return measured.diff(birth, "day");
+  };
 
-const HeadCirChart = () => {
-    return (
-        <div className="w-full px-4 py-12">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-bold">Chu vi đầu</h3>
-                <a href="#" className="text-blue-500 text-lg hover:underline">Chỉ số tiêu chuẩn</a>
-            </div>
+  // Lấy thông tin bé
+  useEffect(() => {
+    const fetchBabyInfo = async () => {
+      try {
+        const result = await getBabyInfo(babyId);
+        setBaby(result);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchBabyInfo();
+  }, [babyId]);
 
-            {/* Chart */}
-            <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={growthData}>
-                    <XAxis dataKey="month" tickFormatter={(m) => `${m}thg`} />
-                    <YAxis domain={[0, 15]} label={{ value: "cm", angle: -90, position: "insideLeft" }} />
-                    <Tooltip />
-                    <Legend />
-                    {Object.keys(growthData[0]).slice(1).map((key) => (
-                        <Line key={key} type="monotone" dataKey={key} stroke={colorMap[key]} strokeWidth={2} dot={false} />
-                    ))}
-                </LineChart>
-            </ResponsiveContainer>
+  // Lấy dữ liệu thực bé (headCircumference)
+  useEffect(() => {
+    const fetchGrowthData = async () => {
+      if (!baby) return;
+      try {
+        const result = await getBabyGrowthData(babyId);
+        // Thay measureAt nếu API là measureAt, 
+        // hoặc item.measuredAt nếu đó là field chuẩn
+        const formatted = result.map((item) => ({
+          day: calculateDays(baby.birthDate, item.measuredAt),
+          headCir: item.headCircumference,
+        }));
+        setUserData(formatted);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchGrowthData();
+  }, [baby, babyId]);
 
-            {/* Chú thích màu sắc */}
-            <div className="flex justify-center mt-4 text-sm">
-                <div className="flex items-center mx-4">
-                    <span className="w-3 h-3 bg-red-500 rounded-full inline-block mr-2"></span>
-                    Ngưỡng dưới (SD1neg - SD4neg)
-                </div>
-                <div className="flex items-center mx-4">
-                    <span className="w-3 h-3 bg-green-500 rounded-full inline-block mr-2"></span>
-                    Ngưỡng trung bình (SD0)
-                </div>
-                <div className="flex items-center mx-4">
-                    <span className="w-3 h-3 bg-blue-500 rounded-full inline-block mr-2"></span>
-                    Ngưỡng trên (SD1 - SD4)
-                </div>
-            </div>
+  // Lấy dữ liệu chuẩn (headCircumference)
+  useEffect(() => {
+    const fetchHeadCirData = async () => {
+      if (!baby) return;
+      try {
+        const result =
+          baby.gender === "Boy"
+            ? await getBoyStandardIndex()
+            : await getGirlStandardIndex();
 
-            {/* Links */}
-            <div className="flex justify-center items-center mt-6 text-lg text-purple-500">
-                <a href="#" className="hover:underline flex items-center">
-                    Xem chi tiết <span className="ml-1">&gt;</span>
-                </a>
-                <span className="mx-4 border-l border-gray-300 h-5"></span>
-                <a href="#" className="hover:underline flex items-center">
-                    Xem toàn màn hình <span className="ml-1">&gt;</span>
-                </a>
-            </div>
-        </div>
-    );
+        const formatted = result.map((item) => ({
+          day: item.period,
+          SD4neg: item.headCircumferenceNeg4Sd,
+          SD3neg: item.headCircumferenceNeg3Sd,
+          SD2neg: item.headCircumferenceNeg2Sd,
+          SD1neg: item.headCircumferenceNeg1Sd,
+          SD0: item.headCircumferenceMedian,
+          SD1: item.headCircumferencePos1Sd,
+          SD2: item.headCircumferencePos2Sd,
+          SD3: item.headCircumferencePos3Sd,
+          SD4: item.headCircumferencePos4Sd,
+        }));
+        setGrowthData(formatted);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchHeadCirData();
+  }, [baby]);
+
+  // === Tính domain X ===
+  const userMaxDay = userData.length
+    ? Math.max(...userData.map((d) => d.day))
+    : 0;
+  const domainMax = userMaxDay + 60; // Dư 60 ngày
+
+  // Tạo mảng tick bội số 30 => hiển thị "tháng"
+  const ticks = [];
+  for (let i = 30; i <= domainMax; i += 30) {
+    ticks.push(i);
+  }
+
+  // === Tính domain Y “center” quanh userData (bỏ qua SD lines) ===
+  let yMin = 0;
+  let yMax = 60; // fallback nếu userData rỗng
+
+  if (userData.length > 0) {
+    const userMin = Math.min(...userData.map((d) => d.headCir));
+    const userMax = Math.max(...userData.map((d) => d.headCir));
+    const mid = (userMin + userMax) / 2;
+    let range = userMax - userMin;
+    if (range < 1) range = 1; // tránh chia 0
+
+    // Tăng factor => domain rộng hơn
+    const factor = 6; // tuỳ ý
+    const half = (range * factor) / 2;
+
+    yMin = mid - half;
+    if (yMin < 0) yMin = 0;
+    yMax = mid + half;
+  }
+
+  // Render chart
+  const renderChart = () => (
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart data={growthData} margin={{ right: 20 }}>
+        <CartesianGrid stroke="#ccc" strokeDasharray="" />
+
+        {/* Trục X */}
+        <XAxis
+          dataKey="day"
+          type="number"
+          domain={[0, domainMax]}
+          scale="linear"
+          ticks={ticks}
+          tickFormatter={(val) => `${val / 30}`}
+          label={{ value: "Tháng", position: "insideBottomRight", offset: 0 }}
+        />
+
+        {/* Trục Y */}
+        <YAxis
+          domain={[yMin, yMax]}
+          label={{ value: "cm", angle: -90, position: "insideLeft" }}
+        />
+
+        {/* Tooltip */}
+        <Tooltip
+          labelFormatter={(dayValue) => `Ngày: ${dayValue}`}
+          formatter={(value, name) => {
+            if (name === "headCir") {
+              return [`${value} cm`, "Chu vi đầu Bé"];
+            }
+            // SD lines => hiển thị raw
+            return [value, name];
+          }}
+        />
+
+        {/* Đường SD */}
+        {growthData.length > 0 &&
+          Object.keys(growthData[0])
+            .filter((key) => key !== "day")
+            .map((key, index) => (
+              <Line
+                key={key}
+                type="monotone"
+                dataKey={key}
+                stroke={index < 3 ? "#000" : index < 6 ? "#f00" : "#0a0"}
+                strokeDasharray={index === 4 ? "5 5" : ""}
+                activeDot={false}
+                dot={false}
+              />
+            ))}
+
+        {/* Đường dữ liệu bé */}
+        {userData.length > 0 && (
+          <Line
+            type="monotone"
+            dataKey="headCir"
+            data={userData}
+            stroke="#007bff"
+            dot={{ r: 4 }}
+            activeDot={{ r: 6 }}
+            isAnimationActive={false}
+          />
+        )}
+      </LineChart>
+    </ResponsiveContainer>
+  );
+
+  return (
+    <div className="w-full px-4 py-12">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-2xl font-bold">Chu vi đầu</h3>
+        <a href="#" className="text-blue-500 text-lg hover:underline">
+          Chỉ số tiêu chuẩn
+        </a>
+      </div>
+
+      {/* Chart */}
+      <div style={{ width: "100%", height: 600 }}>{renderChart()}</div>
+
+      <div className="flex justify-center items-center mt-6 text-lg text-purple-500">
+        <a href="#" className="hover:underline flex items-center">
+          Xem chi tiết <span className="ml-1">&gt;</span>
+        </a>
+        <span className="mx-4 border-l border-gray-300 h-5"></span>
+        <a href="#" className="hover:underline flex items-center">
+          Xem toàn màn hình <span className="ml-1">&gt;</span>
+        </a>
+      </div>
+    </div>
+  );
 };
 
 export default HeadCirChart;
-

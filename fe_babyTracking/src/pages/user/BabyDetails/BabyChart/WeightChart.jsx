@@ -9,16 +9,23 @@ import {
   Brush,
 } from "recharts";
 import {
+  getBabyGrowthData,
   getBabyInfo,
   getBoyStandardIndex,
   getGirlStandardIndex,
 } from "../../../../services/APIServices";
 import dayjs from "dayjs";
 
-const WeightChart = ({ babyId, userData }) => {
+const WeightChart = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
-  const [growthData, setGrowthData] = useState([]); // Dữ liệu chuẩn
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [growthData, setGrowthData] = useState([]);
+  const [userData, setUserData] = useState([]);
+
+  const calculateDays = (birthDate, measuredAt) => {
+    const birth = dayjs(birthDate);
+    const measured = dayjs(measuredAt);
+    return measured.diff(birth, "day");
+  };
 
   // Lấy thông tin bé
   useEffect(() => {
@@ -34,6 +41,25 @@ const WeightChart = ({ babyId, userData }) => {
   }, [babyId]);
 
   // Lấy dữ liệu chuẩn (weight) theo giới tính
+  useEffect(() => {
+    const fetchGrowthData = async () => {
+      if (!baby) return;
+      try {
+        const result = await getBabyGrowthData(babyId);
+        const formattedData = result.map((item) => ({
+          day: calculateDays(baby.birthDate, item.measuredAt),
+          height: item.height,
+          weight: item.weight,
+        }));
+
+        setUserData(formattedData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchGrowthData();
+  }, [baby, babyId]);
+
   useEffect(() => {
     const fetchWeightData = async () => {
       if (!baby) return;

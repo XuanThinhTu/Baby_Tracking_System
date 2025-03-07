@@ -81,9 +81,7 @@ export default function DoctorDashboard() {
                 <DoctorSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
                 {/* MAIN CONTENT */}
-                <main className="flex-1 p-6">
-                    {renderContent()}
-                </main>
+                <main className="flex-1 p-6">{renderContent()}</main>
             </div>
         </div>
     );
