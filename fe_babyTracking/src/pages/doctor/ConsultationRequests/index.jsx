@@ -1,13 +1,121 @@
-// src/components/doctor/consultation/ConsultationRequest.jsx
 import React, { useState } from "react";
 import {
     ClockIcon,
     LightningBoltIcon,
     XCircleIcon,
     PlusCircleIcon,
+    UserIcon,
+    QuestionMarkCircleIcon,
+    CalendarIcon,
 } from "@heroicons/react/outline";
-import ConsultationForm from "./ConsultationForm";
-import KanbanCard from "./KanbanCard";
+
+/* 
+  Form hiển thị danh sách request (theo code bạn gửi).
+  Ở đây, mình tích hợp sẵn logic "create" mock => 
+  Tạo request mới => cột "Pending".
+*/
+function ConsultationForm({ onSave, onCancel }) {
+    // Mock data ví dụ, thay = state + input fields nếu cần
+    const [parentName, setParentName] = useState("");
+    const [childName, setChildName] = useState("");
+    const [question, setQuestion] = useState("");
+    const [date, setDate] = useState("");
+
+    const handleSubmit = () => {
+        if (!parentName || !childName || !question) {
+            alert("Please fill all fields!");
+            return;
+        }
+        // Tạo request mock
+        const newReq = {
+            id: Date.now(), // tạm
+            parentName,
+            childName,
+            question,
+            date: date || "2025-03-10", // fallback
+            status: "Pending",
+        };
+        onSave(newReq);
+    };
+
+    return (
+        <div className="border border-gray-300 rounded p-4 shadow-sm bg-white">
+            <h2 className="text-xl font-bold mb-4">Create Consultation Request</h2>
+
+            <div className="grid grid-cols-2 gap-4">
+                {/* Parent Name */}
+                <div>
+                    <label className="block font-semibold text-gray-700 mb-1">
+                        Parent Name
+                    </label>
+                    <input
+                        type="text"
+                        value={parentName}
+                        onChange={(e) => setParentName(e.target.value)}
+                        className="w-full border border-gray-300 rounded p-2"
+                        placeholder="Parent name..."
+                    />
+                </div>
+
+                {/* Child Name */}
+                <div>
+                    <label className="block font-semibold text-gray-700 mb-1">
+                        Child Name
+                    </label>
+                    <input
+                        type="text"
+                        value={childName}
+                        onChange={(e) => setChildName(e.target.value)}
+                        className="w-full border border-gray-300 rounded p-2"
+                        placeholder="Child name..."
+                    />
+                </div>
+
+                {/* Question */}
+                <div className="col-span-2">
+                    <label className="block font-semibold text-gray-700 mb-1">
+                        Question
+                    </label>
+                    <textarea
+                        value={question}
+                        onChange={(e) => setQuestion(e.target.value)}
+                        className="w-full border border-gray-300 rounded p-2"
+                        rows={3}
+                        placeholder="What do you want to ask?"
+                    />
+                </div>
+
+                {/* Date */}
+                <div>
+                    <label className="block font-semibold text-gray-700 mb-1">
+                        Date
+                    </label>
+                    <input
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        className="w-full border border-gray-300 rounded p-2"
+                    />
+                </div>
+            </div>
+
+            <div className="flex justify-end gap-4 mt-4">
+                <button
+                    onClick={handleSubmit}
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                >
+                    Create
+                </button>
+                <button
+                    onClick={onCancel}
+                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                >
+                    Cancel
+                </button>
+            </div>
+        </div>
+    );
+}
 
 export default function ConsultationRequest() {
     // Mock data ban đầu
@@ -34,7 +142,7 @@ export default function ConsultationRequest() {
             childName: "Baby Tom",
             question: "Child won't eat properly. Any advice?",
             date: "2025-03-07",
-            status: "Closed",
+            status: "Closed", // or "Canceled"
         },
         {
             id: 4,
@@ -139,6 +247,30 @@ export default function ConsultationRequest() {
                     onCancel={handleCancelForm}
                 />
             )}
+        </div>
+    );
+}
+
+// Component hiển thị card
+function KanbanCard({ req }) {
+    return (
+        <div className="bg-white p-3 rounded shadow-sm">
+            <div className="flex items-center gap-2 mb-1 text-gray-700 font-semibold">
+                <UserIcon className="h-4 w-4" />
+                <span>{req.parentName}</span>
+            </div>
+            <div className="flex items-center gap-2 mb-1 text-gray-700">
+                <UserIcon className="h-4 w-4" />
+                <span>Child: {req.childName}</span>
+            </div>
+            <div className="flex items-center gap-2 mb-1 text-gray-700">
+                <QuestionMarkCircleIcon className="h-4 w-4" />
+                <span>{req.question}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+                <CalendarIcon className="h-4 w-4" />
+                <span>{req.date}</span>
+            </div>
         </div>
     );
 }
