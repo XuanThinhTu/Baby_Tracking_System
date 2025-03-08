@@ -1,6 +1,8 @@
 package com.swd.project.enums;
 
 public enum WorkingScheduleStatus {
-    ACTIVE,
-    OFF
+    DRAFT,
+    SUBMITTED,
+    APPROVED,
+    REJECTED
 }
