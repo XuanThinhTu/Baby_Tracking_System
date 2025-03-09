@@ -1,6 +1,9 @@
 package com.swd.project.repository;
 
 import com.swd.project.entity.WorkingSchedule;
+import com.swd.project.enums.WorkingScheduleStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
@@ -10,4 +13,8 @@ public interface WorkingScheduleRepository extends JpaRepository<WorkingSchedule
     List<WorkingSchedule> findByDate(LocalDate date);
     List<WorkingSchedule> findByDateBetween(LocalDate start, LocalDate end);
     List<WorkingSchedule> findByDateAndSlotTimeId(LocalDate date, int slotTimeId);
+
+    Page<WorkingSchedule> findByStatus(WorkingScheduleStatus status, Pageable pageable);
+
+    Page<WorkingSchedule> findByDoctorIdAndStatus(int doctorId, WorkingScheduleStatus status, Pageable pageable);
 }

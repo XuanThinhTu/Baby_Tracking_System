@@ -54,7 +54,10 @@ public class SecurityConfig {
             "/consultation/pending-request",
             "/slot-time/add",
             "/admin/**",
-            "/consultation-response/**"
+            "/consultation-response/**",
+            "/working-schedule/register",
+            "/working-schedule/doctor/**",
+            "/working-schedule/submit"
     );
 
     @Bean

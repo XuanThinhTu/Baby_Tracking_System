@@ -18,9 +18,13 @@ public class FileController {
 
     // Import file excel for under 5 years old
     @PostMapping("/under")
-    public ApiResponse<String> importExcelFileForUnder5YearsOld(@RequestParam("file") MultipartFile file) {
+    public ApiResponse<String> importExcelFileForUnder5YearsOld(@RequestParam("file") MultipartFile file,
+                                                                @RequestParam("isGreaterFiveYearsOld") boolean isGreaterFiveYearsOld,
+                                                                @RequestParam("fileType") String fileType,
+                                                                @RequestParam("gender") String gender){
+
         try {
-            fileService.saveDataForUnder5YearsOld(file, false);
+            fileService.saveDataFromFile(file, isGreaterFiveYearsOld, fileType, gender);
             return ApiResponse.<String>builder()
                     .message("Import file successfully")
                     .data("Import file successfully")
@@ -31,11 +35,5 @@ public class FileController {
                     .data("Import file failed")
                     .build();
         }
-    }
-
-    @PostMapping("/greater")
-    public ResponseEntity<?> importExcelFileForGreaterThan5YearsOld(@RequestParam("file") MultipartFile file) {
-        fileService.saveDataForUnder5YearsOld(file, true);
-        return ResponseEntity.ok().build();
     }
 }

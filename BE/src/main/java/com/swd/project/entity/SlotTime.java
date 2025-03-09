@@ -1,6 +1,7 @@
 package com.swd.project.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.swd.project.enums.SlotTimeShift;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +28,8 @@ public class SlotTime {
     private LocalTime startTime;
     @Column(name = "end_time")
     private LocalTime endTime;
+    @Enumerated(EnumType.STRING)
+    private SlotTimeShift shifts;
 
     // 1 SlotTime có thể được nhiều WorkingSchedule tham chiếu
     @JsonIgnore

@@ -4,5 +4,5 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface IFileService {
 
-    void saveDataForUnder5YearsOld(MultipartFile file, boolean isGreaterFiveYearsOld);
+    void saveDataFromFile(MultipartFile file, boolean isGreaterFiveYearsOld, String fileType, String gender);
 }

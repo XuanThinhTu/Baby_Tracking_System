@@ -30,11 +30,11 @@ public class FileService implements IFileService {
     private final String HEIGHT_FOR_AGE_5_TO_19 = "hfa";
 
     @Override
-    public void saveDataForUnder5YearsOld(MultipartFile file, boolean isGreaterFiveYearsOld) {
+    public void saveDataFromFile(MultipartFile file, boolean isGreaterFiveYearsOld, String fileType, String gender) {
         try {
-            String fileName = file.getOriginalFilename();
-            String dataType = fileName.substring(0, fileName.indexOf("-"));
-            String gender = fileName.substring(fileName.indexOf("-") + 1, fileName.indexOf("-") + 5);
+//            String fileName = file.getOriginalFilename();
+//            String dataType = fileName.substring(0, fileName.indexOf("-"));
+//            String gender = fileName.substring(fileName.indexOf("-") + 1, fileName.indexOf("-") + 5);
             InputStream inputStream = file.getInputStream();
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet sheet = workbook.getSheetAt(0);
@@ -74,7 +74,7 @@ public class FileService implements IFileService {
                 tempStandard.setPeriodType(periodType);
 
                 // Gán các trường theo dataType từ file
-                switch (dataType) {
+                switch (fileType) {
                     case WEIGHT_FOR_AGE -> {
                         tempStandard.setWeightNeg4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4neg"))));
                         tempStandard.setWeightNeg3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3neg"))));
@@ -119,13 +119,13 @@ public class FileService implements IFileService {
                         tempStandard.setBmiPos3Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD3"))));
                         tempStandard.setBmiPos4Sd(getNumericCellValue(row.getCell(columnIndexMap.get("SD4"))));
                     }
-                    default -> throw new RuntimeException("Unknown data type: " + dataType);
+                    default -> throw new RuntimeException("Unknown data type: " + fileType);
                 }
 
                 // Kiểm tra xem record đã tồn tại chưa dựa vào các trường khóa (gender, period, periodType)
                 Optional<BmiStandard> optionalExisting = bmiStandardsRepository.findByGenderAndPeriodAndPeriodType(gender, period, periodType);
                 if (optionalExisting.isPresent()) {
-                    BmiStandard existingRecord = updateBmiStandardDataIfExist(optionalExisting, dataType, tempStandard);
+                    BmiStandard existingRecord = updateBmiStandardDataIfExist(optionalExisting, fileType, tempStandard);
                     bmiStandardsToSave.add(existingRecord);
                 } else {
                     // Nếu record chưa tồn tại thì thêm mới
