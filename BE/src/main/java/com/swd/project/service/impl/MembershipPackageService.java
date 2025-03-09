@@ -130,9 +130,11 @@ public class MembershipPackageService implements IMembershipPackageService {
         if (payment.getState().equals("approved")) {
             User user = userService.getAuthenticatedUser();
             //disable older subscription
-            MembershipSubscription olderSubscription = membershipSubscriptionRepository.findByUserIdAndStatus(user.getId(), MembershipSubscriptionStatus.AVAILABLE).get();
-            olderSubscription.setStatus(MembershipSubscriptionStatus.UNAVAILABLE);
-            membershipSubscriptionRepository.save(olderSubscription);
+            if(membershipSubscriptionRepository.findByUserIdAndStatus(user.getId(), MembershipSubscriptionStatus.AVAILABLE).isPresent()){
+                MembershipSubscription olderSubscription = membershipSubscriptionRepository.findByUserIdAndStatus(user.getId(), MembershipSubscriptionStatus.AVAILABLE).get();
+                olderSubscription.setStatus(MembershipSubscriptionStatus.UNAVAILABLE);
+                membershipSubscriptionRepository.save(olderSubscription);
+            }
             //create new subscription
             MembershipSubscription membershipSubscription = membershipSubscriptionRepository
                     .findByUserIdAndPaymentStatusAndStatus(user.getId(), PaymentStatus.PENDING, MembershipSubscriptionStatus.UNAVAILABLE);
@@ -141,6 +143,7 @@ public class MembershipPackageService implements IMembershipPackageService {
             membershipSubscriptionRepository.save(membershipSubscription);
             return "Payment success";
         }else {
+            log.info("Payment is failed");
             User user = userService.getAuthenticatedUser();
             MembershipSubscription membershipSubscription = membershipSubscriptionRepository
                     .findByUserIdAndPaymentStatusAndStatus(user.getId(), PaymentStatus.PENDING, MembershipSubscriptionStatus.UNAVAILABLE);
