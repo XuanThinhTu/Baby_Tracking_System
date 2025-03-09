@@ -51,6 +51,15 @@ export const registerFunction = async (
   }
 };
 
+export const verifyEmail = async (token) => {
+  try {
+    const result = await axios.post(`${baseUrl}/user/verify`, { token });
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const getUserInformation = async () => {
   try {
     const token = sessionStorage.getItem("token");

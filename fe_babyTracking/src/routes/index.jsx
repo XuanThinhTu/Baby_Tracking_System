@@ -21,6 +21,9 @@ import BookingPage from "../pages/user/Calendar";
 import DoctorPage from "../pages/user/Doctor";
 import DoctorDetail from "../pages/user/Doctor/DoctorDetail";
 import DoctorDashboard from "../pages/doctor";
+import VerifyAccount from "../pages/user/Auth/VerifyAccount/VerifyAccount";
+import MembershipPackages from "../pages/user/Membership/MembershipPage";
+import PaymentCallback from "../pages/user/PaypalPayment/PaymentCallback";
 
 function UserLayout() {
   const location = useLocation();
@@ -35,6 +38,9 @@ function UserLayout() {
       "/consultation-request",
       "/booking-meeting",
       "/doctor",
+      "/verify",
+      "/membership",
+      "/paypal/success",
     ].some((path) => location.pathname.startsWith(path)) ||
     location.pathname.startsWith(
       "/baby-details/",
@@ -54,6 +60,9 @@ function UserLayout() {
             <Route path="/my-family" element={<MyFamily />} />
             <Route path="/baby-details/:babyId" element={<BabyOverview />} />
             <Route path="/add-baby-info/:babyId" element={<AddBabyInfo />} />
+            <Route path="/verify" element={<VerifyAccount />} />
+            <Route path="/membership" element={<MembershipPackages />} />
+            <Route path="/paypal/success" element={<PaymentCallback />} />
             <Route
               path="/consultation-request"
               element={<ConsultationRequest />}

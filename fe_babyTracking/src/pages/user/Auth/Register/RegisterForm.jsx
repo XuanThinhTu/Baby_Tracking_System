@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import LinkToGoogle from "../Google/LinkToGoogle";
 import axios from "axios";
 import { registerFunction } from "../../../../services/APIServices";
+import toast from "react-hot-toast";
 // import { registerFunction } from "../../../../services/APIServices";
 
 const RegisterForm = () => {
@@ -35,8 +36,11 @@ const RegisterForm = () => {
         formValues.phone,
         formValues.address
       );
-      console.log(result);
-      navigate("/login");
+      if (result) {
+        toast.success(
+          "Đăng ký thành công! Xin vui lòng kiểm tra email của bạn để xác thực tài khoản!"
+        );
+      }
     } catch (error) {
       console.log(error);
     }
