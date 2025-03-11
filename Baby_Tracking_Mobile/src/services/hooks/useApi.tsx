@@ -1,15 +1,22 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getRequest, postRequest, putRequest, deleteRequest } from '../apiServices';
+import { getRequest, postRequest, putRequest, deleteRequest, setAuthToken } from '../apiServices';
+import { useAuth } from './useAuth';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 const useApi = (initialUrl: string = '', method: HttpMethod = 'GET', initialBody: any = null) => {
+  const { getToken } = useAuth();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<any>(null);
 
   const fetchData = useCallback(
     async (url: string = initialUrl, newMethod: HttpMethod = method, body: any = initialBody) => {
+
+      let token = await getToken();
+
+      if (token) setAuthToken(token);
+
       setLoading(true);
       setError(null);
       try {

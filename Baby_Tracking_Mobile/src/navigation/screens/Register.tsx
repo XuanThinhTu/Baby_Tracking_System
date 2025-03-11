@@ -1,10 +1,10 @@
-import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
 import { StyleSheet } from 'react-native'
 import { Button, Text, TextInput } from 'react-native-paper'
 import { Image, View } from 'react-native-ui-lib'
 import useApi from '../../services/hooks/useApi'
 import { API_POST_USER_REGISTER } from '@env'
+import { useRedirect } from '../../services/hooks/useRedirect'
 
 interface RegisterUser {
     firstName: string,
@@ -16,7 +16,8 @@ interface RegisterUser {
 }
 
 export function Register() {
-    const { fetchData: registerUser, error, loading } = useApi();
+    const { goBack } = useRedirect();
+    const { fetchData: registerUser, error, loading } = useApi(API_POST_USER_REGISTER, "POST", null, false);
     const [hidePass, setHidePass] = useState(true);
     const [user, setUser] = useState<RegisterUser>({
         firstName: "",
@@ -26,8 +27,6 @@ export function Register() {
         phone: "",
         address: ""
     });
-
-    const navigate = useNavigation();
 
     const handleInputChange = (field: keyof RegisterUser, value: string) => {
         setUser(prev => ({ ...prev, [field]: value }));
@@ -48,7 +47,7 @@ export function Register() {
             });
 
             if (response.statusCode == 201) {
-                navigate.goBack();
+                goBack();
             }
 
         } catch (error) {
@@ -57,7 +56,7 @@ export function Register() {
     }
 
     const redirectToLogin = () => {
-        navigate.goBack();
+        goBack();
     }
 
     return (
@@ -202,18 +201,16 @@ const style = StyleSheet.create({
     },
 
     registerButton: {
-        position:"relative",
+        position: "relative",
         backgroundColor: "#8b5fbf",
         width: 300,
         borderRadius: 10,
     },
 
     registerButtonText: {
-        position:"absolute",
+        position: "absolute",
         lineHeight: 50,
         fontSize: 20,
         fontWeight: "bold",
     }
-
-
 });

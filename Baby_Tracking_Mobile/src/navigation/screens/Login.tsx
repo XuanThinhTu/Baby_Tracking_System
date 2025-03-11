@@ -2,49 +2,39 @@ import { useState } from 'react'
 import { StyleSheet } from 'react-native'
 import { Button, Text, TextInput } from 'react-native-paper';
 import { View } from 'react-native-ui-lib';
-import { useNavigation } from '@react-navigation/native';
 import useApi from '../../services/hooks/useApi';
 import { API_POST_AUTH_LOGIN } from '@env';
-import { saveToken } from '../../utility/Helper';
-
-interface loginUser {
-  email: string,
-  password: string,
-}
+import { useAuth } from '../../services/hooks/useAuth';
+import { useRedirect } from '../../services/hooks/useRedirect';
+import { setAuthToken } from '../../services/apiServices';
 
 export default function Login() {
-  const { fetchData: loginUser, error, loading } = useApi();
+  const { redirectToRegister, redirectToHome } = useRedirect();
+  const { saveToken } = useAuth();
+  const { fetchData: loginUser, error, loading } = useApi(API_POST_AUTH_LOGIN, "POST", null);
   const [loginData, setLoginData] = useState<loginUser>({
     email: "",
     password: ""
   });
   const [hidePass, setHidePass] = useState(true);
 
-  const navigate = useNavigation();
-
   const handleLogin = async () => {
-    try {
-      var response = await loginUser(API_POST_AUTH_LOGIN, "POST", loginData);
-      if (response.statusCode == 200) {
-        saveToken(response.data.accessToken);
-        navigate.navigate("Home");
-      }
-      console.log(response);
-      setLoginData({
-        email: "",
-        password: ""
-      })
-    } catch (error) {
-      console.error("Login error: " + error)
+    var response: ServerResponse = await loginUser(API_POST_AUTH_LOGIN, "POST", loginData);
+    if (response.success) {
+      saveToken(response.data.accessToken);
+      setAuthToken(response.data.accessToken);
+      redirectToHome();
+    } else {
+      console.log(response.message);
     }
+    setLoginData({
+      email: "",
+      password: ""
+    })
   }
 
   const handleInput = (field: keyof loginUser, value: string) => {
     setLoginData(prev => ({ ...prev, [field]: value }));
-  }
-
-  const redirectRegister = () => {
-    navigate.navigate("Register");
   }
 
   return (
@@ -57,6 +47,7 @@ export default function Login() {
         <TextInput
           style={styles.input}
           label="Email"
+          keyboardType='email-address'
           value={loginData.email}
           left={<TextInput.Icon icon="email" />}
           onChangeText={text => handleInput("email", text)}
@@ -65,15 +56,15 @@ export default function Login() {
           style={styles.input}
           secureTextEntry={hidePass}
           label="Password"
+          textContentType='password'
           value={loginData.password}
           right={<TextInput.Icon onPress={() => setHidePass(!hidePass)} icon={hidePass ? "eye-off" : "eye"} />}
           left={<TextInput.Icon icon={"lock"} />}
           onChangeText={text => handleInput("password", text)}
         />
-        {/* <Button style={styles.forgotPasswordText}>Forgot password ?</Button> */}
         <View style={styles.registerContainer}>
           <Text>Don't have account yet? </Text>
-          <Text style={styles.registerHyperlink} onPress={redirectRegister}>Register</Text>
+          <Text style={styles.registerHyperlink} onPress={() => redirectToRegister()}>Register</Text>
         </View>
       </View>
       <View style={styles.buttonContainer}>
@@ -85,7 +76,7 @@ export default function Login() {
           loading={loading}
           disabled={loading}
           onPress={handleLogin}>
-          Sign in
+          {loading ? null : "Sign in"}
         </Button>
       </View>
     </View>
@@ -96,7 +87,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#8b5fbf',
-    flexDirection: "column"
+    flexDirection: "column",
   },
 
   formContainer: {

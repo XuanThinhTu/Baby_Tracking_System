@@ -1,7 +1,7 @@
 declare module '@env'{
     //BASE API
     export const API_LOCAL_URL: string;
-    export const API_HOST_URL:string;
+    export const API_HOST_URL: string;
 
     //USER
     export const API_PUT_USER_UNBAN: string;

@@ -1,27 +1,16 @@
-import { Text } from '@react-navigation/elements';
-import { useNavigation } from '@react-navigation/native';
-import { StyleSheet, View } from 'react-native';
-import { Button } from 'react-native-ui-lib';
-import { getToken } from '../../utility/Helper';
+import React from 'react';
+import { Text } from 'react-native-paper';
+import BabyList from '../../components/BabyList';
+import { View } from 'react-native-ui-lib';
 
-
-export function Home() {
-
-  const navigation = useNavigation();;
+const Home = () => {
 
   return (
-    <View style={styles.container}>
-      <Text>Home Screen</Text>
-      <Button onPress={() => navigation.navigate("Login")} label="Login" />
+    <View>
+      <BabyList />
+      <Text>Home</Text>
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 10,
-  },
-});
+export default Home;
