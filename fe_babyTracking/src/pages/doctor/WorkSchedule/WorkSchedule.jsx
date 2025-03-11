@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { CheckCircleIcon } from "@heroicons/react/solid";
 import {
-  getDoctorWorkingShift,
   getUserInformation,
   registerWorkingShift,
 } from "../../../services/APIServices";
 import dayjs from "dayjs";
 
 export default function WorkSchedule() {
-  // Kanban mock data: 3 cột (Draft, Approved, Rejected)
   const [shifts, setShifts] = useState([
     { id: 1, title: "Shift A", status: "Draft" },
     { id: 2, title: "Shift B", status: "Approved" },
@@ -17,61 +15,38 @@ export default function WorkSchedule() {
 
   // State form hiển thị/ẩn
   const [showForm, setShowForm] = useState(false);
-
-  // State “status tracker”
-  // (Draft, Submit, Confirmed, Approved)
-  const [currentStatus, setCurrentStatus] = useState("Draft");
+  const [currentStatus, setCurrentStatus] = useState("");
 
   // Form fields
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [userInfo, setUserInfo] = useState(null);
   const [scheduleData, setScheduleData] = useState([]);
-  const [draftData, setDraftData] = useState([]);
 
-  useEffect(() => {
-    const fetchRegisterShift = async () => {
-      try {
-        const result = await getDoctorWorkingShift();
-        const draft = result.filter((item) => item.status === "DRAFT");
-        setDraftData(draft);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchRegisterShift();
-  }, []);
-
-  console.log(draftData);
-
-  // Xử lý create
   const handleCreate = () => {
     setShowForm(true);
-    setCurrentStatus("Draft"); // Khi tạo mới => draft
-  };
-
-  // Xử lý save
-  const handleSave = () => {
-    // Lưu logic => tạm push 1 shift mock => status=Draft
-    const newShift = {
-      id: shifts.length + 1,
-      title: `New Shift`,
-      status: "Draft",
-    };
-    setShifts([...shifts, newShift]);
-
-    setCurrentStatus("Draft");
-    setShowForm(false);
     setScheduleData([]);
   };
 
-  // Xử lý discard
+  // Xử lý save
+  const handleSave = async () => {
+    try {
+      if (currentStatus !== "Draft") {
+        const result = await registerWorkingShift(scheduleData);
+        alert("Bạn đã lưu bản nháp đăng ký ca làm thành công!");
+        setCurrentStatus("Draft");
+      } else {
+        setCurrentStatus("");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleDiscard = () => {
-    // Không lưu => ẩn form
     setShowForm(false);
   };
 
-  // Xử lý tick box schedule
   const toggleCheck = (index, shiftType) => {
     setScheduleData((prevSchedule) =>
       prevSchedule.map((row, idx) =>
@@ -83,12 +58,6 @@ export default function WorkSchedule() {
           : row
       )
     );
-  };
-
-  // Xử lý submit => ví dụ setCurrentStatus(“Submit”)
-  const handleSubmitSchedule = () => {
-    setCurrentStatus("Submit");
-    alert("Schedule submitted. Admin will see your request!");
   };
 
   useEffect(() => {
@@ -132,10 +101,9 @@ export default function WorkSchedule() {
 
   const handleSubmit = async () => {
     try {
-      const result = await registerWorkingShift(scheduleData);
       setShowForm(false);
-      setCurrentStatus("Draft");
-      console.log(result);
+      alert("Bạn đã đăng ký ca làm thành công!");
+      setScheduleData([]);
     } catch (error) {
       console.log(error);
     }
@@ -305,6 +273,7 @@ export default function WorkSchedule() {
                             type="checkbox"
                             checked={row?.shifts.morning}
                             onChange={() => toggleCheck(idx, "morning")}
+                            disabled={currentStatus === "Draft"}
                           />
                         </td>
                         <td className="p-2">
@@ -312,6 +281,7 @@ export default function WorkSchedule() {
                             type="checkbox"
                             checked={row?.shifts.afternoon}
                             onChange={() => toggleCheck(idx, "afternoon")}
+                            disabled={currentStatus === "Draft"}
                           />
                         </td>
                         <td className="p-2">
@@ -319,6 +289,7 @@ export default function WorkSchedule() {
                             type="checkbox"
                             checked={row?.shifts.evening}
                             onChange={() => toggleCheck(idx, "evening")}
+                            disabled={currentStatus === "Draft"}
                           />
                         </td>
                       </tr>
@@ -340,6 +311,7 @@ export default function WorkSchedule() {
             <button
               onClick={handleSubmit}
               className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+              disabled={currentStatus !== "Draft"}
             >
               Submit
             </button>
@@ -347,11 +319,12 @@ export default function WorkSchedule() {
 
           {/* Nút Save / Discard */}
           <div className="flex justify-end gap-4 mt-4">
+            <p>Kiểm tra thông tin trước khi lưu</p>
             <button
               onClick={handleSave}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
-              Save
+              {currentStatus !== "Draft" ? "Save" : "Edit"}
             </button>
             <button
               onClick={handleDiscard}
@@ -372,7 +345,6 @@ export default function WorkSchedule() {
     Phần nào trùng currentStatus => highlight
     */
 function StatusTracker({ currentStatus }) {
-  // Thứ tự steps
   const steps = ["Draft", "Submit", "Confirmed", "Approved"];
 
   return (

@@ -78,9 +78,9 @@ const items2 = [
     label: "Appointment",
   },
   {
-    key: "working-schedule",
+    key: "work-schedule",
     icon: <ScheduleOutlined />,
-    label: "Working Schedule",
+    label: "Work Schedule ",
   },
 ];
 
@@ -128,7 +128,7 @@ function AdminHomePage() {
         return <Overview />;
       case "users":
         return <AccountManagement />;
-      case "working-schedule":
+      case "work-schedule":
         return <Schedule />;
     }
   };

@@ -226,22 +226,6 @@ export const registerWorkingShift = async (data) => {
   }
 };
 
-export const getDoctorWorkingShift = async () => {
-  try {
-    const result = await axios.get(
-      `${baseUrl}/working-schedule/doctor/${userId}?status=DRAFT&page=0&size=8`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return result.data.data.content;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 //============ADMIN API ================
 export const getAllUserAccounts = async () => {
   try {
@@ -282,6 +266,57 @@ export const addNewSlotTimes = async (startTime, endTime) => {
         Authorization: `Bearer ${token}`,
       },
     });
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getDoctorWorkingShiftSubmitted = async (doctorId) => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/working-schedule/doctor/${doctorId}?status=SUBMITTED`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const approveWorkShift = async (slots) => {
+  try {
+    const result = await axios.post(
+      `${baseUrl}/admin/working-schedule/approve`,
+      slots,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const rejectWorkShift = async (slots) => {
+  try {
+    const result = await axios.post(
+      `${baseUrl}/admin/working-schedule/reject`,
+      slots,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return result.data;
   } catch (error) {
     console.log(error);
