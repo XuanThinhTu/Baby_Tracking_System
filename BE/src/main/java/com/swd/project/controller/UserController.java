@@ -11,6 +11,7 @@ import com.swd.project.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class UserController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<UserDTO> registerUser(@RequestBody UserCreationRequest request) throws MessagingException {
+    public ApiResponse<UserDTO> registerUser(@Valid @RequestBody UserCreationRequest request) throws MessagingException {
         UserDTO userDTO = userService.register(request);
         return ApiResponse.<UserDTO>builder()
                 .message("User registered")

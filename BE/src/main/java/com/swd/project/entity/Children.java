@@ -29,6 +29,13 @@ public class Children {
 
     @ManyToOne
     private User user;
-    @OneToMany(mappedBy = "children", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "children", cascade = {CascadeType.ALL, CascadeType.REMOVE}, orphanRemoval = true)
     private List<GrowthTracker> growthTrackers;
+
+    @OneToMany(mappedBy = "children", cascade = {CascadeType.ALL, CascadeType.REMOVE}, orphanRemoval = true)
+    private List<Booking> bookings;
+
+    @OneToMany(mappedBy = "child", cascade = {CascadeType.ALL, CascadeType.REMOVE}, orphanRemoval = true)
+    private List<ConsultationRequest> consultationRequests;
+
 }

@@ -36,13 +36,11 @@ public class WorkingScheduleController {
     @GetMapping("/doctor/{doctorId}")
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ROLE_DOCTOR') or hasRole('ROLE_ADMIN')")
-    public ApiResponse<Page<WorkingScheduleDTO>> getDoctorSchedulesByStatus(@RequestParam(name = "status", defaultValue = "DRAFT") WorkingScheduleStatus status,
-                                                                          @RequestParam(defaultValue = "0") int page,
-                                                                          @RequestParam(defaultValue = "8") int size,
+    public ApiResponse<List<WorkingScheduleDTO>> getDoctorSchedulesByStatus(@RequestParam(name = "status", defaultValue = "DRAFT") WorkingScheduleStatus status,
                                                                             @PathVariable int doctorId) {
-        return ApiResponse.<Page<WorkingScheduleDTO>>builder()
+        return ApiResponse.<List<WorkingScheduleDTO>>builder()
                 .message("Working schedules retrieved")
-                .data(workingScheduleService.getDoctorSchedulesByStatus(status, page, size, doctorId))
+                .data(workingScheduleService.getDoctorSchedulesByStatus(status,doctorId))
                 .build();
     }
 

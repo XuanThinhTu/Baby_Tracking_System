@@ -11,10 +11,14 @@ public interface IWorkingScheduleService {
 
     WorkingScheduleDTO registerWorkingSchedule(List<WorkScheduleRequest> requests);
 
-    Page<WorkingScheduleDTO> getSchedulesByStatus(WorkingScheduleStatus status, int page, int size);
+    List<WorkingScheduleDTO> getSchedulesByStatus(WorkingScheduleStatus status);
 
-    Page<WorkingScheduleDTO> getDoctorSchedulesByStatus(WorkingScheduleStatus status, int page, int size, int doctorId);
+    List<WorkingScheduleDTO> getDoctorSchedulesByStatus(WorkingScheduleStatus status,int doctorId);
 
     void submitWorkingSchedule(List<Integer> scheduleIds);
+
+    void approveWorkingSchedule(List<Integer> scheduleIds);
+
+    void rejectWorkingSchedule(List<Integer> scheduleIds);
 
 }

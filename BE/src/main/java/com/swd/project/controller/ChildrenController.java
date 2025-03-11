@@ -67,4 +67,13 @@ public class ChildrenController {
                 .data(childrenDTO)
                 .build();
     }
+
+    @DeleteMapping("/delete/{id}")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<Void> deleteChildren(@PathVariable int id){
+        childrenService.deleteChildren(id);
+        return ApiResponse.<Void>builder()
+                .message("Children deleted")
+                .build();
+    }
 }

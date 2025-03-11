@@ -14,7 +14,7 @@ public interface WorkingScheduleRepository extends JpaRepository<WorkingSchedule
     List<WorkingSchedule> findByDateBetween(LocalDate start, LocalDate end);
     List<WorkingSchedule> findByDateAndSlotTimeId(LocalDate date, int slotTimeId);
 
-    Page<WorkingSchedule> findByStatus(WorkingScheduleStatus status, Pageable pageable);
+    List<WorkingSchedule> findByStatus(WorkingScheduleStatus status);
 
-    Page<WorkingSchedule> findByDoctorIdAndStatus(int doctorId, WorkingScheduleStatus status, Pageable pageable);
+    List<WorkingSchedule> findByDoctorIdAndStatus(int doctorId, WorkingScheduleStatus status);
 }

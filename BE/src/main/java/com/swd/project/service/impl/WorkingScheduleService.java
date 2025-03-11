@@ -75,29 +75,55 @@ public class WorkingScheduleService implements IWorkingScheduleService {
     }
 
     @Override
-    public Page<WorkingScheduleDTO> getSchedulesByStatus(WorkingScheduleStatus status, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<WorkingSchedule> workingSchedules = workingScheduleRepository.findByStatus(status, pageable);
-        return workingSchedules.map(workingScheduleMapper::toWorkingScheduleDTO);
+    public List<WorkingScheduleDTO> getSchedulesByStatus(WorkingScheduleStatus status) {
+        List<WorkingSchedule> workingSchedules = workingScheduleRepository.findByStatus(status);
+        return workingSchedules.stream().map(workingScheduleMapper::toWorkingScheduleDTO).toList();
     }
 
     @Override
-    public Page<WorkingScheduleDTO> getDoctorSchedulesByStatus(WorkingScheduleStatus status, int page, int size, int doctorId) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<WorkingSchedule> doctorWorkingSchedules = workingScheduleRepository.findByDoctorIdAndStatus(doctorId, status, pageable);
-        return doctorWorkingSchedules.map(workingScheduleMapper::toWorkingScheduleDTO);
+    public List<WorkingScheduleDTO> getDoctorSchedulesByStatus(WorkingScheduleStatus status,int doctorId) {
+        List<WorkingSchedule> doctorWorkingSchedules = workingScheduleRepository.findByDoctorIdAndStatus(doctorId, status);
+        return doctorWorkingSchedules.stream().map(workingScheduleMapper::toWorkingScheduleDTO).toList();
     }
 
     @Override
     public void submitWorkingSchedule(List<Integer> scheduleIds) {
-        for (int i = 0; i < scheduleIds.size(); i++) {
+        for (Integer scheduleId : scheduleIds) {
             User user = userService.getAuthenticatedUser();
-            WorkingSchedule workingSchedule = workingScheduleRepository.findById(scheduleIds.get(i))
+            WorkingSchedule workingSchedule = workingScheduleRepository.findById(scheduleId)
                     .orElseThrow(() -> new ResourceNotFoundException("Working schedule not found"));
-            if(workingSchedule.getDoctor().getId() != user.getId()){
+            if (workingSchedule.getDoctor().getId() != user.getId()) {
                 throw new RuntimeException("You are not allowed to submit this schedule");
+            }else if(!workingSchedule.getStatus().equals(WorkingScheduleStatus.DRAFT)){
+                throw new RuntimeException("Schedule " + scheduleId + " is not in draft status");
             }
             workingSchedule.setStatus(WorkingScheduleStatus.SUBMITTED);
+            workingScheduleRepository.save(workingSchedule);
+        }
+    }
+
+    @Override
+    public void approveWorkingSchedule(List<Integer> scheduleIds) {
+        for(Integer scheduleId : scheduleIds) {
+            WorkingSchedule workingSchedule = workingScheduleRepository.findById(scheduleId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Working schedule " + scheduleId +" not found"));
+            if(!workingSchedule.getStatus().equals(WorkingScheduleStatus.SUBMITTED)){
+                throw new RuntimeException("Schedule " + scheduleId + " is not submitted yet");
+            }
+            workingSchedule.setStatus(WorkingScheduleStatus.APPROVED);
+            workingScheduleRepository.save(workingSchedule);
+        }
+    }
+
+    @Override
+    public void rejectWorkingSchedule(List<Integer> scheduleIds) {
+        for (Integer scheduleId : scheduleIds) {
+            WorkingSchedule workingSchedule = workingScheduleRepository.findById(scheduleId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Working schedule " + scheduleId +" not found"));
+            if(!workingSchedule.getStatus().equals(WorkingScheduleStatus.SUBMITTED)){
+                throw new RuntimeException("Schedule " + scheduleId + " is not submitted yet");
+            }
+            workingSchedule.setStatus(WorkingScheduleStatus.REJECTED);
             workingScheduleRepository.save(workingSchedule);
         }
     }

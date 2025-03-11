@@ -40,6 +40,7 @@ public class SecurityConfig {
             "/children/info/**",
             "/children/list",
             "/children/update/**",
+            "/children/delete/**",
             "/membership-package/create",
             "/membership-package/list",
             "/membership-package/update/**",

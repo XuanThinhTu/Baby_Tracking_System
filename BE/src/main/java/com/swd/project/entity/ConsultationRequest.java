@@ -34,7 +34,7 @@ public class ConsultationRequest {
     @Enumerated(EnumType.STRING)
     private ConsultationStatus status;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Children child;
 
     @ManyToOne(optional = false)
@@ -46,6 +46,6 @@ public class ConsultationRequest {
     private User doctor;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "consultationRequest")
+    @OneToMany(mappedBy = "consultationRequest", cascade = {CascadeType.ALL, CascadeType.REMOVE})
     private List<ConsultationResponse> consultationResponses;
 }

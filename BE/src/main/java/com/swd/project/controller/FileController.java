@@ -17,7 +17,7 @@ public class FileController {
     private final IFileService fileService;
 
     // Import file excel for under 5 years old
-    @PostMapping("/under")
+    @PostMapping
     public ApiResponse<String> importExcelFileForUnder5YearsOld(@RequestParam("file") MultipartFile file,
                                                                 @RequestParam("isGreaterFiveYearsOld") boolean isGreaterFiveYearsOld,
                                                                 @RequestParam("fileType") String fileType,

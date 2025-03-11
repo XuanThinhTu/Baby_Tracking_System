@@ -76,7 +76,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ApiResponse.builder()
                         .success(false)
-                        .message(ex.getMessage())
+                        .message("Invalid Username or Password")
                         .errorCode(HttpStatus.BAD_REQUEST.value())
                         .build()
         );
@@ -94,7 +94,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ApiResponse.builder()
                         .success(false)
-                        .message(ex.getMessage())
+                        .message("Validation error")
+                        .data(errors)
                         .errorCode(HttpStatus.BAD_REQUEST.value())
                         .build()
         );
@@ -119,7 +120,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ApiResponse.builder()
                         .success(false)
-                        .message(ex.getMessage())
+                        .message("Validation error")
+                        .data(response)
                         .errorCode(HttpStatus.BAD_REQUEST.value())
                         .build()
         );

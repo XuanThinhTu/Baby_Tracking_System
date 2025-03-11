@@ -54,12 +54,43 @@ public class AdminController {
     @GetMapping("/working-schedule/list")
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ApiResponse<Page<WorkingScheduleDTO>> getAllSchedulesByStatus(@RequestParam(name = "status", defaultValue = "DRAFT") WorkingScheduleStatus status,
-                                                                         @RequestParam(defaultValue = "0") int page,
-                                                                         @RequestParam(defaultValue = "8") int size) {
-        return ApiResponse.<Page<WorkingScheduleDTO>>builder()
+    public ApiResponse<List<WorkingScheduleDTO>> getAllSchedulesByStatus(@RequestParam(name = "status", defaultValue = "DRAFT") WorkingScheduleStatus status) {
+        return ApiResponse.<List<WorkingScheduleDTO>>builder()
                 .message("List working schedule")
-                .data(workingScheduleService.getSchedulesByStatus(status, page, size))
+                .data(workingScheduleService.getSchedulesByStatus(status))
+                .build();
+    }
+
+    @Operation(summary = "Approve working schedule. Only Admin can access")
+    @PostMapping("/working-schedule/approve")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ApiResponse<Void> approveWorkingSchedule(@RequestBody List<Integer> scheduleIds) {
+        workingScheduleService.approveWorkingSchedule(scheduleIds);
+        return ApiResponse.<Void>builder()
+                .message("Working schedule approved")
+                .build();
+    }
+
+    @Operation(summary = "Reject working schedule. Only Admin can access")
+    @PostMapping("/working-schedule/reject")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ApiResponse<Void> rejectWorkingSchedule(@RequestBody List<Integer> scheduleIds) {
+        workingScheduleService.rejectWorkingSchedule(scheduleIds);
+        return ApiResponse.<Void>builder()
+                .message("Working schedule rejected")
+                .build();
+    }
+
+    @Operation(summary = "Get all children. Only Admin can access")
+    @GetMapping("/children")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ApiResponse<Page<ChildrenDTO>> getAllChildren(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.<Page<ChildrenDTO>>builder()
+                .message("List children")
+                .data(childrenService.getAllChildren(page, size))
                 .build();
     }
 
