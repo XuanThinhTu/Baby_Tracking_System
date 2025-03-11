@@ -22,6 +22,7 @@ import DoctorPage from "../pages/user/Doctor";
 import DoctorDetail from "../pages/user/Doctor/DoctorDetail";
 import DoctorDashboard from "../pages/doctor";
 import MembershipPage from "../pages/user/Membership";
+import FAQPage from "../pages/user/FAQ/FAQPage";
 
 function UserLayout() {
   const location = useLocation();
@@ -32,6 +33,7 @@ function UserLayout() {
       "/register",
       "/forgot-password",
       "/my-family",
+      "/faq",
       "/add-baby-info",
       "/consultation-request",
       "/booking-meeting",
@@ -55,13 +57,11 @@ function UserLayout() {
             <Route path="/my-family" element={<MyFamily />} />
             <Route path="/baby-details/:babyId" element={<BabyOverview />} />
             <Route path="/add-baby-info/:babyId" element={<AddBabyInfo />} />
-            <Route
-              path="/consultation-request"
-              element={<ConsultationRequest />}
-            />
+            <Route path="/consultation-request" element={<ConsultationRequest />} />
             <Route path="/booking-meeting" element={<BookingPage />} />
             <Route path="/doctor" element={<DoctorPage />} />
             <Route path="/doctor/:doctorId" element={<DoctorDetail />} />
+            <Route path="/faq" element={<FAQPage />} />
           </Routes>
         </div>
       ) : (

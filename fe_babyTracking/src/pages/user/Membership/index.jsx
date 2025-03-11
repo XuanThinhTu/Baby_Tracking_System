@@ -1,61 +1,57 @@
-import { CheckIcon } from '@heroicons/react/outline'
+import { CheckIcon } from "@heroicons/react/outline";
 
 const tiers = [
     {
-        name: 'Hobby',
-        id: 'tier-hobby',
-        href: '#',
-        priceMonthly: '$29',
+        name: "Hobby",
+        id: "tier-hobby",
+        href: "#",
+        priceMonthly: "$29",
         description: "The perfect plan if you're just getting started with our product.",
         features: [
-            '25 products',
-            'Up to 10,000 subscribers',
-            'Advanced analytics',
-            '24-hour support response time',
+            "25 products",
+            "Up to 10,000 subscribers",
+            "Advanced analytics",
+            "24-hour support response time",
         ],
         featured: false,
     },
     {
-        name: 'Enterprise',
-        id: 'tier-enterprise',
-        href: '#',
-        priceMonthly: '$99',
-        description: 'Dedicated support and infrastructure for your company.',
+        name: "Enterprise",
+        id: "tier-enterprise",
+        href: "#",
+        priceMonthly: "$99",
+        description: "Dedicated support and infrastructure for your company.",
         features: [
-            'Unlimited products',
-            'Unlimited subscribers',
-            'Advanced analytics',
-            'Dedicated support representative',
-            'Marketing automations',
-            'Custom integrations',
+            "Unlimited products",
+            "Unlimited subscribers",
+            "Advanced analytics",
+            "Dedicated support representative",
+            "Marketing automations",
+            "Custom integrations",
         ],
         featured: true,
     },
-]
-
-function classNames(...classes) {
-    return classes.filter(Boolean).join(' ')
-}
+];
 
 export default function MembershipPage() {
     return (
-        <div className="relative isolate min-h-screen bg-gradient-to-tr from-indigo-50 via-white to-purple-50 px-6 py-24 sm:py-32 lg:px-8">
+        <div className="relative isolate min-h-screen bg-gradient-to-tr from-pink-50 via-pink-100 to-pink-200 px-6 py-24 sm:py-32 lg:px-8">
             {/* Decor Shape (optional) */}
             <div
                 aria-hidden="true"
                 className="absolute inset-x-0 top-0 -z-10 transform-gpu overflow-hidden blur-3xl"
             >
-                {/* Thêm 1 div gradient shape */}
+                {/* Gradient shape with pastel pinks */}
                 <div
-                    className="mx-auto aspect-square w-[80rem] rounded-full bg-gradient-to-r from-purple-200 via-pink-200 to-indigo-200 opacity-40"
+                    className="mx-auto aspect-square w-[80rem] rounded-full bg-gradient-to-r from-pink-200 via-pink-300 to-pink-400 opacity-40"
                     style={{
-                        clipPath: 'polygon(70% 0%, 100% 35%, 100% 100%, 30% 100%, 0% 65%, 0% 0%)',
+                        clipPath: "polygon(70% 0%, 100% 35%, 100% 100%, 30% 100%, 0% 65%, 0% 0%)",
                     }}
                 />
             </div>
 
             <div className="mx-auto max-w-4xl text-center">
-                <h2 className="text-base font-semibold text-indigo-600">Pricing</h2>
+                <h2 className="text-base font-semibold text-pink-600">Pricing</h2>
                 <p className="mt-2 text-5xl font-semibold tracking-tight text-gray-900 sm:text-6xl">
                     Choose the right plan for you
                 </p>
@@ -66,84 +62,97 @@ export default function MembershipPage() {
                 audience, creating customer loyalty, and driving sales.
             </p>
 
-            <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-2">
-                {tiers.map((tier, tierIdx) => (
+            {/* 2 cột, gap-8, items-stretch => cùng chiều cao */}
+            <div className="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-8 items-stretch sm:mt-20 lg:grid-cols-2">
+                {tiers.map((tier) => (
                     <div
                         key={tier.id}
-                        className={classNames(
-                            tier.featured ? 'relative bg-gray-900 shadow-2xl' : 'bg-white/70 sm:mx-8 lg:mx-0',
+                        className={
                             tier.featured
-                                ? ''
-                                : tierIdx === 0
-                                    ? 'rounded-t-3xl sm:rounded-b-none lg:rounded-tr-none lg:rounded-bl-3xl'
-                                    : 'sm:rounded-t-none lg:rounded-tr-3xl lg:rounded-bl-none',
-                            'rounded-3xl p-8 ring-1 ring-gray-900/10 sm:p-10 backdrop-blur-sm'
-                        )}
+                                ? // Gói featured: gradient hồng đậm + chữ trắng
+                                "flex flex-col justify-between rounded-3xl p-8 sm:p-10 shadow-2xl bg-gradient-to-r from-pink-400 via-pink-500 to-pink-300 text-white"
+                                : // Gói thường: nền trắng mờ
+                                "flex flex-col justify-between rounded-3xl p-8 sm:p-10 bg-white/70 backdrop-blur-md shadow ring-1 ring-gray-900/10"
+                        }
                     >
+                        {/* Title */}
                         <h3
                             id={tier.id}
-                            className={classNames(
-                                tier.featured ? 'text-indigo-300' : 'text-indigo-600',
-                                'text-base font-semibold'
-                            )}
+                            className={
+                                tier.featured
+                                    ? "text-pink-100 text-base font-semibold"
+                                    : "text-pink-600 text-base font-semibold"
+                            }
                         >
                             {tier.name}
                         </h3>
+
+                        {/* Price */}
                         <p className="mt-4 flex items-baseline gap-x-2">
                             <span
-                                className={classNames(
-                                    tier.featured ? 'text-white' : 'text-gray-900',
-                                    'text-5xl font-semibold tracking-tight'
-                                )}
+                                className={
+                                    tier.featured
+                                        ? "text-5xl font-semibold tracking-tight text-white"
+                                        : "text-5xl font-semibold tracking-tight text-gray-900"
+                                }
                             >
                                 {tier.priceMonthly}
                             </span>
                             <span
-                                className={classNames(
-                                    tier.featured ? 'text-gray-400' : 'text-gray-500',
-                                    'text-base'
-                                )}
+                                className={
+                                    tier.featured ? "text-pink-100 text-base" : "text-gray-500 text-base"
+                                }
                             >
                                 /month
                             </span>
                         </p>
+
+                        {/* Description */}
                         <p
-                            className={classNames(
-                                tier.featured ? 'text-gray-300' : 'text-gray-600',
-                                'mt-6 text-base'
-                            )}
+                            className={
+                                tier.featured
+                                    ? "mt-6 text-base text-pink-100"
+                                    : "mt-6 text-base text-gray-600"
+                            }
                         >
                             {tier.description}
                         </p>
+
+                        {/* Feature list */}
                         <ul
                             role="list"
-                            className={classNames(
-                                tier.featured ? 'text-gray-300' : 'text-gray-600',
-                                'mt-8 space-y-3 text-sm sm:mt-10'
-                            )}
+                            className={
+                                tier.featured
+                                    ? "mt-8 space-y-3 text-sm text-pink-100 sm:mt-10"
+                                    : "mt-8 space-y-3 text-sm text-gray-600 sm:mt-10"
+                            }
                         >
                             {tier.features.map((feature) => (
                                 <li key={feature} className="flex gap-x-3">
                                     <CheckIcon
                                         aria-hidden="true"
-                                        className={classNames(
-                                            tier.featured ? 'text-indigo-300' : 'text-indigo-600',
-                                            'h-6 w-5 flex-none'
-                                        )}
+                                        className={
+                                            tier.featured
+                                                ? "h-6 w-5 flex-none text-pink-100"
+                                                : "h-6 w-5 flex-none text-pink-600"
+                                        }
                                     />
                                     {feature}
                                 </li>
                             ))}
                         </ul>
+
+                        {/* CTA button */}
                         <a
                             href={tier.href}
                             aria-describedby={tier.id}
-                            className={classNames(
+                            className={
                                 tier.featured
-                                    ? 'bg-indigo-500 text-white shadow-md hover:bg-indigo-400 focus-visible:outline-indigo-500'
-                                    : 'text-indigo-600 ring-1 ring-indigo-200 ring-inset hover:ring-indigo-300 focus-visible:outline-indigo-600',
-                                'mt-8 block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 sm:mt-10'
-                            )}
+                                    ? // Gói featured: Nút trắng chữ hồng
+                                    "mt-8 block w-full rounded-md bg-white px-3.5 py-2.5 text-center text-sm font-semibold text-pink-700 shadow-md hover:bg-pink-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-500 sm:mt-10"
+                                    : // Gói thường: Nút hồng đậm chữ trắng
+                                    "mt-8 block w-full rounded-md bg-pink-500 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-md hover:bg-pink-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-500 sm:mt-10"
+                            }
                         >
                             Get started today
                         </a>
@@ -151,5 +160,5 @@ export default function MembershipPage() {
                 ))}
             </div>
         </div>
-    )
+    );
 }
