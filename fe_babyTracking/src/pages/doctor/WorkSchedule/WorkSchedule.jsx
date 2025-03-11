@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { CheckCircleIcon } from "@heroicons/react/solid";
-import { getUserInformation } from "../../../services/APIServices";
+import {
+  getDoctorWorkingShift,
+  getUserInformation,
+  registerWorkingShift,
+} from "../../../services/APIServices";
 import dayjs from "dayjs";
 
 export default function WorkSchedule() {
@@ -23,6 +27,22 @@ export default function WorkSchedule() {
   const [toDate, setToDate] = useState("");
   const [userInfo, setUserInfo] = useState(null);
   const [scheduleData, setScheduleData] = useState([]);
+  const [draftData, setDraftData] = useState([]);
+
+  useEffect(() => {
+    const fetchRegisterShift = async () => {
+      try {
+        const result = await getDoctorWorkingShift();
+        const draft = result.filter((item) => item.status === "DRAFT");
+        setDraftData(draft);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchRegisterShift();
+  }, []);
+
+  console.log(draftData);
 
   // Xử lý create
   const handleCreate = () => {
@@ -40,9 +60,7 @@ export default function WorkSchedule() {
     };
     setShifts([...shifts, newShift]);
 
-    // Đổi status => “Draft” (hoặc “Submitted” tùy logic)
     setCurrentStatus("Draft");
-    // Ẩn form
     setShowForm(false);
     setScheduleData([]);
   };
@@ -111,7 +129,17 @@ export default function WorkSchedule() {
       setScheduleData([]);
     }
   }, [fromDate, toDate]);
-  console.log(scheduleData);
+
+  const handleSubmit = async () => {
+    try {
+      const result = await registerWorkingShift(scheduleData);
+      setShowForm(false);
+      setCurrentStatus("Draft");
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="p-4">
@@ -297,7 +325,11 @@ export default function WorkSchedule() {
                     ))}
                   </>
                 ) : (
-                  <>Please select your free day</>
+                  <tr>
+                    <td colSpan="4" className="text-center p-4">
+                      Please select your free day
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>
@@ -306,7 +338,7 @@ export default function WorkSchedule() {
           {/* Nút SUBMIT */}
           <div className="flex justify-end gap-4">
             <button
-              onClick={handleSubmitSchedule}
+              onClick={handleSubmit}
               className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
             >
               Submit

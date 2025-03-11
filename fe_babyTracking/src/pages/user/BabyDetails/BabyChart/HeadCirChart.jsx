@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -13,13 +13,15 @@ import {
   getBabyInfo,
   getBoyStandardIndex,
   getGirlStandardIndex,
+  getPredictGrowthData,
 } from "../../../../services/APIServices";
 import dayjs from "dayjs";
 
 const HeadCirChart = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
   const [growthData, setGrowthData] = useState([]); // SD lines
-  const [userData, setUserData] = useState([]);     // data bé
+  const [userData, setUserData] = useState([]); // data bé
+  const [predictData, setPredictData] = useState([]);
 
   // Lấy ngày (so với birthDate)
   const calculateDays = (birthDate, measuredAt) => {
@@ -47,8 +49,6 @@ const HeadCirChart = ({ babyId }) => {
       if (!baby) return;
       try {
         const result = await getBabyGrowthData(babyId);
-        // Thay measureAt nếu API là measureAt, 
-        // hoặc item.measuredAt nếu đó là field chuẩn
         const formatted = result.map((item) => ({
           day: calculateDays(baby.birthDate, item.measuredAt),
           headCir: item.headCircumference,
@@ -59,6 +59,22 @@ const HeadCirChart = ({ babyId }) => {
       }
     };
     fetchGrowthData();
+  }, [baby, babyId]);
+
+  useEffect(() => {
+    const fetchPredictData = async () => {
+      try {
+        const result = await getPredictGrowthData(babyId);
+        const formattedData = result.map((item) => ({
+          day: calculateDays(baby?.birthDate, item.predictedDate),
+          predictHeadCir: item.predictedHeadCircumference,
+        }));
+        setPredictData(formattedData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchPredictData();
   }, [baby, babyId]);
 
   // Lấy dữ liệu chuẩn (headCircumference)
@@ -181,6 +197,18 @@ const HeadCirChart = ({ babyId }) => {
             dataKey="headCir"
             data={userData}
             stroke="#007bff"
+            dot={{ r: 4 }}
+            activeDot={{ r: 6 }}
+            isAnimationActive={false}
+          />
+        )}
+
+        {predictData.length > 0 && (
+          <Line
+            type="monotone"
+            dataKey="predictHeadCir"
+            data={predictData}
+            stroke="gray"
             dot={{ r: 4 }}
             activeDot={{ r: 6 }}
             isAnimationActive={false}

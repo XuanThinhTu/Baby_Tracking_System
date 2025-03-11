@@ -38,7 +38,7 @@ function Schedule() {
 
   const eveningSlots = slots.filter((slot) => {
     const hour = dayjs(slot.startTime, "HH:mm:ss").hour();
-    return hour >= 17 && hour < 21;
+    return hour >= 17 && hour <= 21;
   });
 
   const sessionData = [
@@ -110,7 +110,7 @@ function Schedule() {
                     disabledHours: () => {
                       const hours = [];
                       for (let i = 0; i < 8; i++) hours.push(i);
-                      for (let i = 21; i < 24; i++) hours.push(i);
+                      for (let i = 22; i < 24; i++) hours.push(i);
                       return hours;
                     },
                   })}

@@ -8,9 +8,9 @@ import DoctorProfile from "./DoctorProfile/DoctorProfile";
 import ConsultationRequests from "./ConsultationRequests/ConsultationRequests";
 import BookingManagement from "./BookingManagement/BookingManagement";
 import BlogCreation from "./BlogCreation/BlogCreation";
-import WorkSchedule from "./WorkSchedule/WorkSchedule";
 import { getUserInformation } from "../../services/APIServices";
 import { useNavigate } from "react-router-dom";
+import WorkSchedule from "./WorkSchedule/WorkSchedule";
 
 export default function DoctorDashboard() {
   // State dropdown header

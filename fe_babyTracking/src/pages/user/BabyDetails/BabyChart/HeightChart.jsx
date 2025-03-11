@@ -13,14 +13,16 @@ import {
   getBabyInfo,
   getBoyStandardIndex,
   getGirlStandardIndex,
+  getPredictGrowthData,
 } from "../../../../services/APIServices";
 import dayjs from "dayjs";
 
 const HeightChart = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
   const [growthData, setGrowthData] = useState([]); // Dữ liệu chuẩn (SD lines)
-  const [userData, setUserData] = useState([]);     // Dữ liệu bé
+  const [userData, setUserData] = useState([]); // Dữ liệu bé
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [predictData, setPredictData] = useState([]);
 
   // Hàm tính số ngày từ ngày sinh
   const calculateDays = (birthDate, measuredAt) => {
@@ -58,6 +60,22 @@ const HeightChart = ({ babyId }) => {
       }
     };
     fetchGrowthData();
+  }, [baby, babyId]);
+
+  useEffect(() => {
+    const fetchPredictData = async () => {
+      try {
+        const result = await getPredictGrowthData(babyId);
+        const formattedData = result.map((item) => ({
+          day: calculateDays(baby?.birthDate, item.predictedDate),
+          predictHeight: item.predictedHeight,
+        }));
+        setPredictData(formattedData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchPredictData();
   }, [baby, babyId]);
 
   // Lấy dữ liệu chuẩn
@@ -183,6 +201,18 @@ const HeightChart = ({ babyId }) => {
             dataKey="height"
             data={userData}
             stroke="#007bff"
+            dot={{ r: 4 }}
+            activeDot={{ r: 6 }}
+            isAnimationActive={false}
+          />
+        )}
+
+        {predictData.length > 0 && (
+          <Line
+            type="monotone"
+            dataKey="predictHeight"
+            data={predictData}
+            stroke="gray"
             dot={{ r: 4 }}
             activeDot={{ r: 6 }}
             isAnimationActive={false}

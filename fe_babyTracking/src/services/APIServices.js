@@ -184,9 +184,58 @@ export const getBabyGrowthData = async (babyId) => {
   }
 };
 
+export const getPredictGrowthData = async (babyId) => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/api/grow-tracker/${babyId}/predict-next?n=2`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const getAllDoctors = async () => {
   try {
     const result = await axios.get(`${baseUrl}/user/get-doctors?page=0&size=5`);
+    return result.data.data.content;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const registerWorkingShift = async (data) => {
+  try {
+    const result = await axios.post(
+      `${baseUrl}/working-schedule/register`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getDoctorWorkingShift = async () => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/working-schedule/doctor/${userId}?status=DRAFT&page=0&size=8`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return result.data.data.content;
   } catch (error) {
     console.log(error);
