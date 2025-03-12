@@ -20,5 +20,5 @@ public interface WorkingScheduleRepository extends JpaRepository<WorkingSchedule
 
     List<WorkingSchedule> findByDoctorIdAndStatus(int doctorId, WorkingScheduleStatus status);
 
-    Optional<WorkingSchedule> findByDateAndSlotTime(LocalDate date, SlotTime slotTime);
+    Optional<WorkingSchedule> findByDateAndSlotTimeIdAndDoctorId(LocalDate date, int slotTimeId, int doctorId);
 }

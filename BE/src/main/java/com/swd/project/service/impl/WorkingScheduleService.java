@@ -149,7 +149,7 @@ public class WorkingScheduleService implements IWorkingScheduleService {
         }
         SlotTime slotTime = slotTimeRepository.findById(slotTimeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Slot time not found"));
-        if(workingScheduleRepository.findByDateAndSlotTime(workingSchedule.getDate(), slotTime).isPresent()){
+        if(workingScheduleRepository.findByDateAndSlotTimeIdAndDoctorId(workingSchedule.getDate(), slotTime.getId(), user.getId()).isPresent()){
             throw new RuntimeException("Slot time is already taken");
         }
         workingSchedule.setSlotTime(slotTime);
