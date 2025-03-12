@@ -21,4 +21,6 @@ public interface IWorkingScheduleService {
 
     void rejectWorkingSchedule(List<Integer> scheduleIds);
 
+    List<WorkingScheduleDTO> getAllApprovedSchedules();
+
 }

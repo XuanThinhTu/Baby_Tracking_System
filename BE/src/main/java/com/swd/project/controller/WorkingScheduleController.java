@@ -53,4 +53,12 @@ public class WorkingScheduleController {
                 .message("Working schedule submitted")
                 .build();
     }
+
+    @GetMapping("/approved-list")
+    public ApiResponse<List<WorkingScheduleDTO>> getAllApprovedSchedules(){
+        return ApiResponse.<List<WorkingScheduleDTO>>builder()
+                .message("Approved schedules retrieved")
+                .data(workingScheduleService.getAllApprovedSchedules())
+                .build();
+    }
 }

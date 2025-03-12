@@ -127,4 +127,10 @@ public class WorkingScheduleService implements IWorkingScheduleService {
             workingScheduleRepository.save(workingSchedule);
         }
     }
+
+    @Override
+    public List<WorkingScheduleDTO> getAllApprovedSchedules() {
+        List<WorkingSchedule> schedules = workingScheduleRepository.findByStatus(WorkingScheduleStatus.APPROVED);
+        return schedules.stream().map(workingScheduleMapper::toWorkingScheduleDTO).toList();
+    }
 }

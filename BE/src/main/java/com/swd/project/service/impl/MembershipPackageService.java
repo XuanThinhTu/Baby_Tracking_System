@@ -166,15 +166,15 @@ public class MembershipPackageService implements IMembershipPackageService {
         MembershipPackage membershipPackage = packageRepository.findById(membershipId)
                 .orElseThrow(() -> new ResourceNotFoundException("Membership Package not found"));
         //membership subscription
-        MembershipSubscription membershipSubscription = new MembershipSubscription();
-        membershipSubscription.setStartDate(Date.valueOf(LocalDateTime.now().toLocalDate()));
-        membershipSubscription.setEndDate(Date.valueOf(LocalDateTime.now().plusDays(membershipPackage.getDuration()).toLocalDate()));
-        membershipSubscription.setStatus(MembershipSubscriptionStatus.UNAVAILABLE);
-        membershipSubscription.setCreatedAt(Date.valueOf(LocalDateTime.now().toLocalDate()));
-        membershipSubscription.setPaymentStatus(PaymentStatus.PENDING);
-        membershipSubscription.setMembershipPackage(membershipPackage);
-        membershipSubscription.setUser(userService.getAuthenticatedUser());
-        membershipSubscriptionRepository.save(membershipSubscription);
+//        MembershipSubscription membershipSubscription = new MembershipSubscription();
+//        membershipSubscription.setStartDate(Date.valueOf(LocalDateTime.now().toLocalDate()));
+//        membershipSubscription.setEndDate(Date.valueOf(LocalDateTime.now().plusDays(membershipPackage.getDuration()).toLocalDate()));
+//        membershipSubscription.setStatus(MembershipSubscriptionStatus.UNAVAILABLE);
+//        membershipSubscription.setCreatedAt(Date.valueOf(LocalDateTime.now().toLocalDate()));
+//        membershipSubscription.setPaymentStatus(PaymentStatus.PENDING);
+//        membershipSubscription.setMembershipPackage(membershipPackage);
+//        membershipSubscription.setUser(userService.getAuthenticatedUser());
+//        membershipSubscriptionRepository.save(membershipSubscription);
         //paypal payment
         Amount amount = new Amount();
         amount.setCurrency(CURRENCY);
