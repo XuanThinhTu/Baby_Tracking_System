@@ -58,7 +58,8 @@ public class SecurityConfig {
             "/consultation-response/**",
             "/working-schedule/register",
             "/working-schedule/doctor/**",
-            "/working-schedule/submit"
+            "/working-schedule/submit",
+            "/working-schedule/update/**"
     );
 
     @Bean

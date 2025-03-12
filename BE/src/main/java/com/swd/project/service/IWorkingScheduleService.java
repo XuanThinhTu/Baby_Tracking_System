@@ -23,4 +23,7 @@ public interface IWorkingScheduleService {
 
     List<WorkingScheduleDTO> getAllApprovedSchedules();
 
+    WorkingScheduleDTO updateWorkingSchedule(int scheduleId, int slotTimeId);
+
+    void unsubmitWorkingSchedule(List<Integer> scheduleIds);
 }

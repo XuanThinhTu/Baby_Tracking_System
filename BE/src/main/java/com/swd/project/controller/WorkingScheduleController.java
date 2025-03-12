@@ -54,11 +54,31 @@ public class WorkingScheduleController {
                 .build();
     }
 
+    @PutMapping("/update/{scheduleId}")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_DOCTOR')")
+    public ApiResponse<WorkingScheduleDTO> updateWorkingSchedule(@PathVariable int scheduleId, @RequestParam int slotTimeId) {
+        return ApiResponse.<WorkingScheduleDTO>builder()
+                .message("Working schedule updated")
+                .data(workingScheduleService.updateWorkingSchedule(scheduleId, slotTimeId))
+                .build();
+    }
+
     @GetMapping("/approved-list")
     public ApiResponse<List<WorkingScheduleDTO>> getAllApprovedSchedules(){
         return ApiResponse.<List<WorkingScheduleDTO>>builder()
                 .message("Approved schedules retrieved")
                 .data(workingScheduleService.getAllApprovedSchedules())
+                .build();
+    }
+
+    @PostMapping("/un-submit")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_DOCTOR')")
+    public ApiResponse<Void> unsubmitWorkingSchedule(@RequestBody List<Integer> scheduleIds) {
+        workingScheduleService.unsubmitWorkingSchedule(scheduleIds);
+        return ApiResponse.<Void>builder()
+                .message("Working schedule unsubmitted")
                 .build();
     }
 }

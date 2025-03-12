@@ -46,7 +46,8 @@ public class WorkingScheduleService implements IWorkingScheduleService {
                         workingSchedule.setDoctor(user);
                         workingScheduleRepository.save(workingSchedule);
                     }
-                }else if(request.getShifts().isAfternoon()){
+                }
+                if(request.getShifts().isAfternoon()){
                     List<SlotTime> slotTimes = slotTimeRepository.findByShifts(SlotTimeShift.AFTERNOON);
                     for(SlotTime slotTime : slotTimes){
                         WorkingSchedule workingSchedule = new WorkingSchedule();
@@ -56,7 +57,8 @@ public class WorkingScheduleService implements IWorkingScheduleService {
                         workingSchedule.setDoctor(user);
                         workingScheduleRepository.save(workingSchedule);
                     }
-                }else if(request.getShifts().isEvening()){
+                }
+                if(request.getShifts().isEvening()){
                     List<SlotTime> slotTimes = slotTimeRepository.findByShifts(SlotTimeShift.EVENING);
                     for(SlotTime slotTime : slotTimes){
                         WorkingSchedule workingSchedule = new WorkingSchedule();
@@ -132,5 +134,43 @@ public class WorkingScheduleService implements IWorkingScheduleService {
     public List<WorkingScheduleDTO> getAllApprovedSchedules() {
         List<WorkingSchedule> schedules = workingScheduleRepository.findByStatus(WorkingScheduleStatus.APPROVED);
         return schedules.stream().map(workingScheduleMapper::toWorkingScheduleDTO).toList();
+    }
+
+    @Override
+    public WorkingScheduleDTO updateWorkingSchedule(int scheduleId, int slotTimeId) {
+        User user = userService.getAuthenticatedUser();
+        WorkingSchedule workingSchedule = workingScheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Working schedule not found"));
+        if(workingSchedule.getDoctor().getId() != user.getId()){
+            throw new RuntimeException("You are not allowed to update this schedule");
+        }
+        if(!workingSchedule.getStatus().equals(WorkingScheduleStatus.DRAFT)){
+            throw new RuntimeException("Schedule " + scheduleId + " is not in draft status");
+        }
+        SlotTime slotTime = slotTimeRepository.findById(slotTimeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Slot time not found"));
+        if(workingScheduleRepository.findByDateAndSlotTime(workingSchedule.getDate(), slotTime).isPresent()){
+            throw new RuntimeException("Slot time is already taken");
+        }
+        workingSchedule.setSlotTime(slotTime);
+        workingSchedule = workingScheduleRepository.save(workingSchedule);
+        return workingScheduleMapper.toWorkingScheduleDTO(workingSchedule);
+    }
+
+    @Override
+    public void unsubmitWorkingSchedule(List<Integer> scheduleIds) {
+        for (Integer scheduleId : scheduleIds) {
+            User user = userService.getAuthenticatedUser();
+            WorkingSchedule workingSchedule = workingScheduleRepository.findById(scheduleId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Working schedule " + scheduleId + " not found"));
+            if (workingSchedule.getDoctor().getId() != user.getId()) {
+                throw new RuntimeException("You are not allowed to un-submit this schedule");
+            }
+            if (!workingSchedule.getStatus().equals(WorkingScheduleStatus.SUBMITTED)) {
+                throw new RuntimeException("Schedule " + scheduleId + " is not submitted yet");
+            }
+            workingSchedule.setStatus(WorkingScheduleStatus.DRAFT);
+            workingScheduleRepository.save(workingSchedule);
+        }
     }
 }
