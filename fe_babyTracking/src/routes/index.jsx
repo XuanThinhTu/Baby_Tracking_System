@@ -23,6 +23,7 @@ import DoctorDetail from "../pages/user/Doctor/DoctorDetail";
 import DoctorDashboard from "../pages/doctor";
 import MembershipPage from "../pages/user/Membership";
 import FAQPage from "../pages/user/FAQ/FAQPage";
+import VerifyAccount from "../pages/user/Auth/Register/VerifyAccount";
 
 function UserLayout() {
   const location = useLocation();
@@ -31,13 +32,14 @@ function UserLayout() {
     [
       "/login",
       "/register",
+      "/verify",
       "/forgot-password",
       "/my-family",
       "/faq",
       "/add-baby-info",
       "/consultation-request",
       "/booking-meeting",
-      "/doctor",
+      "/doctor"
     ].some((path) => location.pathname.startsWith(path)) ||
     location.pathname.startsWith(
       "/baby-details/",
@@ -53,6 +55,7 @@ function UserLayout() {
           <Routes>
             <Route path="/login" element={<SignIn />} />
             <Route path="/register" element={<SignUp />} />
+            <Route path="/verify" element={<VerifyAccount />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/my-family" element={<MyFamily />} />
             <Route path="/baby-details/:babyId" element={<BabyOverview />} />
