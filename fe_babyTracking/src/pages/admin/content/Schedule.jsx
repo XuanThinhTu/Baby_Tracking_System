@@ -28,7 +28,7 @@ function Schedule() {
   const pageSize = 8;
   const [currentPage, setCurrentPage] = useState(1);
   const startIndex = (currentPage - 1) * pageSize;
-  const paginatedSchedule = workDates.slice(startIndex, startIndex + pageSize);
+  const paginatedSchedule = workDates?.slice(startIndex, startIndex + pageSize);
   const [slotTimes, setSlotTimes] = useState({ startTime: "", endTime: "" });
 
   useEffect(() => {
@@ -62,7 +62,6 @@ function Schedule() {
 
         const result = await getDoctorWorkingShiftSubmitted(selectedDoctor?.id);
         setWorkDates(result);
-        console.log(result);
       } catch (error) {
         console.log(error);
       }

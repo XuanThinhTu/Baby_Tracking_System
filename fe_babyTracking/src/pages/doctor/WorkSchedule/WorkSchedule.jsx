@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { CheckCircleIcon } from "@heroicons/react/solid";
 import {
+  getNewWorkingShiftDraft,
   getUserInformation,
   registerWorkingShift,
+  submitWorkingShift,
 } from "../../../services/APIServices";
 import dayjs from "dayjs";
 
@@ -22,17 +24,29 @@ export default function WorkSchedule() {
   const [toDate, setToDate] = useState("");
   const [userInfo, setUserInfo] = useState(null);
   const [scheduleData, setScheduleData] = useState([]);
+  const today = new Date().toISOString().split("T")[0];
+  const [numberOfShift, setNumberOfShifts] = useState(0);
 
   const handleCreate = () => {
     setShowForm(true);
     setScheduleData([]);
+    setCurrentStatus("");
+    setFromDate("");
+    setToDate("");
   };
 
-  // Xử lý save
+  const countTrueValues = (data) => {
+    return data.map(
+      (item) =>
+        Object.values(item.shifts).filter((value) => value === true).length
+    );
+  };
+
   const handleSave = async () => {
     try {
       if (currentStatus !== "Draft") {
         const result = await registerWorkingShift(scheduleData);
+        setNumberOfShifts(countTrueValues(scheduleData));
         alert("Bạn đã lưu bản nháp đăng ký ca làm thành công!");
         setCurrentStatus("Draft");
       } else {
@@ -101,7 +115,18 @@ export default function WorkSchedule() {
 
   const handleSubmit = async () => {
     try {
+      const dates = scheduleData.map((item) => item.date);
+      const newSchedule = await getNewWorkingShiftDraft(
+        userInfo.id,
+        dates,
+        numberOfShift
+      );
+      const submittedIds = newSchedule?.map((item) =>
+        item.map((item) => item.id)
+      );
+      const result = await submitWorkingShift(submittedIds);
       setShowForm(false);
+      setNumberOfShifts(0);
       alert("Bạn đã đăng ký ca làm thành công!");
       setScheduleData([]);
     } catch (error) {
@@ -188,6 +213,7 @@ export default function WorkSchedule() {
                 <input
                   type="date"
                   value={fromDate}
+                  min={today}
                   onChange={(e) => setFromDate(e.target.value)}
                   className="w-full border border-gray-300 rounded p-2"
                 />
@@ -200,6 +226,7 @@ export default function WorkSchedule() {
                 <input
                   type="date"
                   value={toDate}
+                  min={today}
                   onChange={(e) => setToDate(e.target.value)}
                   className="w-full border border-gray-300 rounded p-2"
                 />

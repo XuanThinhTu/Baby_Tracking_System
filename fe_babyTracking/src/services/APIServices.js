@@ -226,6 +226,71 @@ export const registerWorkingShift = async (data) => {
   }
 };
 
+export const getNewWorkingShiftDraft = async (doctorId, dates, number) => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/working-schedule/doctor/${doctorId}?status=DRAFT`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const stringDates = dates.map(String);
+    let newResult = result.data.data.filter((item) =>
+      stringDates.some((date) => date === String(item.date))
+    );
+
+    const latestData = stringDates.map((date, index) => {
+      const limit = number[index] === 3 ? 24 : number[index] === 2 ? 16 : 8;
+      return newResult
+        .filter((item) => String(item.date) === date)
+        .sort((a, b) => b.id - a.id)
+        .slice(0, limit);
+    });
+
+    return latestData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const submitWorkingShift = async (slots) => {
+  try {
+    const flattenedSlots = slots?.flat();
+    const result = await axios.post(
+      `${baseUrl}/working-schedule/submit`,
+      flattenedSlots,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getAvailableShift = async (yearMonth) => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/booking/available?yearMonth=${yearMonth}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 //============ADMIN API ================
 export const getAllUserAccounts = async () => {
   try {
@@ -297,6 +362,7 @@ export const approveWorkShift = async (slots) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       }
     );
@@ -314,6 +380,7 @@ export const rejectWorkShift = async (slots) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       }
     );
