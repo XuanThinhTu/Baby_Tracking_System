@@ -17,6 +17,7 @@ import MyFamily from "../pages/user/MyFamily";
 import BabyOverview from "../pages/user/BabyDetails";
 import AddBabyInfo from "../pages/user/BabyDetails/Info/AddBabyInfo";
 import ConsultationRequest from "../pages/user/BabyDetails/Consultation/index";
+import ConsultationDetail from "../pages/user/BabyDetails/Consultation/ConsultationDetail";
 import BookingPage from "../pages/user/Calendar";
 import DoctorPage from "../pages/user/Doctor";
 import DoctorDetail from "../pages/user/Doctor/DoctorDetail";
@@ -28,24 +29,28 @@ import VerifyAccount from "../pages/user/Auth/Register/VerifyAccount";
 function UserLayout() {
   const location = useLocation();
 
-  const isContentPage =
-    [
-      "/login",
-      "/register",
-      "/verify",
-      "/forgot-password",
-      "/my-family",
-      "/faq",
-      "/add-baby-info",
-      "/consultation-request",
-      "/booking-meeting",
-      "/doctor"
-    ].some((path) => location.pathname.startsWith(path)) ||
-    location.pathname.startsWith(
-      "/baby-details/",
-      "/add-baby-info/",
-      "/doctor/"
-    );
+  // Gom tất cả prefix cần check vào 1 mảng
+  const contentPaths = [
+    "/login",
+    "/register",
+    "/verify",
+    "/forgot-password",
+    "/my-family",
+    "/faq",
+    "/add-baby-info",
+    "/consultation-request",
+    "/booking-meeting",
+    "/doctor",
+    "/baby-details/",
+    "/add-baby-info/",
+    "/doctor/",
+    "/consultation-detail/",
+  ];
+
+  // Kiểm tra xem location.pathname có bắt đầu bằng bất kỳ prefix nào
+  const isContentPage = contentPaths.some((path) =>
+    location.pathname.startsWith(path)
+  );
 
   return (
     <>
@@ -61,6 +66,7 @@ function UserLayout() {
             <Route path="/baby-details/:babyId" element={<BabyOverview />} />
             <Route path="/add-baby-info/:babyId" element={<AddBabyInfo />} />
             <Route path="/consultation-request" element={<ConsultationRequest />} />
+            <Route path="/consultation-detail/:id" element={<ConsultationDetail />} />
             <Route path="/booking-meeting" element={<BookingPage />} />
             <Route path="/doctor" element={<DoctorPage />} />
             <Route path="/doctor/:doctorId" element={<DoctorDetail />} />

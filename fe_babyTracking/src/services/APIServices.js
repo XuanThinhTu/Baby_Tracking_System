@@ -284,3 +284,14 @@ export const addNewSlotTimes = async (startTime, endTime) => {
     console.log(error);
   }
 };
+
+// Consultation Request
+export async function getAllConsultations() {
+  try {
+    const res = await axios.get(`${baseUrl}/consultation/all-request`);
+    return res.data; // Trả về object { success, message, data: { content, ...} }
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
