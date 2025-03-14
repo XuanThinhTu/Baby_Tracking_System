@@ -354,6 +354,16 @@ export const bookingMeeting = async (babyId, date, slotTimeId, note) => {
   }
 };
 
+export async function getAllConsultations() {
+  try {
+    const res = await axios.get(`${baseUrl}/consultation/all-request`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 //============ADMIN API ================
 export const getAllUserAccounts = async () => {
   try {
@@ -452,13 +462,3 @@ export const rejectWorkShift = async (slots) => {
     console.log(error);
   }
 };
-
-export async function getAllConsultations() {
-  try {
-    const res = await axios.get(`${baseUrl}/consultation/all-request`);
-    return res.data;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}

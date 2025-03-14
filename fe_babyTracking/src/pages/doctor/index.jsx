@@ -5,48 +5,34 @@ import { UserIcon, LogoutIcon } from "@heroicons/react/outline";
 // Import các component
 import DoctorSidebar from "./DoctorSidebar/DoctorSidebar";
 import DoctorProfile from "./DoctorProfile/DoctorProfile";
-import ConsultationRequests from "./ConsultationRequests/ConsultationRequests";
 import BookingManagement from "./BookingManagement/BookingManagement";
 import BlogCreation from "./BlogCreation/BlogCreation";
 import { getUserInformation } from "../../services/APIServices";
 import { useNavigate } from "react-router-dom";
 import WorkSchedule from "./WorkSchedule/WorkSchedule";
-
+import DoctorConsultation from "./ConsultationRequests/DoctorConsultation";
 export default function DoctorDashboard() {
   // State dropdown header
   const [userInfo, setUserInfo] = useState(null);
   const [openDropdown, setOpenDropdown] = useState(false);
   const navigation = useNavigate();
 
-  // State xác định tab đang hiển thị
-  const [activeTab, setActiveTab] = useState("profile");
-
-  // Render nội dung main tuỳ theo tab
-  const renderContent = () => {
-    switch (activeTab) {
-      case "profile":
-        return <DoctorProfile />;
-      case "consultation":
-        return <ConsultationRequests />;
-      case "booking":
-        return <BookingManagement />;
-      case "blog":
-        return <BlogCreation />;
-      case "workSchedule":
-        return <WorkSchedule />;
-      default:
-        return <DoctorProfile />;
-    }
-  };
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const result = await getUserInformation();
-        setUserInfo(result.data);
-      } catch (error) {
-        console.log(error);
-      }
+    // Render nội dung main tuỳ theo tab
+    const renderContent = () => {
+        switch (activeTab) {
+            case "profile":
+                return <DoctorProfile />;
+            case "consultation":
+                return <DoctorConsultation />;
+            case "booking":
+                return <BookingManagement />;
+            case "blog":
+                return <BlogCreation />;
+            case "workSchedule":
+                return <WorkSchedule />;
+            default:
+                return <DoctorProfile />;
+        }
     };
     fetchUserInfo();
   }, []);
