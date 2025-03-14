@@ -100,24 +100,50 @@ const BabyDetails = ({ babyId }) => {
       <div className="grid grid-cols-3 gap-8 w-full max-w-full px-4 mt-6">
         <Link
           to={`/add-baby-info/${babyId}`}
-          className="flex flex-col items-center cursor-pointer"
+          className="
+          flex flex-col items-center p-4 
+          bg-white shadow rounded-lg 
+          transition 
+          transform 
+          hover:scale-105 
+          hover:shadow-lg 
+          cursor-pointer
+        "
         >
-          <FaRuler className="text-blue-500 text-7xl" />
-          <p className="text-gray-600 text-lg mt-2">Chiều cao, cân nặng</p>
+          <FaRuler className="text-blue-500 text-7xl mb-2" />
+          <p className="text-gray-700 text-lg font-medium">Chiều cao, cân nặng</p>
         </Link>
+
         <Link
           to="/consultation-request"
-          className="flex flex-col items-center cursor-pointer"
+          className="
+          flex flex-col items-center p-4 
+          bg-white shadow rounded-lg 
+          transition 
+          transform 
+          hover:scale-105 
+          hover:shadow-lg 
+          cursor-pointer
+        "
         >
-          <FaUserMd className="text-yellow-500 text-7xl" />
-          <p className="text-gray-600 text-lg mt-2">Consultation Request</p>
+          <FaUserMd className="text-yellow-500 text-7xl mb-2" />
+          <p className="text-gray-700 text-lg font-medium">Consultation Request</p>
         </Link>
+
         <Link
           to="/booking-meeting"
-          className="flex flex-col items-center cursor-pointer"
+          className="
+          flex flex-col items-center p-4 
+          bg-white shadow rounded-lg 
+          transition 
+          transform 
+          hover:scale-105 
+          hover:shadow-lg 
+          cursor-pointer
+        "
         >
-          <FaCalendarAlt className="text-red-500 text-7xl" />
-          <p className="text-gray-600 text-lg mt-2">Book lịch</p>
+          <FaCalendarAlt className="text-red-500 text-7xl mb-2" />
+          <p className="text-gray-700 text-lg font-medium">Book lịch</p>
         </Link>
       </div>
     </div>

@@ -5,10 +5,10 @@ import { UserIcon, LogoutIcon } from "@heroicons/react/outline";
 // Import các component
 import DoctorSidebar from "./DoctorSidebar/DoctorSidebar";
 import DoctorProfile from "./DoctorProfile/DoctorProfile";
-import ConsultationRequests from "./ConsultationRequests/ConsultationRequests";
 import BookingManagement from "./BookingManagement/BookingManagement";
 import BlogCreation from "./BlogCreation/BlogCreation";
 import WorkSchedule from "./WorkSchedule.jsx/WorkSchedule";
+import DoctorConsultation from "./ConsultationRequests/DoctorConsultation";
 
 export default function DoctorDashboard() {
     // State dropdown header
@@ -22,7 +22,7 @@ export default function DoctorDashboard() {
             case "profile":
                 return <DoctorProfile />;
             case "consultation":
-                return <ConsultationRequests />;
+                return <DoctorConsultation />;
             case "booking":
                 return <BookingManagement />;
             case "blog":
