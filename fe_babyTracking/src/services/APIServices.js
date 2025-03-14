@@ -461,7 +461,6 @@ export const getDoctorWorkingShiftSubmitted = async (doctorId) => {
   } catch (error) {
     console.log(error);
   }
-<<<<<<< HEAD
 };
 
 export const approveWorkShift = async (slots) => {
