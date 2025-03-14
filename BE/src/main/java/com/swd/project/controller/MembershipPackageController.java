@@ -139,6 +139,15 @@ public class MembershipPackageController {
                 .build();
     }
 
+    @GetMapping("/cancel")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<?> cancelPayment(@RequestParam("token") String token) throws PayPalRESTException {
+        membershipPackageService.cancelMembershipPayment(token);
+        return ApiResponse.builder()
+                .message("Payment cancelled successfully")
+                .build();
+    }
+
     @GetMapping("/my-package")
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<?> getUserMembership(){

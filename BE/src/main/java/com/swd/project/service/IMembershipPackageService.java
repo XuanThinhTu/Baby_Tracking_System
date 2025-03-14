@@ -21,4 +21,5 @@ public interface IMembershipPackageService {
 
     MembershipSubscriptionResponse getUserMembership();
 
+    void cancelMembershipPayment(String token);
 }

@@ -18,7 +18,8 @@ public class BlogImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String url;
+    private String publicId;
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL, CascadeType.REMOVE})
     private Blog blog;
 }

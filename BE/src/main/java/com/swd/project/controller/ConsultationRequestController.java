@@ -4,6 +4,7 @@ import com.swd.project.dto.request.ConsultationRequestCreation;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.ConsultationRequestDTO;
 import com.swd.project.service.IConsultationRequestService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ public class ConsultationRequestController {
     private final IConsultationRequestService iConsultationRequestService;
 
     @PostMapping("/request")
+    @SecurityRequirement(name = "bearerAuth")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ConsultationRequestDTO> createConsultationRequest(@RequestBody ConsultationRequestCreation request) {
         return ApiResponse.<ConsultationRequestDTO>builder()
@@ -27,6 +29,7 @@ public class ConsultationRequestController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<ConsultationRequestDTO> getConsultationRequestById(@PathVariable int id) {
         return ApiResponse.<ConsultationRequestDTO>builder()
                 .message("Consultation request")
@@ -35,6 +38,7 @@ public class ConsultationRequestController {
     }
 
     @GetMapping("/all-request")
+    @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ROLE_DOCTOR') or hasRole('ROLE_ADMIN')")
     public ApiResponse<Page<ConsultationRequestDTO>> getAllConsultationRequest(@RequestParam(defaultValue = "0") int page,
                                                                           @RequestParam(defaultValue = "10") int size) {
@@ -45,6 +49,7 @@ public class ConsultationRequestController {
     }
 
     @GetMapping("/pending-request")
+    @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ROLE_DOCTOR') or hasRole('ROLE_ADMIN')")
     public ApiResponse<Page<ConsultationRequestDTO>> getPendingConsultation(@RequestParam(defaultValue = "0") int page,
                                                                           @RequestParam(defaultValue = "10") int size) {
