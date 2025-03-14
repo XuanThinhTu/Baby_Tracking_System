@@ -1,4 +1,4 @@
-// src/components/doctor/consultation/ConsultationRequest.jsx
+// src/pages/doctor/consultation/ConsultationRequest.jsx
 import React, { useState } from "react";
 import {
     ClockIcon,
@@ -6,71 +6,112 @@ import {
     XCircleIcon,
     PlusCircleIcon,
 } from "@heroicons/react/outline";
-import ConsultationForm from "./ConsultationForm";
+import { useNavigate } from "react-router-dom";
+
 import KanbanCard from "./KanbanCard";
+import ConsultationForm from "./ConsultationForm";
 
 export default function ConsultationRequest() {
-    // Mock data ban đầu
+    const navigate = useNavigate();
+    // Thay vì [] hoặc fetch API, bạn gán sẵn data:
     const [requests, setRequests] = useState([
         {
-            id: 1,
-            parentName: "John Doe",
-            childName: "Baby Anna",
-            question: "My baby has a rash. What should I do?",
-            date: "2025-03-05",
+            id: 1001,
+            requestTitle: "My baby has a rash",
+            note: "It started yesterday...",
+            requestDate: "2025-03-05T10:00:00",
+            doctorId: 101,
+            doctorName: "Dr. Strange",
             status: "Pending",
+            child: {
+                id: 201,
+                name: "Baby Anna",
+                birthDate: "2024-11-10T00:00:00",
+                gender: "girl",
+                parentId: 501,
+                parentName: "John Doe",
+            },
         },
         {
-            id: 2,
-            parentName: "Alice",
-            childName: "Baby Max",
-            question: "Baby has fever for 2 days. Need help.",
-            date: "2025-03-06",
+            id: 1002,
+            requestTitle: "Baby has fever for 2 days",
+            note: "High fever, about 39°C",
+            requestDate: "2025-03-06T09:30:00",
+            doctorId: 102,
+            doctorName: "Dr. House",
             status: "Processing",
+            child: {
+                id: 202,
+                name: "Baby Max",
+                birthDate: "2024-12-20T00:00:00",
+                gender: "boy",
+                parentId: 502,
+                parentName: "Alice",
+            },
         },
         {
-            id: 3,
-            parentName: "Bob",
-            childName: "Baby Tom",
-            question: "Child won't eat properly. Any advice?",
-            date: "2025-03-07",
+            id: 1003,
+            requestTitle: "Baby refuses to eat",
+            note: "Need advice on nutrition",
+            requestDate: "2025-03-07T11:15:00",
+            doctorId: 101,
+            doctorName: "Dr. Strange",
             status: "Closed",
+            child: {
+                id: 203,
+                name: "Baby Tom",
+                birthDate: "2024-05-15T00:00:00",
+                gender: "boy",
+                parentId: 503,
+                parentName: "Bob",
+            },
         },
         {
-            id: 4,
-            parentName: "Jane Smith",
-            childName: "Baby Ema",
-            question: "Baby has trouble sleeping.",
-            date: "2025-03-08",
+            id: 1004,
+            requestTitle: "Baby trouble sleeping",
+            note: "Crying at night",
+            requestDate: "2025-03-08T14:20:00",
+            doctorId: 103,
+            doctorName: "Dr. McCoy",
             status: "Canceled",
+            child: {
+                id: 204,
+                name: "Baby Ema",
+                birthDate: "2023-12-20T00:00:00",
+                gender: "girl",
+                parentId: 504,
+                parentName: "Jane Smith",
+            },
         },
     ]);
 
-    // show/hide form
     const [showForm, setShowForm] = useState(false);
 
-    // Handler: khi nhấn "Create" => hiển thị form
-    const handleCreate = () => {
-        setShowForm(true);
-    };
-
-    // Lưu request => push cột "Pending"
-    const handleSaveRequest = (newReq) => {
-        setRequests([...requests, newReq]);
-        setShowForm(false);
-    };
-
-    // Cancel => ẩn form
-    const handleCancelForm = () => {
-        setShowForm(false);
-    };
-
-    // Lọc requests theo status
+    // Tách logic filter status
     const pendingRequests = requests.filter((r) => r.status === "Pending");
     const processingRequests = requests.filter((r) => r.status === "Processing");
     const closedOrCanceled = requests.filter(
         (r) => r.status === "Closed" || r.status === "Canceled"
     );
+
+    const handleCreate = () => {
+        setShowForm(true);
+    };
+
+    // Thêm request mock => cột Pending
+    const handleSaveRequest = (newReq) => {
+        setRequests([...requests, newReq]);
+        setShowForm(false);
+    };
+
+    const handleCancelForm = () => {
+        setShowForm(false);
+    };
+
+    // Bấm card => sang /consultation-detail/:id
+    const handleCardClick = (id) => {
+        navigate(`/consultation-detail/${id}`);
+    };
 
     return (
         <div className="p-4">
@@ -88,8 +129,8 @@ export default function ConsultationRequest() {
                 )}
             </div>
 
-            {/* Nếu không show form => hiển thị Kanban */}
-            {!showForm && (
+            {/* Kanban hoặc Form */}
+            {!showForm ? (
                 <div className="grid grid-cols-3 gap-4">
                     {/* Pending */}
                     <div className="bg-gray-100 p-4 rounded shadow-sm">
@@ -99,7 +140,9 @@ export default function ConsultationRequest() {
                         </div>
                         <div className="space-y-2">
                             {pendingRequests.map((req) => (
-                                <KanbanCard key={req.id} req={req} />
+                                <div key={req.id} onClick={() => handleCardClick(req.id)}>
+                                    <KanbanCard req={req} />
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -112,7 +155,9 @@ export default function ConsultationRequest() {
                         </div>
                         <div className="space-y-2">
                             {processingRequests.map((req) => (
-                                <KanbanCard key={req.id} req={req} />
+                                <div key={req.id} onClick={() => handleCardClick(req.id)}>
+                                    <KanbanCard req={req} />
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -125,19 +170,15 @@ export default function ConsultationRequest() {
                         </div>
                         <div className="space-y-2">
                             {closedOrCanceled.map((req) => (
-                                <KanbanCard key={req.id} req={req} />
+                                <div key={req.id} onClick={() => handleCardClick(req.id)}>
+                                    <KanbanCard req={req} />
+                                </div>
                             ))}
                         </div>
                     </div>
                 </div>
-            )}
-
-            {/* Nếu showForm => hiển thị form tạo ConsultationRequest */}
-            {showForm && (
-                <ConsultationForm
-                    onSave={handleSaveRequest}
-                    onCancel={handleCancelForm}
-                />
+            ) : (
+                <ConsultationForm onSave={handleSaveRequest} onCancel={handleCancelForm} />
             )}
         </div>
     );

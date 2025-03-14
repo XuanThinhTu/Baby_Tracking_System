@@ -51,6 +51,52 @@ export const registerFunction = async (
   }
 };
 
+export async function verifyUser(tokenParam) {
+  try {
+    // Gọi POST /user/verify với body { token }
+    const response = await axios.post(
+      `${baseUrl}/user/verify`,
+      { token: tokenParam },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const { success, message, errorCode, data } = response.data;
+
+    // Tách thông tin user
+    const userInfo = {
+      id: data?.id,
+      email: data?.email,
+      firstName: data?.firstName,
+      lastName: data?.lastName,
+      phone: data?.phone,
+      address: data?.address,
+      avatar: data?.avatar,
+      role: data?.role,
+      active: data?.active,
+      banned: data?.banned,
+    };
+
+    // Trả về object gọn gàng
+    return {
+      success,
+      message,
+      errorCode,
+      userInfo,
+    };
+  } catch (error) {
+    // Bắt lỗi, lấy message từ backend (nếu có)
+    if (error.response) {
+      throw new Error(error.response.data.message || "Xác thực thất bại!");
+    } else {
+      throw new Error("Something went wrong!");
+    }
+  }
+}
+
 export const getUserInformation = async () => {
   try {
     const token = sessionStorage.getItem("token");
@@ -406,3 +452,13 @@ export const rejectWorkShift = async (slots) => {
     console.log(error);
   }
 };
+
+export async function getAllConsultations() {
+  try {
+    const res = await axios.get(`${baseUrl}/consultation/all-request`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}

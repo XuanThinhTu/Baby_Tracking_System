@@ -1,24 +1,22 @@
-// src/components/doctor/consultation/ConsultationForm.jsx
+// src/pages/doctor/consultation/ConsultationForm.jsx
 import React, { useState } from "react";
 
 export default function ConsultationForm({ onSave, onCancel }) {
-    const [parentName, setParentName] = useState("");
-    const [childName, setChildName] = useState("");
-    const [question, setQuestion] = useState("");
-    const [date, setDate] = useState("");
+    const [requestTitle, setRequestTitle] = useState("");
+    const [note, setNote] = useState("");
+    // v.v. Tùy schema => requestTitle, note, childId...?
 
     const handleSubmit = () => {
-        if (!parentName || !childName || !question) {
-            alert("Please fill all fields!");
+        if (!requestTitle) {
+            alert("Title is required!");
             return;
         }
         // Tạo request mock
         const newReq = {
-            id: Date.now(), // tạm
-            parentName,
-            childName,
-            question,
-            date: date || "2025-03-10", // fallback
+            id: Date.now(),
+            requestTitle,
+            note,
+            requestDate: new Date().toISOString(),
             status: "Pending",
         };
         onSave(newReq);
@@ -27,64 +25,30 @@ export default function ConsultationForm({ onSave, onCancel }) {
     return (
         <div className="border border-gray-300 rounded p-4 shadow-sm bg-white">
             <h2 className="text-xl font-bold mb-4">Create Consultation Request</h2>
-
-            <div className="grid grid-cols-2 gap-4">
-                {/* Parent Name */}
-                <div>
-                    <label className="block font-semibold text-gray-700 mb-1">
-                        Parent Name
-                    </label>
-                    <input
-                        type="text"
-                        value={parentName}
-                        onChange={(e) => setParentName(e.target.value)}
-                        className="w-full border border-gray-300 rounded p-2"
-                        placeholder="Parent name..."
-                    />
-                </div>
-
-                {/* Child Name */}
-                <div>
-                    <label className="block font-semibold text-gray-700 mb-1">
-                        Child Name
-                    </label>
-                    <input
-                        type="text"
-                        value={childName}
-                        onChange={(e) => setChildName(e.target.value)}
-                        className="w-full border border-gray-300 rounded p-2"
-                        placeholder="Child name..."
-                    />
-                </div>
-
-                {/* Question */}
-                <div className="col-span-2">
-                    <label className="block font-semibold text-gray-700 mb-1">
-                        Question
-                    </label>
-                    <textarea
-                        value={question}
-                        onChange={(e) => setQuestion(e.target.value)}
-                        className="w-full border border-gray-300 rounded p-2"
-                        rows={3}
-                        placeholder="What do you want to ask?"
-                    />
-                </div>
-
-                {/* Date */}
-                <div>
-                    <label className="block font-semibold text-gray-700 mb-1">
-                        Date
-                    </label>
-                    <input
-                        type="date"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        className="w-full border border-gray-300 rounded p-2"
-                    />
-                </div>
+            <div className="mb-4">
+                <label className="block font-semibold text-gray-700 mb-1">
+                    Request Title
+                </label>
+                <input
+                    type="text"
+                    value={requestTitle}
+                    onChange={(e) => setRequestTitle(e.target.value)}
+                    className="w-full border border-gray-300 rounded p-2"
+                    placeholder="Title..."
+                />
             </div>
-
+            <div className="mb-4">
+                <label className="block font-semibold text-gray-700 mb-1">
+                    Note
+                </label>
+                <textarea
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    className="w-full border border-gray-300 rounded p-2"
+                    rows={3}
+                    placeholder="What do you want to ask?"
+                />
+            </div>
             <div className="flex justify-end gap-4 mt-4">
                 <button
                     onClick={handleSubmit}
