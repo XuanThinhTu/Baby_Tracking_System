@@ -311,7 +311,7 @@ export const submitWorkingShift = async (slots) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
@@ -396,7 +396,7 @@ export async function getAllConsultations() {
 
 export const getMembershipPackages = async () => {
   try {
-    const result = await axios.get(${baseUrl}/membership-package/list, {
+    const result = await axios.get(`${baseUrl}/membership-package/list`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -407,7 +407,6 @@ export const getMembershipPackages = async () => {
   }
 };
 
-
 export const getDoctorWorkingShiftSubmitted = async (doctorId) => {
   try {
     const result = await axios.get(
@@ -415,7 +414,7 @@ export const getDoctorWorkingShiftSubmitted = async (doctorId) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
@@ -433,7 +432,7 @@ export const approveWorkShift = async (slots) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
@@ -451,7 +450,7 @@ export const rejectWorkShift = async (slots) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
