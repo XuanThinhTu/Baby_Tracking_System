@@ -17,7 +17,7 @@ interface RegisterUser {
 
 export function Register() {
     const { goBack } = useRedirect();
-    const { fetchData: registerUser, error, loading } = useApi(API_POST_USER_REGISTER, "POST", null, false);
+    const { fetchData: registerUser, error, loading } = useApi(API_POST_USER_REGISTER, "POST", null);
     const [hidePass, setHidePass] = useState(true);
     const [user, setUser] = useState<RegisterUser>({
         firstName: "",

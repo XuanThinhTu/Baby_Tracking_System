@@ -20,48 +20,45 @@ export const setAuthToken = (token: string) => {
     }
 };
 
-export const getRequest = async (endpoint: string, params = {}) => {
-    try {
-        const response = await apiClient.get(endpoint, { params });
-        return response.data;
-    } catch (error) {
-        const err = error as any;
-        console.error('GET Error:', err.response?.data || err.message);
-        throw error;
+
+const cancelTokenSource = axios.CancelToken.source();
+
+apiClient.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        if (axios.isCancel(error)) {
+            console.log("Request cancelled:", error.message);
+            return Promise.reject(error);
+        }
+
+        if (error.response?.status === 401) {
+            console.log("Token expired. Redirecting to login...");
+            // TODO: Thực hiện refresh token nếu có API refresh
+        }
+
+        console.log(error)
+
+        return Promise.reject(error.response?.data || "Something went wrong");
     }
+);
+
+// GET Request
+export const getRequest = async (endpoint: string, params = {}, headers = {}) => {
+    return (await apiClient.get(endpoint, { params, headers, cancelToken: cancelTokenSource.token })).data;
 };
 
-export const postRequest = async (endpoint: string, data = {}) => {
-    try {
-        const response = await apiClient.post(endpoint, data);
-        return response.data;
-    } catch (error) {
-        const err = error as any;
-        console.error('GET Error:', err.response?.data || err.message);
-        throw error;
-    }
+// POST Request
+export const postRequest = async (endpoint: string, data = {}, headers = {}) => {
+    return (await apiClient.post(endpoint, data, { headers, cancelToken: cancelTokenSource.token })).data;
+};
+// PUT Request
+export const putRequest = async (endpoint: string, data = {}, headers = {}) => {
+    return (await apiClient.put(endpoint, data, { headers, cancelToken: cancelTokenSource.token })).data;
 };
 
-export const putRequest = async (endpoint: string, data = {}) => {
-    try {
-        const response = await apiClient.put(endpoint, data);
-        return response.data;
-    } catch (error) {
-        const err = error as any;
-        console.error('GET Error:', err.response?.data || err.message);
-        throw error;
-    }
-};
-
-export const deleteRequest = async (endpoint: string) => {
-    try {
-        const response = await apiClient.delete(endpoint);
-        return response.data;
-    } catch (error) {
-        const err = error as any;
-        console.error('GET Error:', err.response?.data || err.message);
-        throw error;
-    }
+// DELETE Request
+export const deleteRequest = async (endpoint: string, headers = {}) => {
+    return (await apiClient.delete(endpoint, { cancelToken: cancelTokenSource.token })).data;
 };
 
 export default apiClient;

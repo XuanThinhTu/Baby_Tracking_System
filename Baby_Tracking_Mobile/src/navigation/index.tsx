@@ -7,7 +7,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Image, StyleSheet } from 'react-native';
 import person from '../assets/icons/person.png';
 import home from '../assets/icons/home.png'
-import search from "../assets/icons/bell.png"
+import notification from "../assets/icons/bell.png"
+import menu from "../assets/icons/menu.png"
 import Home from './screens/Home';
 import { Profile } from './screens/Profile';
 import { Settings } from './screens/Settings';
@@ -26,7 +27,7 @@ import EditForm from '../components/EditForm';
 const HomeTabs = createBottomTabNavigator({
   screenOptions: ({ navigation }) => ({
     headerRight: () => {
-      return <HeaderButton onPress={() => navigation.navigate("Notifications")}><Image source={search} tintColor={"white"} style={{ width: 25, height: 25, marginRight: 10 }} /></HeaderButton>
+      return <HeaderButton onPress={() => navigation.navigate("Notifications")}><Image source={notification} tintColor={"white"} style={{ width: 25, height: 25, marginRight: 10 }} /></HeaderButton>
     },
     tabBarStyle: styles.tabBar,
     headerTitleAlign: "center",
@@ -106,6 +107,7 @@ const RootStack = createNativeStackNavigator({
     ProfileDetail: {
       screen: ProfileDetail,
       options: {
+
         title: "Detail",
       }
     },
@@ -129,7 +131,7 @@ const RootStack = createNativeStackNavigator({
     },
     Login: {
       screen: Login,
-      options: ({ navigation }) => ({
+      options: () => ({
         headerShown: true,
         title: ""
       })
@@ -157,7 +159,7 @@ const RootStack = createNativeStackNavigator({
     CreateForm: {
       screen: CreateForm,
       options: {
-        title: "Create"
+        title: ""
       }
     },
     EditForm: {

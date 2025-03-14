@@ -50,8 +50,9 @@ declare module '@env'{
 
     //CHILDREN 
     export const API_POST_CHILDREN_ADD: string;
-    export const API_GET_CHILDREN_LIST_PARENTID: string;
+    export const API_GET_CHILDREN_LIST: string;
     export const API_GET_CHILDRED_INFO_CHILDID: string;
+    export const API_DELETE_CHILDREN_CHILDID:string;
 
     //AUTHENTICATE
     export const API_POST_AUTH_LOGIN: string;

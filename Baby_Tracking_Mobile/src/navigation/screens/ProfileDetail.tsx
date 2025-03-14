@@ -7,6 +7,7 @@ import { useTypedRoute } from "../../services/hooks/useTypeRoute";
 export function ProfileDetail() {
     const route = useTypedRoute("ProfileDetail");
     const { user } = route.params;
+    
     return (
         <View style={detailStyles.formContainer}>
             <View style={globalStyles.horizontalForm}>

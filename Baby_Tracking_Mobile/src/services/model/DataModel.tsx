@@ -10,8 +10,21 @@ interface User {
 interface Child {
     id: string;
     name: string;
-    birthDay: string;
+    height: string;
+    weight: string;
+    headCircumference: string;
+    measuredAt: string;
+    birthDate: string;
     gender: string;
+}
+
+interface MembershipPlansResponse {
+    id: string,
+    name: string,
+    description: string,
+    price: string,
+    duration: string,
+    permissions: []
 }
 
 interface ServerResponse {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { ScrollView, Dimensions } from 'react-native';
 import { Text, Card } from 'react-native-paper';
 import { LineChart, PieChart } from 'react-native-chart-kit';
@@ -28,12 +28,43 @@ const bmiData = [
     { name: "Béo phì", population: 10, color: "#4bc0c0", legendFontColor: "#7F7F7F", legendFontSize: 12 },
 ];
 
-const BabyDetail = () => {
+import { useNavigation } from '@react-navigation/native';
+import HeaderMenu from '../../components/HeaderMenu';
+import useApi from '../../services/hooks/useApi';
+import { API_DELETE_CHILDREN_CHILDID, API_DELETE_GROW_TRACKER_CHILDID } from '@env';
+import { showConfirmDialog } from '../../utility/HelperComponents';
+import { useToast } from 'react-native-toast-notifications';
 
+const BabyDetail = () => {
+    const { fetchData, error, loading } = useApi();
     const route = useTypedRoute("BabyDetail");
     const { baby } = route.params;
-    const weightData = [3.2, 4.1, 5.0, 5.8, 6.5, 7.2];
+    const navigation = useNavigation();
+    const toast = useToast();
 
+    const menuActions = [
+        { label: "Edit", onPress: () => console.log("Press Edit") },
+        { label: "Delete", onPress: () => onDeleteChild() },
+        { label: "Add tracker", onPress: () => console.log("Press Add tracker") },
+    ]
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => <HeaderMenu actions={menuActions} />
+        })
+    })
+
+    const onDeleteChild = () => {
+        showConfirmDialog("Are your sure ?", "You can revert if confirm it.", async () => {
+            var response: ServerResponse = await fetchData(API_DELETE_CHILDREN_CHILDID.replace("{childId}", baby.id), "DELETE", null, { "Content-Type": "application/json" });
+            if (response.success) {
+                toast.show(response.message, { type: "success" })
+                navigation.goBack();
+            }
+        })
+    }
+
+    const weightData = [3.2, 4.1, 5.0, 5.8, 6.5, 7.2];
     const predictedWeights = predictNextValues(weightData, 3);
 
     const allData = [...weightData, ...predictedWeights];

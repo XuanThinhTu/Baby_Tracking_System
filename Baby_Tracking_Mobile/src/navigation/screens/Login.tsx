@@ -19,7 +19,7 @@ export default function Login() {
   const [hidePass, setHidePass] = useState(true);
 
   const handleLogin = async () => {
-    var response: ServerResponse = await loginUser(API_POST_AUTH_LOGIN, "POST", loginData);
+    var response: ServerResponse = await loginUser(API_POST_AUTH_LOGIN, "POST", loginData , {"Content-Type":"application/json"});
     if (response.success) {
       saveToken(response.data.accessToken);
       setAuthToken(response.data.accessToken);
