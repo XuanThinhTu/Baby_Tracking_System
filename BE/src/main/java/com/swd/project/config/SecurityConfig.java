@@ -49,6 +49,7 @@ public class SecurityConfig {
             "/membership-package/disable/**",
             "/membership-package/payment/**",
             "/membership-package/execute",
+            "/membership-package/cancel",
             "/membership-package/my-package",
             "/grow-tracker/**",
             "/consultation/request",
@@ -61,7 +62,8 @@ public class SecurityConfig {
             "/working-schedule/submit",
             "/working-schedule/update/**",
             "/category/create",
-            "/category/update/**"
+            "/category/update/**",
+            "/blogs/create"
     );
 
     @Bean
