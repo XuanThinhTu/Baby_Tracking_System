@@ -113,7 +113,7 @@ const BabyDetails = ({ babyId }) => {
           <p className="text-gray-600 text-lg mt-2">Consultation Request</p>
         </Link>
         <Link
-          to="/booking-meeting"
+          to={`/booking-meeting/${babyId}`}
           className="flex flex-col items-center cursor-pointer"
         >
           <FaCalendarAlt className="text-red-500 text-7xl" />

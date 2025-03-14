@@ -291,6 +291,23 @@ export const getAvailableShift = async (yearMonth) => {
   }
 };
 
+export const bookingMeeting = async (babyId, date, slotTimeId, note) => {
+  try {
+    const result = await axios.post(
+      `${baseUrl}/booking/${babyId}?date=${date}&slotTimeId=${slotTimeId}`,
+      note,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 //============ADMIN API ================
 export const getAllUserAccounts = async () => {
   try {

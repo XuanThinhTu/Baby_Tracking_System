@@ -42,7 +42,8 @@ function UserLayout() {
     location.pathname.startsWith(
       "/baby-details/",
       "/add-baby-info/",
-      "/doctor/"
+      "/doctor/",
+      "booking-meeting"
     );
 
   return (
@@ -57,8 +58,11 @@ function UserLayout() {
             <Route path="/my-family" element={<MyFamily />} />
             <Route path="/baby-details/:babyId" element={<BabyOverview />} />
             <Route path="/add-baby-info/:babyId" element={<AddBabyInfo />} />
-            <Route path="/consultation-request" element={<ConsultationRequest />} />
-            <Route path="/booking-meeting" element={<BookingPage />} />
+            <Route
+              path="/consultation-request"
+              element={<ConsultationRequest />}
+            />
+            <Route path="/booking-meeting/:babyId" element={<BookingPage />} />
             <Route path="/doctor" element={<DoctorPage />} />
             <Route path="/doctor/:doctorId" element={<DoctorDetail />} />
             <Route path="/faq" element={<FAQPage />} />

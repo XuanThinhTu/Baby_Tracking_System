@@ -1,5 +1,5 @@
 import React, { useState, useEffect, use } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "./DatePicker";
 // Heroicons
 import {
@@ -10,7 +10,11 @@ import {
   CheckCircleIcon,
   UserIcon,
 } from "@heroicons/react/outline";
-import { getAvailableShift } from "../../../services/APIServices";
+import {
+  bookingMeeting,
+  getAvailableShift,
+  getBabyInfo,
+} from "../../../services/APIServices";
 
 const DAY_NAMES = [
   "Sunday",
@@ -36,9 +40,7 @@ const MONTH_NAMES = [
   "December",
 ];
 
-// Hàm tính giờ kết thúc (vd: 09:15 + 15 min => 09:30)
 function getEndTime(timeStr, durationStr) {
-  // timeStr: "09:15", durationStr: "15 min" => parse "15"
   const [hh, mm] = timeStr.split(":").map(Number);
   const d = parseInt(durationStr);
   const totalMinutes = mm + d;
@@ -51,23 +53,22 @@ function getEndTime(timeStr, durationStr) {
 }
 
 export default function BookingPage() {
+  const { babyId } = useParams();
+  const [baby, setBaby] = useState(null);
   const navigate = useNavigate();
-  // step=1: Chọn ngày/giờ, step=2: Note & Confirm, step=3: Success
   const [step, setStep] = useState(1);
 
-  // Thời lượng meeting
-  const [duration] = useState("15 min");
+  const [duration] = useState("30 min");
 
-  // Dữ liệu user chọn
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [meetingNote, setMeetingNote] = useState("");
+  const [selectedKey, setSelectedKey] = useState(null);
   const [yearMonth, setYearMonth] = useState("");
   const [availableDays, setAvailableDays] = useState([]);
   const [availableTimes, setAvailableTimes] = useState([]);
   const isDayAvailable =
     selectedDay && availableDays.map(Number).includes(selectedDay.day);
-  console.log(availableTimes);
 
   const formatSelectedDay = () => {
     if (!selectedDay) return "";
@@ -82,6 +83,18 @@ export default function BookingPage() {
     const yearNumber = dateObj.getFullYear();
     return `${dayOfWeek}, ${monthName} ${dayNumber}, ${yearNumber}`;
   };
+
+  useEffect(() => {
+    const fetchBabyInfo = async () => {
+      try {
+        const result = await getBabyInfo(babyId);
+        setBaby(result);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchBabyInfo();
+  }, []);
 
   useEffect(() => {
     const fetchAvailableSlot = async () => {
@@ -99,7 +112,6 @@ export default function BookingPage() {
     fetchAvailableSlot();
   }, [yearMonth]);
 
-  // Nút Back chung (Step 1 => Home? Step 2 => Step 1, Step 3 => ???)
   const handleBack = () => {
     if (step === 1) {
       // Ở Step 1, back về trang Home (hoặc console.log)
@@ -113,17 +125,29 @@ export default function BookingPage() {
     }
   };
 
-  // Chuyển sang step 2
-  const handleNext = () => {
+  const handleNext = (key) => {
     if (isDayAvailable && selectedTime) {
       setStep(2);
+      setSelectedKey(key);
     }
   };
 
   // Bấm Schedule => step=3
-  const handleSchedule = () => {
+  const handleSchedule = async () => {
     setStep(3);
-    // TODO: Gọi API, ...
+    const [date, slotTimeId, index] = selectedKey.split("/");
+
+    try {
+      const result = await bookingMeeting(
+        babyId,
+        date,
+        parseInt(slotTimeId),
+        meetingNote
+      );
+      alert("Đã đăng ký lịch thành công!");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // Dùng chung: Tính giờ kết thúc
@@ -194,20 +218,23 @@ export default function BookingPage() {
                           (_, index) =>
                             parseInt(availableDays[index], 10) ===
                             selectedDay.day
-                        ) // So sánh chính xác
-                        .flat() // Chuyển về 1 mảng duy nhất
-                        .map((slot) => {
+                        )
+                        .flat()
+                        .map((slot, index) => {
                           const isChosen = selectedTime === slot.startTime;
+                          const uniqueKey = `${selectedDay.year}-${String(
+                            selectedDay.month
+                          ).padStart(2, "0")}-${String(
+                            selectedDay.day
+                          ).padStart(2, "0")}/${slot.slotTimeId}/${index}`;
+
                           return isChosen ? (
-                            <div
-                              key={slot.slotId}
-                              className="flex gap-2 w-full"
-                            >
+                            <div key={uniqueKey} className="flex gap-2 w-full">
                               <button className="flex-1 bg-gray-500 text-white text-center py-2 rounded">
                                 {slot.startTime}
                               </button>
                               <button
-                                onClick={handleNext}
+                                onClick={() => handleNext(uniqueKey)}
                                 className="flex-1 bg-blue-500 text-white text-center py-2 rounded hover:bg-blue-600"
                               >
                                 Next
@@ -215,7 +242,7 @@ export default function BookingPage() {
                             </div>
                           ) : (
                             <button
-                              key={slot.slotId}
+                              key={uniqueKey}
                               onClick={() => setSelectedTime(slot.startTime)}
                               className="border border-blue-500 bg-white text-blue-500 text-center py-2 rounded cursor-pointer hover:bg-blue-50"
                             >
@@ -265,22 +292,19 @@ export default function BookingPage() {
             </div>
 
             {(() => {
-              const babyName = "Moon";
-              const babyBirthDate = "2022-06-15";
-              const babyGender = "Female";
               return (
                 <>
                   <div className="flex items-center gap-2 text-gray-600">
                     <UserIcon className="h-5 w-5" />
-                    <span>Baby: {babyName}</span>
+                    <span>Baby: {baby?.name}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
                     <ClockIcon className="h-5 w-5" />
-                    <span>Birth: {babyBirthDate}</span>
+                    <span>Birth: {baby?.birthDate}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
                     <UserIcon className="h-5 w-5" />
-                    <span>Gender: {babyGender}</span>
+                    <span>Gender: {baby?.gender}</span>
                   </div>
                 </>
               );
