@@ -364,6 +364,42 @@ export async function getAllConsultations() {
   }
 }
 
+export const postConsultations = async (title, note, babyId) => {
+  try {
+    const addingInformation = {
+      title: title,
+      notes: note,
+      childId: babyId,
+    };
+    const result = await axios.post(
+      `${baseUrl}/consultation/request`,
+      addingInformation,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("result", result.data);
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getMembershipPackages = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/membership-package/list`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 //============ADMIN API ================
 export const getAllUserAccounts = async () => {
   try {

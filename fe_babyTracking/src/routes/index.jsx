@@ -67,7 +67,7 @@ function UserLayout() {
             <Route path="/add-baby-info/:babyId" element={<AddBabyInfo />} />
             <Route path="/booking-meeting/:babyId" element={<BookingPage />} />
             <Route
-              path="/consultation-request"
+              path="/consultation-request/:babyId"
               element={<ConsultationRequest />}
             />
             <Route

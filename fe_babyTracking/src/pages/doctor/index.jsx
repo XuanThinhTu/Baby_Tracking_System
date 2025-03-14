@@ -17,22 +17,35 @@ export default function DoctorDashboard() {
   const [openDropdown, setOpenDropdown] = useState(false);
   const navigation = useNavigate();
 
-    // Render nội dung main tuỳ theo tab
-    const renderContent = () => {
-        switch (activeTab) {
-            case "profile":
-                return <DoctorProfile />;
-            case "consultation":
-                return <DoctorConsultation />;
-            case "booking":
-                return <BookingManagement />;
-            case "blog":
-                return <BlogCreation />;
-            case "workSchedule":
-                return <WorkSchedule />;
-            default:
-                return <DoctorProfile />;
-        }
+  // State xác định tab đang hiển thị
+  const [activeTab, setActiveTab] = useState("profile");
+
+  // Render nội dung main tuỳ theo tab
+  const renderContent = () => {
+    switch (activeTab) {
+      case "profile":
+        return <DoctorProfile />;
+      case "consultation":
+        return <DoctorConsultation />;
+      case "booking":
+        return <BookingManagement />;
+      case "blog":
+        return <BlogCreation />;
+      case "workSchedule":
+        return <WorkSchedule />;
+      default:
+        return <DoctorProfile />;
+    }
+  };
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const result = await getUserInformation();
+        setUserInfo(result.data);
+      } catch (error) {
+        console.log(error);
+      }
     };
     fetchUserInfo();
   }, []);

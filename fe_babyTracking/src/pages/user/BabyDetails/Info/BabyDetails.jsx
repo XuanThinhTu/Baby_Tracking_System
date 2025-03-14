@@ -117,7 +117,7 @@ const BabyDetails = ({ babyId }) => {
         </Link>
 
         <Link
-          to="/consultation-request"
+          to={`/consultation-request/${babyId}`}
           className="
           flex flex-col items-center p-4 
           bg-white shadow rounded-lg 
