@@ -70,7 +70,7 @@ public class GoogleMeetConfig {
                 .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
                 .setAccessType("offline")
                 .build();
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setHost("azbtsappdp.livelydesert-5fef761c.eastasia.azurecontainerapps.io/").build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setHost("azbtsappdp.livelydesert-5fef761c.eastasia.azurecontainerapps.io/").setPort(8888).build();
         Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
         //returns an authorized Credential object.
         return credential;
