@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { verifyUser } from "../../../../services/APIServices";
+// Heroicons
+import { CheckCircleIcon, ExclamationIcon } from "@heroicons/react/outline";
 
 export default function VerifyAccount() {
     const [searchParams] = useSearchParams();
@@ -21,9 +23,12 @@ export default function VerifyAccount() {
             const result = await verifyUser(token);
             // result = { success, message, errorCode, userInfo }
             if (result?.success) {
+                setStatus("success");
                 toast.success("Tài khoản đăng kí thành công!");
-                // chuyển sang /login
-                navigate("/login");
+                // chuyển sang /login sau 2s, hoặc tuỳ ý
+                setTimeout(() => {
+                    navigate("/login");
+                }, 2000);
             } else {
                 toast.error(result?.message || "Xác thực thất bại!");
                 setStatus("error");
@@ -36,25 +41,52 @@ export default function VerifyAccount() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-            <div className="max-w-md w-full bg-white p-8 rounded-md shadow">
-                <h1 className="text-2xl font-bold text-gray-800 mb-4">
-                    Xác thực tài khoản
-                </h1>
-                <p className="text-gray-600 mb-6">
-                    Nhấn nút bên dưới để hoàn tất xác thực tài khoản.
-                </p>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-pink-100 to-pink-200 p-6">
+            <div className="max-w-md w-full bg-white p-8 rounded-md shadow relative overflow-hidden">
+                {/* Decor shape */}
+                <div
+                    className="absolute -top-16 -right-16 w-40 h-40 bg-pink-300 rounded-full opacity-30"
+                    style={{ filter: "blur(80px)" }}
+                ></div>
+
+                {/* Header */}
+                <div className="mb-6 text-center">
+                    <h1 className="text-3xl font-bold text-pink-700">Xác thực tài khoản</h1>
+                    <p className="text-gray-500 mt-1">
+                        Cảm ơn bạn đã đăng ký! Hãy hoàn tất xác thực để bắt đầu.
+                    </p>
+                </div>
 
                 {!token ? (
-                    <p className="text-red-500">Không có token trong URL!</p>
+                    <div className="flex flex-col items-center text-red-500">
+                        <ExclamationIcon className="h-10 w-10 mb-2" />
+                        <p className="font-semibold">Không có token trong URL!</p>
+                    </div>
                 ) : (
-                    <button
-                        onClick={handleActivate}
-                        disabled={status === "loading"}
-                        className="w-full bg-pink-600 text-white py-3 rounded hover:bg-pink-700 transition"
-                    >
-                        {status === "loading" ? "Đang xử lý..." : "Activate account"}
-                    </button>
+                    <div className="text-center">
+                        {status === "success" ? (
+                            <div className="flex flex-col items-center text-green-500 my-6">
+                                <CheckCircleIcon className="h-10 w-10 mb-2" />
+                                <p className="font-semibold">Tài khoản đã được xác thực!</p>
+                                <p className="text-gray-500 text-sm mt-1">
+                                    Đang chuyển hướng sang trang đăng nhập...
+                                </p>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={handleActivate}
+                                disabled={status === "loading"}
+                                className="inline-block w-full bg-pink-600 text-white py-3 rounded hover:bg-pink-700 transition font-semibold"
+                            >
+                                {status === "loading" ? "Đang xử lý..." : "Activate Account"}
+                            </button>
+                        )}
+                        {status === "error" && (
+                            <p className="mt-4 text-red-500 font-medium">
+                                Có lỗi xảy ra, vui lòng thử lại!
+                            </p>
+                        )}
+                    </div>
                 )}
             </div>
         </div>

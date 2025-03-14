@@ -295,3 +295,16 @@ export async function getAllConsultations() {
     return null;
   }
 }
+
+export const getMembershipPackages = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/membership-package/list`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
