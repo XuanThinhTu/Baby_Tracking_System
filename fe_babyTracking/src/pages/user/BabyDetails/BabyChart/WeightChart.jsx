@@ -13,13 +13,15 @@ import {
   getBabyInfo,
   getBoyStandardIndex,
   getGirlStandardIndex,
+  getPredictGrowthData,
 } from "../../../../services/APIServices";
 import dayjs from "dayjs";
 
 const WeightChart = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
   const [growthData, setGrowthData] = useState([]); // Dữ liệu chuẩn (SD lines)
-  const [userData, setUserData] = useState([]);     // Dữ liệu bé
+  const [userData, setUserData] = useState([]); // Dữ liệu bé
+  const [predictData, setPredictData] = useState([]);
 
   // Tính ngày so với birthDate
   const calculateDays = (birthDate, measuredAt) => {
@@ -58,6 +60,23 @@ const WeightChart = ({ babyId }) => {
       }
     };
     fetchGrowthData();
+  }, [baby, babyId]);
+
+  // Lấy dữ liệu chuẩn đoán trong 2 ngày tới của bé
+  useEffect(() => {
+    const fetchPredictData = async () => {
+      try {
+        const result = await getPredictGrowthData(babyId);
+        const formattedData = result.map((item) => ({
+          day: calculateDays(baby?.birthDate, item.predictedDate),
+          predictWeight: item.predictedWeight,
+        }));
+        setPredictData(formattedData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchPredictData();
   }, [baby, babyId]);
 
   // Lấy dữ liệu chuẩn (weight)
@@ -122,6 +141,9 @@ const WeightChart = ({ babyId }) => {
     if (yMin < 0) yMin = 0;
     yMax = mid + half;
   }
+  const mergedData = [...userData, ...predictData].sort(
+    (a, b) => a.day - b.day
+  );
 
   // Render chart
   const renderChart = () => (
@@ -174,7 +196,6 @@ const WeightChart = ({ babyId }) => {
               />
             ))}
 
-        {/* Đường dữ liệu Bé */}
         {userData.length > 0 && (
           <Line
             type="monotone"
@@ -186,6 +207,43 @@ const WeightChart = ({ babyId }) => {
             isAnimationActive={false}
           />
         )}
+
+        {predictData.length > 0 && (
+          <Line
+            type="monotone"
+            dataKey="predictWeight"
+            data={predictData}
+            stroke="gray"
+            dot={{ r: 4 }}
+            activeDot={{ r: 6 }}
+            isAnimationActive={false}
+          />
+        )}
+
+        {/* {mergedData.length > 0 && (
+          <>
+            <Line
+              type="monotone"
+              dataKey="weight"
+              data={mergedData}
+              stroke="#007bff"
+              dot={{ r: 4 }}
+              activeDot={{ r: 6 }}
+              isAnimationActive={false}
+              connectNulls={true}
+            />
+            <Line
+              type="monotone"
+              dataKey="predictWeight"
+              data={mergedData}
+              stroke="gray"
+              dot={{ r: 4 }}
+              activeDot={{ r: 6 }}
+              isAnimationActive={false}
+              connectNulls={true}
+            />
+          </>
+        )} */}
       </LineChart>
     </ResponsiveContainer>
   );

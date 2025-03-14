@@ -230,10 +230,108 @@ export const getBabyGrowthData = async (babyId) => {
   }
 };
 
+export const getPredictGrowthData = async (babyId) => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/api/grow-tracker/${babyId}/predict-next?n=2`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const getAllDoctors = async () => {
   try {
     const result = await axios.get(`${baseUrl}/user/get-doctors?page=0&size=5`);
     return result.data.data.content;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const registerWorkingShift = async (data) => {
+  try {
+    const result = await axios.post(
+      `${baseUrl}/working-schedule/register`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getNewWorkingShiftDraft = async (doctorId, dates, number) => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/working-schedule/doctor/${doctorId}?status=DRAFT`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const stringDates = dates.map(String);
+    let newResult = result.data.data.filter((item) =>
+      stringDates.some((date) => date === String(item.date))
+    );
+
+    const latestData = stringDates.map((date, index) => {
+      const limit = number[index] === 3 ? 24 : number[index] === 2 ? 16 : 8;
+      return newResult
+        .filter((item) => String(item.date) === date)
+        .sort((a, b) => b.id - a.id)
+        .slice(0, limit);
+    });
+
+    return latestData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const submitWorkingShift = async (slots) => {
+  try {
+    const flattenedSlots = slots?.flat();
+    const result = await axios.post(
+      `${baseUrl}/working-schedule/submit`,
+      flattenedSlots,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getAvailableShift = async (yearMonth) => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/booking/available?yearMonth=${yearMonth}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data.data;
   } catch (error) {
     console.log(error);
   }
@@ -298,11 +396,65 @@ export async function getAllConsultations() {
 
 export const getMembershipPackages = async () => {
   try {
-    const result = await axios.get(`${baseUrl}/membership-package/list`, {
+    const result = await axios.get(${baseUrl}/membership-package/list, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+export const getDoctorWorkingShiftSubmitted = async (doctorId) => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/working-schedule/doctor/${doctorId}?status=SUBMITTED`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const approveWorkShift = async (slots) => {
+  try {
+    const result = await axios.post(
+      `${baseUrl}/admin/working-schedule/approve`,
+      slots,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const rejectWorkShift = async (slots) => {
+  try {
+    const result = await axios.post(
+      `${baseUrl}/admin/working-schedule/reject`,
+      slots,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return result.data;
   } catch (error) {
     console.log(error);

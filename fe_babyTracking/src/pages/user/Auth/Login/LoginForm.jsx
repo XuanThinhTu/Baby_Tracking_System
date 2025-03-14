@@ -20,11 +20,13 @@ const LoginForm = () => {
 
       if (token) {
         sessionStorage.setItem("token", token);
-
         const userInfo = await getUserInformation();
+        sessionStorage.setItem("userId", userInfo.data?.id);
 
         if (userInfo.data?.role === "ROLE_ADMIN") {
           navigation("/admin");
+        } else if (userInfo.data?.role === "ROLE_DOCTOR") {
+          navigation("/doctor-dashboard");
         } else {
           navigation("/");
         }
@@ -50,7 +52,7 @@ const LoginForm = () => {
               type="email"
               placeholder="Nhập email..."
               onChange={(e) => setEmail(e.target.value)}
-            // disabled
+              // disabled
             />
           </div>
 
@@ -61,7 +63,7 @@ const LoginForm = () => {
               type="password"
               placeholder="Nhập mật khẩu..."
               onChange={(e) => setPassword(e.target.value)}
-            // disabled
+              // disabled
             />
           </div>
 

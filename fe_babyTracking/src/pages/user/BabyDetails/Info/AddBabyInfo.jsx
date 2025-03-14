@@ -82,7 +82,7 @@ const AddBabyInfo = () => {
                 className="w-12 h-12 rounded-full mr-4"
               />
               <span className="text-gray-800 font-medium text-lg">
-                {baby.name}
+                {baby?.name}
               </span>
             </div>
           </div>
