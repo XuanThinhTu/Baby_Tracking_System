@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cache;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,6 +15,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "bmi_standards")
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class BmiStandard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
