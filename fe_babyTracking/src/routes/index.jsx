@@ -25,6 +25,8 @@ import DoctorDashboard from "../pages/doctor";
 import MembershipPage from "../pages/user/Membership";
 import FAQPage from "../pages/user/FAQ/FAQPage";
 import VerifyAccount from "../pages/user/Auth/Register/VerifyAccount";
+import MembershipPackages from "../pages/user/Membership/MembershipPage";
+import PaymentCallback from "../pages/user/PaypalPayment/PaymentCallback";
 
 function UserLayout() {
   const location = useLocation();
@@ -67,6 +69,9 @@ function UserLayout() {
             <Route path="/add-baby-info/:babyId" element={<AddBabyInfo />} />
             <Route path="/consultation-request" element={<ConsultationRequest />} />
             <Route path="/consultation-detail/:id" element={<ConsultationDetail />} />
+            <Route path="/verify" element={<VerifyAccount />} />
+            <Route path="/membership" element={<MembershipPackages />} />
+            <Route path="/paypal/success" element={<PaymentCallback />} />
             <Route path="/booking-meeting" element={<BookingPage />} />
             <Route path="/doctor" element={<DoctorPage />} />
             <Route path="/doctor/:doctorId" element={<DoctorDetail />} />
