@@ -15,11 +15,9 @@ export default function WorkSchedule() {
     { id: 3, title: "Shift C", status: "Rejected" },
   ]);
 
-  // State form hiển thị/ẩn
   const [showForm, setShowForm] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("");
 
-  // Form fields
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [userInfo, setUserInfo] = useState(null);

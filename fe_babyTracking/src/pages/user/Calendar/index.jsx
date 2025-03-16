@@ -12,7 +12,8 @@ import {
 } from "@heroicons/react/outline";
 import {
   bookingMeeting,
-  getAvailableShift,
+  getAllSlotTimes,
+  getApprovedList,
   getBabyInfo,
 } from "../../../services/APIServices";
 
@@ -69,12 +70,14 @@ export default function BookingPage() {
   const [availableTimes, setAvailableTimes] = useState([]);
   const isDayAvailable =
     selectedDay && availableDays.map(Number).includes(selectedDay.day);
+  const [approvedList, setApprovedList] = useState([]);
+  const [allSlotTimes, setAllSlotTimes] = useState([]);
 
   const formatSelectedDay = () => {
     if (!selectedDay) return "";
     const dateObj = new Date(
       selectedDay.year,
-      selectedDay.month,
+      selectedDay.month - 1,
       selectedDay.day
     );
     const dayOfWeek = DAY_NAMES[dateObj.getDay()];
@@ -94,23 +97,67 @@ export default function BookingPage() {
       }
     };
     fetchBabyInfo();
-  }, []);
+  }, [babyId]);
 
   useEffect(() => {
-    const fetchAvailableSlot = async () => {
+    const fetchSlotTimes = async () => {
       try {
-        const result = await getAvailableShift(yearMonth);
-        //console.log(result.availableDates);
-        setAvailableDays(
-          result.availableDates.map((item) => item.date.split("-")[2])
-        );
-        setAvailableTimes(result.availableDates.map((item) => item.slotTimes));
+        const result = await getAllSlotTimes();
+        setAllSlotTimes(result);
       } catch (error) {
         console.log(error);
       }
     };
-    fetchAvailableSlot();
+    fetchSlotTimes();
+  }, []);
+
+  useEffect(() => {
+    if (!approvedList.length || !allSlotTimes.length) return;
+
+    const groupSlotsByDate = (approvedList, allSlotTimes) => {
+      const groupedByDate = {};
+
+      approvedList.forEach(({ date, startTime }) => {
+        if (!groupedByDate[date]) groupedByDate[date] = [];
+
+        const matchedSlots = allSlotTimes.filter(
+          (slot) => slot.startTime === startTime
+        );
+
+        groupedByDate[date].push(...matchedSlots);
+      });
+
+      return Object.values(groupedByDate);
+    };
+
+    const newAvailableTimes = groupSlotsByDate(approvedList, allSlotTimes);
+    setAvailableTimes(newAvailableTimes);
+  }, [approvedList, allSlotTimes]);
+
+  useEffect(() => {
+    const fetchAprroveList = async () => {
+      try {
+        const result = await getApprovedList();
+
+        const filteredList = result.filter(
+          (item) => item.date?.slice(0, 7) === yearMonth
+        );
+
+        setApprovedList(filteredList);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchAprroveList();
   }, [yearMonth]);
+
+  useEffect(() => {
+    const uniqueDays = [
+      ...new Set(approvedList.map((item) => item.date.split("-")[2])),
+    ];
+
+    setAvailableDays(uniqueDays);
+  }, [approvedList]);
 
   const handleBack = () => {
     if (step === 1) {
@@ -132,7 +179,6 @@ export default function BookingPage() {
     }
   };
 
-  // Bấm Schedule => step=3
   const handleSchedule = async () => {
     setStep(3);
     const [date, slotTimeId, index] = selectedKey.split("/");
@@ -150,7 +196,6 @@ export default function BookingPage() {
     }
   };
 
-  // Dùng chung: Tính giờ kết thúc
   const endTime = selectedTime ? getEndTime(selectedTime, duration) : "";
 
   return (
@@ -197,7 +242,7 @@ export default function BookingPage() {
                   availableDays={availableDays}
                   selectedDay={selectedDay}
                   onSelectDay={(day) => {
-                    setSelectedDay(day);
+                    setSelectedDay({ ...day, month: day.month + 1 });
                     setSelectedTime(null);
                   }}
                   onYearMonthChange={setYearMonth}
@@ -226,8 +271,7 @@ export default function BookingPage() {
                             selectedDay.month
                           ).padStart(2, "0")}-${String(
                             selectedDay.day
-                          ).padStart(2, "0")}/${slot.slotTimeId}/${index}`;
-
+                          ).padStart(2, "0")}/${slot.id}/${index}`;
                           return isChosen ? (
                             <div key={uniqueKey} className="flex gap-2 w-full">
                               <button className="flex-1 bg-gray-500 text-white text-center py-2 rounded">
@@ -369,16 +413,14 @@ export default function BookingPage() {
               </span>
             </div>
 
-            {/* Timezone */}
             <div className="flex items-center text-gray-700">
               <GlobeAltIcon className="h-5 w-5 mr-2 text-gray-500" />
               <span>Indochina Time</span>
             </div>
           </div>
 
-          {/* Nút Back to Home */}
           <button
-            onClick={() => navigate(`/doctor/${doc.id}`)}
+            onClick={() => navigate("/my-family")}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
             BACK TO HOME

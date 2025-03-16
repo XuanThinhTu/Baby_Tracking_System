@@ -337,6 +337,15 @@ export const getAvailableShift = async (yearMonth) => {
   }
 };
 
+export const getApprovedList = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/working-schedule/approved-list`);
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const bookingMeeting = async (babyId, date, slotTimeId, note) => {
   try {
     const result = await axios.post(

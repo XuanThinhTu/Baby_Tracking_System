@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getMembershipPackages } from "../../../services/APIServices";
 import { CheckIcon } from "@heroicons/react/outline";
+import { purchaseMembership } from "../../../services/membershipServices";
 
 export default function MembershipPage() {
   const [packages, setPackages] = useState([]);
@@ -10,7 +11,6 @@ export default function MembershipPage() {
     async function fetchPackages() {
       try {
         const result = await getMembershipPackages();
-        // Giả sử result = { success, data: [ { id, name, price, description, features, featured }, ... ] }
         if (result?.success) {
           setPackages(result.data || []);
         }
@@ -30,6 +30,15 @@ export default function MembershipPage() {
       </div>
     );
   }
+
+  const handlePurchasePackage = async (packageId) => {
+    try {
+      const result = await purchaseMembership(packageId);
+      window.location.href = result?.paymentUrl;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="relative isolate min-h-screen bg-gradient-to-tr from-green-50 via-green-100 to-green-200 px-6 py-24 sm:py-32 lg:px-8">
@@ -162,6 +171,7 @@ export default function MembershipPage() {
                     : "bg-green-500 text-white hover:bg-green-400 focus-visible:outline-green-500"
                 }
                 `}
+                onClick={() => handlePurchasePackage(pkg.id)}
               >
                 Buy now
               </button>

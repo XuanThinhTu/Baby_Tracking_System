@@ -24,7 +24,7 @@ const MembershipPackages = () => {
   const handleSelectPurchase = async (packageId) => {
     const response = await purchaseMembership(packageId);
     if (response) {
-      window.location.href = response.data.data?.paymentUrl;
+      window.location.href = response.data?.paymentUrl;
     }
   };
 

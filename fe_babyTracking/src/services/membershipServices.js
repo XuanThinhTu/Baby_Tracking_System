@@ -28,7 +28,7 @@ export const purchaseMembership = async (packageId) => {
         },
       }
     );
-    return response;
+    return response.data.data;
   } catch (error) {
     console.error("Error purchasing membership: ", error);
   }
