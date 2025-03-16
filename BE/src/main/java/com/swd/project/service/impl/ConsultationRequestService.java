@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -111,5 +112,11 @@ public class ConsultationRequestService implements IConsultationRequestService {
                 NotificationType.CONSULTATION
         );
         return consultationRequestMapper.toConsultationRequestDTO(consultationRequest);
+    }
+
+    @Override
+    public List<ConsultationRequestDTO> getAllConsultationRequestByUser() {
+        List<ConsultationRequest> consultationRequests = consultationRequestRepository.findAll();
+        return consultationRequests.stream().map(consultationRequestMapper::toConsultationRequestDTO).toList();
     }
 }

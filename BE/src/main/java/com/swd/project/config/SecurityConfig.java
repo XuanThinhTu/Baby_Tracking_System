@@ -54,6 +54,7 @@ public class SecurityConfig {
             "/grow-tracker/**",
             "/consultation/request",
             "/consultation/pending-request",
+            "/consultation/my-request",
             "/slot-time/add",
             "/admin/**",
             "/consultation-response/**",

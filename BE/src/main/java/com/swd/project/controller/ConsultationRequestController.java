@@ -4,12 +4,15 @@ import com.swd.project.dto.request.ConsultationRequestCreation;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.ConsultationRequestDTO;
 import com.swd.project.service.IConsultationRequestService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/consultation")
@@ -56,6 +59,16 @@ public class ConsultationRequestController {
         return ApiResponse.<Page<ConsultationRequestDTO>>builder()
                 .message("Pending consultation request")
                 .data(iConsultationRequestService.getPendingConsultationRequest(page, size))
+                .build();
+    }
+
+    @Operation(summary = "Get all consultation request by authenticated user")
+    @GetMapping("/my-request")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<List<ConsultationRequestDTO>> getAllConsultationRequestByUser() {
+        return ApiResponse.<List<ConsultationRequestDTO>>builder()
+                .message("All consultation request")
+                .data(iConsultationRequestService.getAllConsultationRequestByUser())
                 .build();
     }
 
