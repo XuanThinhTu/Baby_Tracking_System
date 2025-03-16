@@ -28,7 +28,7 @@ public class ConsultationResponseController {
 
     @GetMapping("/{consultationRequestId}")
     @SecurityRequirement(name = "bearerAuth")
-    public ApiResponse<Page<ConsultationResponseDTO>> sendConsultationResponse(@PathVariable int consultationRequestId,
+    public ApiResponse<Page<ConsultationResponseDTO>> getResponsesByConsultationRequestId(@PathVariable int consultationRequestId,
                                                                                @RequestParam(defaultValue = "0") int page,
                                                                                @RequestParam(defaultValue = "10") int size){
         return ApiResponse.<Page<ConsultationResponseDTO>>builder()

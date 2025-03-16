@@ -76,9 +76,9 @@ public class ConsultationRequestService implements IConsultationRequestService {
     }
 
     @Override
-    public Page<ConsultationRequestDTO> getAllConsultationRequest(int page, int size) {
+    public Page<ConsultationRequestDTO> getAllConsultationRequest(int page, int size, ConsultationStatus status) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ConsultationRequest> consultations = consultationRequestRepository.findAll(pageable);
+        Page<ConsultationRequest> consultations = consultationRequestRepository.findAllByStatus(status, pageable);
         return consultations.map(consultationRequestMapper::toConsultationRequestDTO);
     }
 

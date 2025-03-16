@@ -64,7 +64,8 @@ public class SecurityConfig {
             "/working-schedule/update/**",
             "/category/create",
             "/category/update/**",
-            "/blogs/create"
+            "/blogs/create",
+            "/feedback/send"
     );
 
     @Bean
