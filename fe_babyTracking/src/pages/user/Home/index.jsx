@@ -1,6 +1,6 @@
 import React from "react";
 import CarouselHero from "../../../components/Hero/CarouselHero";
-import MembershipPage from "../Membership/MembershipPage";
+import MembershipPage from "../Membership/index";
 import BMICalculator from "./BMICalculator";
 import DoctorIntro from "./DoctorIntro";
 import Testimonial from "./Testimonial";

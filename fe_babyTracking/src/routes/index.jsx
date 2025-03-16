@@ -22,10 +22,9 @@ import BookingPage from "../pages/user/Calendar";
 import DoctorPage from "../pages/user/Doctor";
 import DoctorDetail from "../pages/user/Doctor/DoctorDetail";
 import DoctorDashboard from "../pages/doctor";
-import MembershipPage from "../pages/user/Membership";
+import MembershipPage from "../pages/user/Membership/index";
 import FAQPage from "../pages/user/FAQ/FAQPage";
 import VerifyAccount from "../pages/user/Auth/Register/VerifyAccount";
-import MembershipPackages from "../pages/user/Membership/MembershipPage";
 import PaymentCallback from "../pages/user/PaypalPayment/PaymentCallback";
 
 function UserLayout() {
@@ -70,7 +69,6 @@ function UserLayout() {
             <Route path="/consultation-request" element={<ConsultationRequest />} />
             <Route path="/consultation-detail/:id" element={<ConsultationDetail />} />
             <Route path="/verify" element={<VerifyAccount />} />
-            <Route path="/membership" element={<MembershipPackages />} />
             <Route path="/paypal/success" element={<PaymentCallback />} />
             <Route path="/booking-meeting" element={<BookingPage />} />
             <Route path="/doctor" element={<DoctorPage />} />
