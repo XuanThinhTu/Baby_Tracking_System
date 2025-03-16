@@ -55,6 +55,9 @@ public class MembershipPackageService implements IMembershipPackageService {
 
     @Override
     public MembershipPackageResponse createMembershipPackage(MembershipPackageRequest request) {
+        if(request.duration() > 365){
+            throw new RuntimeException("Duration must be less than 365 days");
+        }
         MembershipPackage membershipPackage = packageMapper.toMembershipPackage(request);
         var permissions = permissionRepository.findAllById(request.permissions());
         membershipPackage.setPermissions(new HashSet<>(permissions));
@@ -166,15 +169,15 @@ public class MembershipPackageService implements IMembershipPackageService {
         MembershipPackage membershipPackage = packageRepository.findById(membershipId)
                 .orElseThrow(() -> new ResourceNotFoundException("Membership Package not found"));
         //membership subscription
-//        MembershipSubscription membershipSubscription = new MembershipSubscription();
-//        membershipSubscription.setStartDate(Date.valueOf(LocalDateTime.now().toLocalDate()));
-//        membershipSubscription.setEndDate(Date.valueOf(LocalDateTime.now().plusDays(membershipPackage.getDuration()).toLocalDate()));
-//        membershipSubscription.setStatus(MembershipSubscriptionStatus.UNAVAILABLE);
-//        membershipSubscription.setCreatedAt(Date.valueOf(LocalDateTime.now().toLocalDate()));
-//        membershipSubscription.setPaymentStatus(PaymentStatus.PENDING);
-//        membershipSubscription.setMembershipPackage(membershipPackage);
-//        membershipSubscription.setUser(userService.getAuthenticatedUser());
-//        membershipSubscriptionRepository.save(membershipSubscription);
+        MembershipSubscription membershipSubscription = new MembershipSubscription();
+        membershipSubscription.setStartDate(Date.valueOf(LocalDateTime.now().toLocalDate()));
+        membershipSubscription.setEndDate(Date.valueOf(LocalDateTime.now().plusDays(membershipPackage.getDuration()).toLocalDate()));
+        membershipSubscription.setStatus(MembershipSubscriptionStatus.UNAVAILABLE);
+        membershipSubscription.setCreatedAt(Date.valueOf(LocalDateTime.now().toLocalDate()));
+        membershipSubscription.setPaymentStatus(PaymentStatus.PENDING);
+        membershipSubscription.setMembershipPackage(membershipPackage);
+        membershipSubscription.setUser(userService.getAuthenticatedUser());
+        membershipSubscriptionRepository.save(membershipSubscription);
         //paypal payment
         Amount amount = new Amount();
         amount.setCurrency(CURRENCY);
@@ -202,6 +205,16 @@ public class MembershipPackageService implements IMembershipPackageService {
         payment.setRedirectUrls(redirectUrls);
 
         return payment.create(apiContext);
+    }
+
+    @Override
+    public void cancelMembershipPayment(String token) {
+        User user = userService.getAuthenticatedUser();
+        MembershipSubscription membershipSubscription = membershipSubscriptionRepository
+                .findByUserIdAndPaymentStatusAndStatus(user.getId(), PaymentStatus.PENDING, MembershipSubscriptionStatus.UNAVAILABLE);
+        membershipSubscription.setPaymentStatus(PaymentStatus.FAILED);
+        membershipSubscription.setStatus(MembershipSubscriptionStatus.UNAVAILABLE);
+        membershipSubscriptionRepository.save(membershipSubscription);
     }
 
     @Override
