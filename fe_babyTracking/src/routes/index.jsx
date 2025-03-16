@@ -25,6 +25,8 @@ import DoctorDashboard from "../pages/doctor";
 import MembershipPage from "../pages/user/Membership";
 import FAQPage from "../pages/user/FAQ/FAQPage";
 import VerifyAccount from "../pages/user/Auth/Register/VerifyAccount";
+import Blog from "../pages/user/Blog/Blog";
+import BlogDetail from "../pages/user/Blog/BlogDetail";
 
 function UserLayout() {
   const location = useLocation();
@@ -45,6 +47,8 @@ function UserLayout() {
     "/add-baby-info/",
     "/doctor/",
     "/consultation-detail/",
+    "/blog",
+    "/blog/"
   ];
 
   // Kiểm tra xem location.pathname có bắt đầu bằng bất kỳ prefix nào
@@ -71,6 +75,8 @@ function UserLayout() {
             <Route path="/doctor" element={<DoctorPage />} />
             <Route path="/doctor/:doctorId" element={<DoctorDetail />} />
             <Route path="/faq" element={<FAQPage />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:id" element={<BlogDetail />} />
           </Routes>
         </div>
       ) : (
