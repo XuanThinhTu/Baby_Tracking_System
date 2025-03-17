@@ -14,6 +14,8 @@ public interface IConsultationRequestService {
 
     Page<ConsultationRequestDTO> getPendingConsultationRequest(int page, int size);
 
+    Page<ConsultationRequestDTO> getAllConsultation(int page, int size);
+
     Page<ConsultationRequestDTO> getAllConsultationRequest(int page, int size, ConsultationStatus status);
 
     ConsultationRequestDTO getConsultationRequestById(int id);

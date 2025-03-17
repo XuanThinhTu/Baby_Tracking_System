@@ -119,4 +119,11 @@ public class ConsultationRequestService implements IConsultationRequestService {
         List<ConsultationRequest> consultationRequests = consultationRequestRepository.findAll();
         return consultationRequests.stream().map(consultationRequestMapper::toConsultationRequestDTO).toList();
     }
+
+    @Override
+    public Page<ConsultationRequestDTO> getAllConsultation(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ConsultationRequest> consultations = consultationRequestRepository.findAll(pageable);
+        return consultations.map(consultationRequestMapper::toConsultationRequestDTO);
+    }
 }
