@@ -1,18 +1,22 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 // Icon Heroicons (cài bằng: npm install @heroicons/react)
 import { UserIcon, LogoutIcon } from "@heroicons/react/outline";
 
 // Import các component
 import DoctorSidebar from "./DoctorSidebar/DoctorSidebar";
 import DoctorProfile from "./DoctorProfile/DoctorProfile";
-import ConsultationRequests from "./ConsultationRequests/ConsultationRequests";
 import BookingManagement from "./BookingManagement/BookingManagement";
 import BlogCreation from "./BlogCreation/BlogCreation";
+import { getUserInformation } from "../../services/APIServices";
+import { useNavigate } from "react-router-dom";
 import WorkSchedule from "./WorkSchedule/WorkSchedule";
 
 export default function DoctorDashboard() {
     // State dropdown header
+    const [userInfo, setUserInfo] = useState(null);
     const [openDropdown, setOpenDropdown] = useState(false);
+    const navigation = useNavigate();
+
     // State xác định tab đang hiển thị
     const [activeTab, setActiveTab] = useState("profile");
 
@@ -34,6 +38,25 @@ export default function DoctorDashboard() {
         }
     };
 
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const result = await getUserInformation();
+                setUserInfo(result.data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchUserInfo();
+    }, []);
+
+    const handleLogout = () => {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("userId");
+        setUserInfo(null);
+        navigation("/login");
+    };
+
     return (
         <div className="min-h-screen flex flex-col bg-gray-100">
             {/* HEADER */}
@@ -48,7 +71,9 @@ export default function DoctorDashboard() {
                         className="flex items-center space-x-2 hover:bg-blue-700 px-3 py-2 rounded"
                     >
                         <UserIcon className="h-5 w-5" />
-                        <span>Dr. John Doe</span>
+                        <span>
+                            Welcome Dr. {userInfo?.firstName} {userInfo?.lastName}
+                        </span>
                     </button>
 
                     {openDropdown && (
@@ -63,13 +88,13 @@ export default function DoctorDashboard() {
                                 Profile
                             </button>
                             <div className="border-t" />
-                            <a
-                                href="#"
+                            <button
                                 className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition"
+                                onClick={handleLogout}
                             >
                                 <LogoutIcon className="h-4 w-4 text-gray-500" />
                                 <span>Logout</span>
-                            </a>
+                            </button>
                         </div>
                     )}
                 </div>

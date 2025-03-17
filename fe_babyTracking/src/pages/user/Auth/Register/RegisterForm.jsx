@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import LinkToGoogle from "../Google/LinkToGoogle";
 import axios from "axios";
 import { registerFunction } from "../../../../services/APIServices";
-import toast from "react-hot-toast";
-// import { registerFunction } from "../../../../services/APIServices";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
@@ -36,13 +34,15 @@ const RegisterForm = () => {
         formValues.phone,
         formValues.address
       );
-      if (result) {
-        toast.success(
-          "Đăng ký thành công! Xin vui lòng kiểm tra email của bạn để xác thực tài khoản!"
-        );
-      }
+      console.log(result);
+
+      // Sau khi đăng ký thành công, KHÔNG navigate("/login") nữa
+      // Thay vào đó, hiển thị toast
+      toast.success("Email xác thực đã được gửi. Vui lòng kiểm tra hộp thư!");
+      // => Ở đây user sẽ check mail, bấm link => /verify?token=xxx
     } catch (error) {
       console.log(error);
+      toast.error("Đăng ký thất bại! " + error.message);
     }
   };
 

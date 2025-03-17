@@ -4,14 +4,13 @@ import {
   Calendar,
   Form,
   Input,
-  message,
   Modal,
   Popconfirm,
   TimePicker,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import dayjs from "dayjs";
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 
 function AppointmentManagement() {
   const [showModal, setShowModal] = useState(false);

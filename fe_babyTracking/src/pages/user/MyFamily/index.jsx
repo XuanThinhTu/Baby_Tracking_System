@@ -15,17 +15,23 @@ const MyFamily = () => {
   const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
-    const fetchBabies = async () => {
-      try {
-        const babiesData = await getAllBabies();
-        setBabies(babiesData?.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     fetchBabies();
   }, [babies]);
+
+  const fetchBabies = async () => {
+    try {
+      // setBabies([]);
+      const babiesData = await getAllBabies();
+      console.log("baby raw data", babiesData.data);
+      setBabies(babiesData.data);
+      console.log("baby", babies);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  
+  console.log("baby1", babies);
 
   return (
     <>
@@ -33,7 +39,7 @@ const MyFamily = () => {
       <div className="w-full min-h-screen flex flex-col items-center bg-white text-black p-8">
         <h1 className="text-2xl font-bold mb-6">I'm a parent</h1>
         <div className="w-full max-w-3xl bg-gray-100 p-6 rounded-2xl shadow-md">
-          {!babies ? (
+          {!babies.length ? (
             <Spin
               indicator={<LoadingOutlined spin />}
               size="large"
@@ -41,7 +47,7 @@ const MyFamily = () => {
             />
           ) : (
             <>
-              {babies?.map((baby) => (
+              {babies.map((baby) => (
                 <div
                   key={baby.id}
                   className="flex justify-between items-center p-4 border-b border-gray-300"
