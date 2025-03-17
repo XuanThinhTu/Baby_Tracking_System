@@ -15,7 +15,6 @@ import { getUserConsultation } from "../../../../services/APIServices";
 export default function ConsultationRequest() {
   const { babyId } = useParams();
   const navigate = useNavigate();
-
   const [requests, setRequests] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
@@ -23,14 +22,16 @@ export default function ConsultationRequest() {
     const fetchUserConsultation = async () => {
       try {
         const result = await getUserConsultation();
-        setRequests(result);
+        const filteredData = result.filter(
+          (item) => item?.child.id === parseInt(babyId)
+        );
+        setRequests(filteredData);
       } catch (error) {
         console.log(error);
       }
     };
     fetchUserConsultation();
   }, []);
-  console.log(requests);
 
   const pendingRequests = requests?.filter((r) => r.status === "PENDING");
   const processingRequests = requests?.filter((r) => r.status === "ASSIGNED");
@@ -42,7 +43,6 @@ export default function ConsultationRequest() {
     setShowForm(true);
   };
 
-  // Thêm request mock => cột Pending
   const handleSaveRequest = (newReq) => {
     setRequests([...requests, newReq]);
     setShowForm(false);

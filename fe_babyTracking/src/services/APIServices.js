@@ -415,7 +415,7 @@ export const getUserConsultation = async () => {
 export const getConsultationReplies = async (consultationId) => {
   try {
     const result = await axios.get(
-      `${baseUrl}/consultation-response/${consultationId}?page=0&size=10`,
+      `${baseUrl}/consultation-response/get/${consultationId}?page=0&size=20`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -431,8 +431,8 @@ export const getConsultationReplies = async (consultationId) => {
 export const addNewConsultationReply = async (consultationId, content) => {
   try {
     const result = await axios.post(
-      `${baseUrl}/consultation-response/${consultationId}`,
-      content,
+      `${baseUrl}/consultation-response/send/${consultationId}`,
+      { content },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -560,7 +560,7 @@ export const rejectWorkShift = async (slots) => {
 export const getAllConsultations = async () => {
   try {
     const result = await axios.get(
-      `${baseUrl}/consultation/all-request?page=0&size=20`,
+      `${baseUrl}/consultation/all?page=0&size=20`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

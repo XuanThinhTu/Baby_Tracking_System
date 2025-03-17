@@ -14,7 +14,6 @@ import toast from "react-hot-toast";
  */
 export default function DoctorConsultationDetail({ requestData, onBack }) {
   const [consultationDetail, setConsultationDetail] = useState(requestData);
-  console.log(consultationDetail);
 
   const [replies, setReplies] = useState([]);
   const [newReply, setNewReply] = useState("");
@@ -39,6 +38,7 @@ export default function DoctorConsultationDetail({ requestData, onBack }) {
       );
       if (result) {
         toast.success("Response success!");
+        onBack();
       } else {
         toast.error("Response failed!");
       }

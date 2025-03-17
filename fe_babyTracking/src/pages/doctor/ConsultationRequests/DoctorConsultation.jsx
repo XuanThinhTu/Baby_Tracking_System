@@ -16,6 +16,7 @@ const baseUrl = import.meta.env.VITE_API_BASE_URL;
  */
 export default function DoctorConsultation() {
   const [requests, setRequests] = useState([]);
+  const doctorId = sessionStorage.getItem("userId");
   const [selectedRequest, setSelectedRequest] = useState(null); // object
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +25,10 @@ export default function DoctorConsultation() {
       try {
         setLoading(true);
         const result = await getAllConsultations();
-        setRequests(result);
+        const filteredData = result.filter(
+          (item) => item?.doctorId === parseInt(doctorId)
+        );
+        setRequests(filteredData);
       } catch (error) {
         console.error(error);
       } finally {

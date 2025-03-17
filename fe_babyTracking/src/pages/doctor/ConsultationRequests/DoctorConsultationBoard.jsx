@@ -7,9 +7,9 @@ import {
 import KanbanCard from "./KanbanCard";
 
 export default function DoctorConsultationBoard({ requests, onSelectRequest }) {
-  const pendingList = requests.filter((r) => r.status === "PENDING");
-  const processingList = requests.filter((r) => r.status === "ASSIGNED");
-  const closedList = requests.filter(
+  const pendingList = requests?.filter((r) => r.status === "PENDING");
+  const processingList = requests?.filter((r) => r.status === "ASSIGNED");
+  const closedList = requests?.filter(
     (r) => r.status === "CLOSED" || r.status === "CANCELED"
   );
 
@@ -24,7 +24,7 @@ export default function DoctorConsultationBoard({ requests, onSelectRequest }) {
             <h3 className="text-lg font-semibold">Pending</h3>
           </div>
           <div className="space-y-2">
-            {pendingList.map((req) => (
+            {pendingList?.map((req) => (
               <KanbanCard
                 key={req.id}
                 consultation={req}
@@ -41,7 +41,7 @@ export default function DoctorConsultationBoard({ requests, onSelectRequest }) {
             <h3 className="text-lg font-semibold">Processing</h3>
           </div>
           <div className="space-y-2">
-            {processingList.map((req) => (
+            {processingList?.map((req) => (
               <KanbanCard
                 key={req.id}
                 consultation={req}
@@ -58,7 +58,7 @@ export default function DoctorConsultationBoard({ requests, onSelectRequest }) {
             <h3 className="text-lg font-semibold">Closed / Canceled</h3>
           </div>
           <div className="space-y-2">
-            {closedList.map((req) => (
+            {closedList?.map((req) => (
               <KanbanCard
                 key={req.id}
                 consultation={req}
