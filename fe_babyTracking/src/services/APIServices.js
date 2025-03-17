@@ -459,3 +459,21 @@ export const rejectWorkShift = async (slots) => {
     console.log(error);
   }
 };
+
+// Blogs
+export const createBlog = async (blogData) => {
+  try {
+    const response = await axios.post(`${baseUrl}/blogs/create`, blogData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
