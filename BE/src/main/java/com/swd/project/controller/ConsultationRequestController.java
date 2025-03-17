@@ -32,6 +32,15 @@ public class ConsultationRequestController {
                 .build();
     }
 
+    @GetMapping("/all")
+    public ApiResponse<Page<ConsultationRequestDTO>> getAllConsultations(@RequestParam(defaultValue = "0") int page,
+                                                                        @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.<Page<ConsultationRequestDTO>>builder()
+                .message("All consultation request")
+                .data(iConsultationRequestService.getAllConsultation(page, size))
+                .build();
+    }
+
     @GetMapping("/{id}")
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<ConsultationRequestDTO> getConsultationRequestById(@PathVariable int id) {
