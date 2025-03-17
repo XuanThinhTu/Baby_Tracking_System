@@ -16,6 +16,7 @@ import {
   getApprovedList,
   getBabyInfo,
 } from "../../../services/APIServices";
+import toast from "react-hot-toast";
 
 const DAY_NAMES = [
   "Sunday",
@@ -180,7 +181,6 @@ export default function BookingPage() {
   };
 
   const handleSchedule = async () => {
-    setStep(3);
     const [date, slotTimeId, index] = selectedKey.split("/");
 
     try {
@@ -190,7 +190,12 @@ export default function BookingPage() {
         parseInt(slotTimeId),
         meetingNote
       );
-      alert("Đã đăng ký lịch thành công!");
+      if (result) {
+        toast.success("Đã đăng ký lịch thành công!");
+        setStep(3);
+      } else {
+        toast.error("Đăng ký lịch thất bại, hãy thử lại!");
+      }
     } catch (error) {
       console.log(error);
     }

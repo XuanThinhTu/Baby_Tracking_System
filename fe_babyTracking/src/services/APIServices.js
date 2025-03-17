@@ -175,6 +175,19 @@ export const updateBabyProfile = async (babyId, name, birthday, gender) => {
   }
 };
 
+export const deleteBaby = async (babyId) => {
+  try {
+    const result = await axios.delete(`${baseUrl}/children/delete/${babyId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const addBabyGrowthData = async (
   babyId,
   height,
@@ -363,16 +376,6 @@ export const bookingMeeting = async (babyId, date, slotTimeId, note) => {
   }
 };
 
-export async function getAllConsultations() {
-  try {
-    const res = await axios.get(`${baseUrl}/consultation/all-request`);
-    return res.data;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
-
 export const postConsultations = async (title, note, babyId) => {
   try {
     const addingInformation = {
@@ -390,6 +393,52 @@ export const postConsultations = async (title, note, babyId) => {
       }
     );
     console.log("result", result.data);
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getUserConsultation = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/consultation/my-request`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getConsultationReplies = async (consultationId) => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/consultation-response/${consultationId}?page=0&size=10`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data.data.content;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const addNewConsultationReply = async (consultationId, content) => {
+  try {
+    const result = await axios.post(
+      `${baseUrl}/consultation-response/${consultationId}`,
+      content,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return result.data;
   } catch (error) {
     console.log(error);
@@ -499,6 +548,39 @@ export const rejectWorkShift = async (slots) => {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getAllConsultations = async () => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/consultation/all-request?page=0&size=20`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data.data.content;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const assignConsultation = async (doctorId, consultationId) => {
+  try {
+    const result = await axios.post(
+      `${baseUrl}/admin/consultation/assign?consultationRequestId=${consultationId}&doctorId=${doctorId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
       }
     );

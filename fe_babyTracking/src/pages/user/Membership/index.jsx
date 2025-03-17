@@ -34,7 +34,9 @@ export default function MembershipPage() {
   const handlePurchasePackage = async (packageId) => {
     try {
       const result = await purchaseMembership(packageId);
-      window.location.href = result?.paymentUrl;
+      if (result) {
+        window.location.href = result?.paymentUrl;
+      }
     } catch (error) {
       console.log(error);
     }

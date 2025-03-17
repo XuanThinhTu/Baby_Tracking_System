@@ -20,12 +20,12 @@ import PieChart from "../content/charts/PieChart";
 import BarChart from "../content/charts/BarChart";
 import Analytics from "../content/Analytics";
 import Standard from "../content/Standard";
-import Mail from "../content/Mail";
 import Overview from "../content/Overview";
 import { useNavigate } from "react-router-dom";
 import AccountManagement from "../content/AccountManagement";
 import { getUserInformation } from "../../../services/APIServices";
 import Schedule from "../content/Schedule";
+import Consultation from "../content/Consultation";
 
 const items1 = [
   { key: "home", label: "Home" },
@@ -68,9 +68,9 @@ const items2 = [
     label: "Growth Standard",
   },
   {
-    key: "mail",
+    key: "consultation",
     icon: <MailOutlined />,
-    label: "Mail",
+    label: "Consultation",
   },
   {
     key: "appointment",
@@ -122,8 +122,8 @@ function AdminHomePage() {
         return <Analytics />;
       case "standard":
         return <Standard />;
-      case "mail":
-        return <Mail />;
+      case "consultation":
+        return <Consultation />;
       case "overview":
         return <Overview />;
       case "users":

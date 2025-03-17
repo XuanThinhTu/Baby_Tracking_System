@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaCamera, FaTimes, FaCalendarAlt } from "react-icons/fa";
 import { addNewBaby } from "../../../services/APIServices";
+import toast from "react-hot-toast";
 
 const BabyForm = ({ onClose }) => {
   const [newChild, setNewChild] = useState({
@@ -31,8 +32,13 @@ const BabyForm = ({ onClose }) => {
         newChild.birthday,
         newChild.gender
       );
-      setNewChild({ name: "", birthday: "", gender: "" });
-      onClose();
+      if (result) {
+        toast.success("Add baby success!");
+        setNewChild({ name: "", birthday: "", gender: "" });
+        onClose();
+      } else {
+        toast.error("Add baby failed!");
+      }
     } catch (error) {
       console.log(error);
     }

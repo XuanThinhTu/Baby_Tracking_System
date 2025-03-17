@@ -18,6 +18,7 @@ import {
   rejectWorkShift,
 } from "../../../services/APIServices";
 import dayjs from "dayjs";
+import toast from "react-hot-toast";
 
 function Schedule() {
   const [slots, setSlots] = useState([]);
@@ -116,8 +117,16 @@ function Schedule() {
 
   const handleAddSlot = async () => {
     try {
-      await addNewSlotTimes(slotTimes.startTime, slotTimes.endTime);
-      setIsOpen(false);
+      const result = await addNewSlotTimes(
+        slotTimes.startTime,
+        slotTimes.endTime
+      );
+      if (result) {
+        toast.success("Add slot success!");
+        setIsOpen(false);
+      } else {
+        toast.error("Add slot failed!");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -126,13 +135,11 @@ function Schedule() {
   const handleApprove = async () => {
     const shifts = workDates.map((item) => item.id);
     if (selectedSlots.length > 0) {
-      console.log("haha");
       const result = await approveWorkShift(selectedSlots);
     } else {
-      console.log("hihi");
       const result = await approveWorkShift(shifts);
     }
-    alert("Working schedule approved!");
+    toast.success("Working schedule approved!");
     handleCloseCard();
   };
 
@@ -144,8 +151,7 @@ function Schedule() {
       } else {
         const result = await rejectWorkShift(shifts);
       }
-
-      alert("Working schedule rejected!");
+      toast.success("Working schedule rejected!");
       handleCloseCard();
     } catch (error) {
       console.log(error);

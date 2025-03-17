@@ -1,6 +1,7 @@
 // src/pages/doctor/consultation/ConsultationForm.jsx
 import { useEffect, useState } from "react";
 import { postConsultations } from "../../../../services/APIServices";
+import toast from "react-hot-toast";
 
 export default function ConsultationForm({ onSave, onCancel, babyId }) {
   const [requestTitle, setRequestTitle] = useState("");
@@ -14,8 +15,12 @@ export default function ConsultationForm({ onSave, onCancel, babyId }) {
         return;
       }
       const result = await postConsultations(requestTitle, note, babyId);
-      alert("Bạn đã gửi yêu cầu tư vấn thành công!");
-      onCancel();
+      if (result) {
+        toast.success("Bạn đã gửi yêu cầu tư vấn thành công!");
+        onCancel();
+      } else {
+        toast.error("Gửi yêu cầu tư vấn thất bại!");
+      }
     } catch (error) {
       console.log(error);
     }

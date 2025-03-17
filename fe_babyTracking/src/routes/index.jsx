@@ -46,9 +46,9 @@ function UserLayout() {
     "/add-baby-info/",
     "/doctor/",
     "/consultation-detail/",
+    "/paypal/success",
   ];
 
-  // Kiểm tra xem location.pathname có bắt đầu bằng bất kỳ prefix nào
   const isContentPage = contentPaths.some((path) =>
     location.pathname.startsWith(path)
   );

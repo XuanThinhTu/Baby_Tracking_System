@@ -7,6 +7,7 @@ import {
   submitWorkingShift,
 } from "../../../services/APIServices";
 import dayjs from "dayjs";
+import toast from "react-hot-toast";
 
 export default function WorkSchedule() {
   const [shifts, setShifts] = useState([
@@ -44,9 +45,13 @@ export default function WorkSchedule() {
     try {
       if (currentStatus !== "Draft") {
         const result = await registerWorkingShift(scheduleData);
-        setNumberOfShifts(countTrueValues(scheduleData));
-        alert("Bạn đã lưu bản nháp đăng ký ca làm thành công!");
-        setCurrentStatus("Draft");
+        if (result) {
+          setNumberOfShifts(countTrueValues(scheduleData));
+          toast.success("Bạn đã lưu bản nháp đăng ký ca làm thành công!");
+          setCurrentStatus("Draft");
+        } else {
+          toast.error("Bản nháp ca làm chưa được đăng ký");
+        }
       } else {
         setCurrentStatus("");
       }
@@ -123,10 +128,14 @@ export default function WorkSchedule() {
         item.map((item) => item.id)
       );
       const result = await submitWorkingShift(submittedIds);
-      setShowForm(false);
-      setNumberOfShifts(0);
-      alert("Bạn đã đăng ký ca làm thành công!");
-      setScheduleData([]);
+      if (result) {
+        setShowForm(false);
+        setNumberOfShifts(0);
+        toast.success("Bạn đã đăng ký ca làm thành công!");
+        setScheduleData([]);
+      } else {
+        toast.error("Đăng ký ca làm thất bại!");
+      }
     } catch (error) {
       console.log(error);
     }
