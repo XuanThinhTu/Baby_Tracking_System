@@ -57,14 +57,16 @@ public class SecurityConfig {
             "/consultation/my-request",
             "/slot-time/add",
             "/admin/**",
-            "/consultation-response/**",
+            "/consultation-response/send/**",
+            "/consultation-response/get/**",
             "/working-schedule/register",
             "/working-schedule/doctor/**",
             "/working-schedule/submit",
             "/working-schedule/update/**",
             "/category/create",
             "/category/update/**",
-            "/blogs/create"
+            "/blogs/create",
+            "/feedback/send"
     );
 
     @Bean

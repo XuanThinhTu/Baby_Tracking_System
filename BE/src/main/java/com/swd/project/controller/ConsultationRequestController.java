@@ -3,6 +3,7 @@ package com.swd.project.controller;
 import com.swd.project.dto.request.ConsultationRequestCreation;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.ConsultationRequestDTO;
+import com.swd.project.enums.ConsultationStatus;
 import com.swd.project.service.IConsultationRequestService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -42,12 +43,12 @@ public class ConsultationRequestController {
 
     @GetMapping("/all-request")
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasRole('ROLE_DOCTOR') or hasRole('ROLE_ADMIN')")
     public ApiResponse<Page<ConsultationRequestDTO>> getAllConsultationRequest(@RequestParam(defaultValue = "0") int page,
-                                                                          @RequestParam(defaultValue = "10") int size) {
+                                                                               @RequestParam(defaultValue = "10") int size,
+                                                                               @RequestParam("status")ConsultationStatus status) {
         return ApiResponse.<Page<ConsultationRequestDTO>>builder()
                 .message("All consultation request")
-                .data(iConsultationRequestService.getAllConsultationRequest(page, size))
+                .data(iConsultationRequestService.getAllConsultationRequest(page, size, status))
                 .build();
     }
 
