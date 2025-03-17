@@ -16,7 +16,7 @@ public class ConsultationResponseController {
 
     private final IConsultationResponseService consultationResponseService;
 
-    @PostMapping("/{consultationRequestId}")
+    @PostMapping("/send/{consultationRequestId}")
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<ConsultationResponseDTO> sendConsultationResponse(@PathVariable int consultationRequestId,
                                                                          @RequestBody ConsultationResponseCreation response){
@@ -26,7 +26,7 @@ public class ConsultationResponseController {
                 .build();
     }
 
-    @GetMapping("/{consultationRequestId}")
+    @GetMapping("/get/{consultationRequestId}")
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<Page<ConsultationResponseDTO>> getResponsesByConsultationRequestId(@PathVariable int consultationRequestId,
                                                                                @RequestParam(defaultValue = "0") int page,
