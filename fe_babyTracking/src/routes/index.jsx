@@ -61,7 +61,7 @@ function UserLayout() {
     <>
       <UserHeader />
       {isContentPage ? (
-        <div className="container mx-auto px-2 py-4">
+        <div className="container mx-auto px-2 py-4 pt-[70px]">
           <Routes>
             <Route path="/login" element={<SignIn />} />
             <Route path="/register" element={<SignUp />} />

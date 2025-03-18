@@ -5,6 +5,7 @@ import BMICalculator from "./BMICalculator";
 import DoctorIntro from "./DoctorIntro";
 import Testimonial from "./Testimonial";
 import FAQ from "./FAQ";
+import MembershipPackages from "../Membership/MembershipPackages";
 
 function HomePage() {
   const token = sessionStorage.getItem("token");
@@ -15,7 +16,7 @@ function HomePage() {
       <DoctorIntro />
       <Testimonial />
       <FAQ />
-      {token && <MembershipPage />}
+      {token && <MembershipPackages />}
     </>
   );
 }
