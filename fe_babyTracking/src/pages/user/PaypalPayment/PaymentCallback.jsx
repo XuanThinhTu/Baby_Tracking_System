@@ -7,6 +7,7 @@ import { paymentCallback } from "../../../services/membershipServices";
 const PaymentCallback = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
   useEffect(() => {
     const handlePayment = async () => {
       const paramUrl = new URLSearchParams(location.search);

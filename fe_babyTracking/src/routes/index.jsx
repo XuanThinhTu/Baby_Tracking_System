@@ -46,9 +46,9 @@ function UserLayout() {
     "/add-baby-info/",
     "/doctor/",
     "/consultation-detail/",
+    "/paypal/success",
   ];
 
-  // Kiểm tra xem location.pathname có bắt đầu bằng bất kỳ prefix nào
   const isContentPage = contentPaths.some((path) =>
     location.pathname.startsWith(path)
   );
@@ -66,11 +66,16 @@ function UserLayout() {
             <Route path="/my-family" element={<MyFamily />} />
             <Route path="/baby-details/:babyId" element={<BabyOverview />} />
             <Route path="/add-baby-info/:babyId" element={<AddBabyInfo />} />
-            <Route path="/consultation-request" element={<ConsultationRequest />} />
-            <Route path="/consultation-detail/:id" element={<ConsultationDetail />} />
-            <Route path="/verify" element={<VerifyAccount />} />
+            <Route path="/booking-meeting/:babyId" element={<BookingPage />} />
             <Route path="/paypal/success" element={<PaymentCallback />} />
-            <Route path="/booking-meeting" element={<BookingPage />} />
+            <Route
+              path="/consultation-request/:babyId"
+              element={<ConsultationRequest />}
+            />
+            <Route
+              path="/consultation-detail/:id"
+              element={<ConsultationDetail />}
+            />
             <Route path="/doctor" element={<DoctorPage />} />
             <Route path="/doctor/:doctorId" element={<DoctorDetail />} />
             <Route path="/faq" element={<FAQPage />} />

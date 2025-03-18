@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FaCamera, FaTimes, FaCalendarAlt } from "react-icons/fa";
-import { updateBabyProfile } from "../../../services/APIServices";
+import { deleteBaby, updateBabyProfile } from "../../../services/APIServices";
+import toast from "react-hot-toast";
 
 const EditBabyForm = ({ baby, onClose }) => {
   const [updatedBaby, setUpdatedBaby] = useState({ ...baby });
@@ -27,7 +28,12 @@ const EditBabyForm = ({ baby, onClose }) => {
         updatedBaby.birthDate,
         updatedBaby.gender
       );
-      onClose();
+      if (result) {
+        toast.success("Update baby information success!");
+        onClose();
+      } else {
+        toast.error("Update baby information failed!");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -37,6 +43,21 @@ const EditBabyForm = ({ baby, onClose }) => {
     setShowLossPopup(false);
     setShowRemovePopup(false);
     setIsEditing(true);
+    onClose();
+  };
+
+  const handleDeleteBaby = async () => {
+    try {
+      const result = await deleteBaby(updatedBaby.id);
+      if (result) {
+        toast.success("Delete baby success!");
+        closeAllPopups();
+      } else {
+        toast.error("Delete baby failed!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -209,7 +230,7 @@ const EditBabyForm = ({ baby, onClose }) => {
 
           <div className="flex justify-center mt-5">
             <button
-              onClick={closeAllPopups}
+              onClick={handleDeleteBaby}
               className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition"
             >
               Remove

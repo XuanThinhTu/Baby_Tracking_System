@@ -1,8 +1,8 @@
-import axios from 'axios';
-import dayjs from 'dayjs';
+import axios from "axios";
+import dayjs from "dayjs";
 
-const token = sessionStorage.getItem('token');
-const userId = sessionStorage.getItem('userId');
+const token = sessionStorage.getItem("token");
+const userId = sessionStorage.getItem("userId");
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 export const loginFucntion = async (mail, pass) => {
@@ -17,7 +17,7 @@ export const loginFucntion = async (mail, pass) => {
     if (error.response) {
       throw new Error(error.response.data.message);
     } else {
-      throw new Error('Some thing when wrong!');
+      throw new Error("Some thing when wrong!");
     }
   }
 };
@@ -41,7 +41,7 @@ export const registerFunction = async (
     };
     const result = await axios.post(`${baseUrl}/user/register`, regisData, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
     console.log(result.data);
@@ -59,7 +59,7 @@ export async function verifyUser(tokenParam) {
       { token: tokenParam },
       {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
@@ -90,20 +90,20 @@ export async function verifyUser(tokenParam) {
   } catch (error) {
     // Bắt lỗi, lấy message từ backend (nếu có)
     if (error.response) {
-      throw new Error(error.response.data.message || 'Xác thực thất bại!');
+      throw new Error(error.response.data.message || "Xác thực thất bại!");
     } else {
-      throw new Error('Something went wrong!');
+      throw new Error("Something went wrong!");
     }
   }
 }
 
 export const getUserInformation = async () => {
   try {
-    const token = sessionStorage.getItem('token');
+    const token = sessionStorage.getItem("token");
     const result = await axios.get(`${baseUrl}/user/p`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
     return result.data;
@@ -122,7 +122,7 @@ export const getAllBabies = async () => {
     });
     return result.data;
   } catch (error) {
-    console.log('API Call Error:', error);
+    console.log("API Call Error:", error);
   }
 };
 
@@ -147,7 +147,7 @@ export const addNewBaby = async (babyName, birthday, gender) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
@@ -165,10 +165,23 @@ export const updateBabyProfile = async (babyId, name, birthday, gender) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deleteBaby = async (babyId) => {
+  try {
+    const result = await axios.delete(`${baseUrl}/children/delete/${babyId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return result.data;
   } catch (error) {
     console.log(error);
@@ -203,7 +216,7 @@ export const getBoyStandardIndex = async () => {
   try {
     const result = await axios.get(`${baseUrl}/api/standard-index/pro`);
     const standard = result.data.data;
-    const boyStandard = standard.filter((item) => item.gender === 'boys');
+    const boyStandard = standard.filter((item) => item.gender === "boys");
     return boyStandard;
   } catch (error) {
     console.log(error);
@@ -214,7 +227,7 @@ export const getGirlStandardIndex = async () => {
   try {
     const result = await axios.get(`${baseUrl}/api/standard-index/pro`);
     const standard = result.data.data;
-    const girlStandard = standard.filter((item) => item.gender === 'girl');
+    const girlStandard = standard.filter((item) => item.gender === "girl");
     return girlStandard;
   } catch (error) {
     console.log(error);
@@ -311,7 +324,7 @@ export const submitWorkingShift = async (slots) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
@@ -332,6 +345,114 @@ export const getAvailableShift = async (yearMonth) => {
       }
     );
     return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getApprovedList = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/working-schedule/approved-list`);
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const bookingMeeting = async (babyId, date, slotTimeId, note) => {
+  try {
+    const result = await axios.post(
+      `${baseUrl}/booking/${babyId}?date=${date}&slotTimeId=${slotTimeId}`,
+      note,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const postConsultations = async (title, note, babyId) => {
+  try {
+    const addingInformation = {
+      title: title,
+      notes: note,
+      childId: babyId,
+    };
+    const result = await axios.post(
+      `${baseUrl}/consultation/request`,
+      addingInformation,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("result", result.data);
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getUserConsultation = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/consultation/my-request`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getConsultationReplies = async (consultationId) => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/consultation-response/get/${consultationId}?page=0&size=20`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data.data.content;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const addNewConsultationReply = async (consultationId, content) => {
+  try {
+    const result = await axios.post(
+      `${baseUrl}/consultation-response/send/${consultationId}`,
+      { content },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getMembershipPackages = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/membership-package/list`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data;
   } catch (error) {
     console.log(error);
   }
@@ -364,7 +485,7 @@ export const addNewSlotTimes = async (startTime, endTime) => {
   try {
     const slots = await getAllSlotTimes();
     const isDup = slots.some(
-      (slot) => dayjs(slot.startTime, 'HH:mm:ss').format('HH:mm') === startTime
+      (slot) => dayjs(slot.startTime, "HH:mm:ss").format("HH:mm") === startTime
     );
     if (isDup) return;
 
@@ -383,30 +504,6 @@ export const addNewSlotTimes = async (startTime, endTime) => {
   }
 };
 
-// Consultation Request
-export async function getAllConsultations() {
-  try {
-    const res = await axios.get(`${baseUrl}/consultation/all-request`);
-    return res.data; // Trả về object { success, message, data: { content, ...} }
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
-
-export const getMembershipPackages = async () => {
-  try {
-    const result = await axios.get(`${baseUrl}/membership-package/list`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return result.data;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 export const getDoctorWorkingShiftSubmitted = async (doctorId) => {
   try {
     const result = await axios.get(
@@ -414,7 +511,7 @@ export const getDoctorWorkingShiftSubmitted = async (doctorId) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
@@ -432,7 +529,7 @@ export const approveWorkShift = async (slots) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
@@ -450,7 +547,40 @@ export const rejectWorkShift = async (slots) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getAllConsultations = async () => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/consultation/all?page=0&size=20`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data.data.content;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const assignConsultation = async (doctorId, consultationId) => {
+  try {
+    const result = await axios.post(
+      `${baseUrl}/admin/consultation/assign?consultationRequestId=${consultationId}&doctorId=${doctorId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
       }
     );

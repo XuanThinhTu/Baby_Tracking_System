@@ -41,7 +41,6 @@ function UserHeader() {
 
     fetchUserInfo();
   }, [token]);
-  sessionStorage.setItem("userId", user?.id);
 
   return (
     <header>
@@ -201,7 +200,6 @@ function UserHeader() {
                   FAQ
                 </NavLink>
               </li>
-
               <li>
                 <NavLink
                   to="/membership"

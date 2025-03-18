@@ -6,7 +6,7 @@ import {
   loginFucntion,
 } from "../../../../services/APIServices";
 // import { fetchLogin } from "../../../data/api.jsx";
-// import { toast, Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const LoginForm = () => {
   const navigation = useNavigate();
@@ -22,6 +22,7 @@ const LoginForm = () => {
         sessionStorage.setItem("token", token);
         const userInfo = await getUserInformation();
         sessionStorage.setItem("userId", userInfo.data?.id);
+        toast.success("Login success!");
 
         if (userInfo.data?.role === "ROLE_ADMIN") {
           navigation("/admin");
@@ -32,7 +33,7 @@ const LoginForm = () => {
         }
       }
     } catch (error) {
-      alert(error?.message);
+      toast.error(error?.message);
     }
   };
 

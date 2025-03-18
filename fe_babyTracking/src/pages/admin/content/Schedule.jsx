@@ -2,6 +2,7 @@ import {
   Avatar,
   Button,
   Card,
+  Checkbox,
   Modal,
   Pagination,
   Space,
@@ -17,6 +18,7 @@ import {
   rejectWorkShift,
 } from "../../../services/APIServices";
 import dayjs from "dayjs";
+import toast from "react-hot-toast";
 
 function Schedule() {
   const [slots, setSlots] = useState([]);
@@ -30,6 +32,26 @@ function Schedule() {
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedSchedule = workDates?.slice(startIndex, startIndex + pageSize);
   const [slotTimes, setSlotTimes] = useState({ startTime: "", endTime: "" });
+  const [selectedSlots, setSelectedSlots] = useState([]);
+
+  const handleCardClick = (doctor) => {
+    setSelectedDoctor(doctor);
+    setOpenModal(true);
+  };
+
+  const handleCloseCard = () => {
+    setOpenModal(false);
+    setSelectedDoctor(null);
+    setSelectedSlots([]);
+  };
+
+  const handleCheckboxChange = (itemId) => {
+    setSelectedSlots((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
 
   useEffect(() => {
     const fetchAllSlots = async () => {
@@ -95,8 +117,16 @@ function Schedule() {
 
   const handleAddSlot = async () => {
     try {
-      await addNewSlotTimes(slotTimes.startTime, slotTimes.endTime);
-      setIsOpen(false);
+      const result = await addNewSlotTimes(
+        slotTimes.startTime,
+        slotTimes.endTime
+      );
+      if (result) {
+        toast.success("Add slot success!");
+        setIsOpen(false);
+      } else {
+        toast.error("Add slot failed!");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -104,27 +134,28 @@ function Schedule() {
 
   const handleApprove = async () => {
     const shifts = workDates.map((item) => item.id);
-    const result = await approveWorkShift(shifts);
-    alert("Working schedule approved!");
-    setOpenModal(false);
-    setSelectedDoctor(null);
+    if (selectedSlots.length > 0) {
+      const result = await approveWorkShift(selectedSlots);
+    } else {
+      const result = await approveWorkShift(shifts);
+    }
+    toast.success("Working schedule approved!");
+    handleCloseCard();
   };
 
   const handleReject = async () => {
     try {
       const shifts = workDates.map((item) => item.id);
-      const result = await rejectWorkShift(shifts);
-      alert("Working schedule rejected!");
-      setOpenModal(false);
-      setSelectedDoctor(null);
+      if (selectedDoctor.length > 0) {
+        const result = await rejectWorkShift(selectedSlots);
+      } else {
+        const result = await rejectWorkShift(shifts);
+      }
+      toast.success("Working schedule rejected!");
+      handleCloseCard();
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const handleCardClick = (doctor) => {
-    setSelectedDoctor(doctor);
-    setOpenModal(true);
   };
 
   return (
@@ -211,7 +242,7 @@ function Schedule() {
       <Modal
         title="Doctor Working Schedule"
         open={openModal}
-        onCancel={() => setOpenModal(false)}
+        onCancel={handleCloseCard}
         footer={null}
         width={600}
       >
@@ -230,7 +261,10 @@ function Schedule() {
                 {paginatedSchedule.map((item, index) => (
                   <Card
                     key={index}
-                    style={{ marginBottom: "10px", textAlign: "left" }}
+                    style={{
+                      marginBottom: "10px",
+                      textAlign: "left",
+                    }}
                   >
                     <p>
                       <b>Date:</b> {item.date}
@@ -241,6 +275,10 @@ function Schedule() {
                     <p>
                       <b>Status:</b> {item.status}
                     </p>
+                    <Checkbox
+                      checked={selectedSlots.includes(item.id)}
+                      onChange={() => handleCheckboxChange(item.id)}
+                    />
                   </Card>
                 ))}
 

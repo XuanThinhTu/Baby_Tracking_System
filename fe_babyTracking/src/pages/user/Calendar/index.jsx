@@ -1,5 +1,5 @@
 import React, { useState, useEffect, use } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "./DatePicker";
 // Heroicons
 import {
@@ -10,7 +10,13 @@ import {
   CheckCircleIcon,
   UserIcon,
 } from "@heroicons/react/outline";
-import { getAvailableShift } from "../../../services/APIServices";
+import {
+  bookingMeeting,
+  getAllSlotTimes,
+  getApprovedList,
+  getBabyInfo,
+} from "../../../services/APIServices";
+import toast from "react-hot-toast";
 
 const DAY_NAMES = [
   "Sunday",
@@ -36,9 +42,7 @@ const MONTH_NAMES = [
   "December",
 ];
 
-// Hàm tính giờ kết thúc (vd: 09:15 + 15 min => 09:30)
 function getEndTime(timeStr, durationStr) {
-  // timeStr: "09:15", durationStr: "15 min" => parse "15"
   const [hh, mm] = timeStr.split(":").map(Number);
   const d = parseInt(durationStr);
   const totalMinutes = mm + d;
@@ -51,29 +55,30 @@ function getEndTime(timeStr, durationStr) {
 }
 
 export default function BookingPage() {
+  const { babyId } = useParams();
+  const [baby, setBaby] = useState(null);
   const navigate = useNavigate();
-  // step=1: Chọn ngày/giờ, step=2: Note & Confirm, step=3: Success
   const [step, setStep] = useState(1);
 
-  // Thời lượng meeting
-  const [duration] = useState("15 min");
+  const [duration] = useState("30 min");
 
-  // Dữ liệu user chọn
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [meetingNote, setMeetingNote] = useState("");
+  const [selectedKey, setSelectedKey] = useState(null);
   const [yearMonth, setYearMonth] = useState("");
   const [availableDays, setAvailableDays] = useState([]);
   const [availableTimes, setAvailableTimes] = useState([]);
   const isDayAvailable =
     selectedDay && availableDays.map(Number).includes(selectedDay.day);
-  console.log(availableTimes);
+  const [approvedList, setApprovedList] = useState([]);
+  const [allSlotTimes, setAllSlotTimes] = useState([]);
 
   const formatSelectedDay = () => {
     if (!selectedDay) return "";
     const dateObj = new Date(
       selectedDay.year,
-      selectedDay.month,
+      selectedDay.month - 1,
       selectedDay.day
     );
     const dayOfWeek = DAY_NAMES[dateObj.getDay()];
@@ -84,22 +89,77 @@ export default function BookingPage() {
   };
 
   useEffect(() => {
-    const fetchAvailableSlot = async () => {
+    const fetchBabyInfo = async () => {
       try {
-        const result = await getAvailableShift(yearMonth);
-        //console.log(result.availableDates);
-        setAvailableDays(
-          result.availableDates.map((item) => item.date.split("-")[2])
-        );
-        setAvailableTimes(result.availableDates.map((item) => item.slotTimes));
+        const result = await getBabyInfo(babyId);
+        setBaby(result);
       } catch (error) {
         console.log(error);
       }
     };
-    fetchAvailableSlot();
+    fetchBabyInfo();
+  }, [babyId]);
+
+  useEffect(() => {
+    const fetchSlotTimes = async () => {
+      try {
+        const result = await getAllSlotTimes();
+        setAllSlotTimes(result);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchSlotTimes();
+  }, []);
+
+  useEffect(() => {
+    if (!approvedList.length || !allSlotTimes.length) return;
+
+    const groupSlotsByDate = (approvedList, allSlotTimes) => {
+      const groupedByDate = {};
+
+      approvedList.forEach(({ date, startTime }) => {
+        if (!groupedByDate[date]) groupedByDate[date] = [];
+
+        const matchedSlots = allSlotTimes.filter(
+          (slot) => slot.startTime === startTime
+        );
+
+        groupedByDate[date].push(...matchedSlots);
+      });
+
+      return Object.values(groupedByDate);
+    };
+
+    const newAvailableTimes = groupSlotsByDate(approvedList, allSlotTimes);
+    setAvailableTimes(newAvailableTimes);
+  }, [approvedList, allSlotTimes]);
+
+  useEffect(() => {
+    const fetchAprroveList = async () => {
+      try {
+        const result = await getApprovedList();
+
+        const filteredList = result.filter(
+          (item) => item.date?.slice(0, 7) === yearMonth
+        );
+
+        setApprovedList(filteredList);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchAprroveList();
   }, [yearMonth]);
 
-  // Nút Back chung (Step 1 => Home? Step 2 => Step 1, Step 3 => ???)
+  useEffect(() => {
+    const uniqueDays = [
+      ...new Set(approvedList.map((item) => item.date.split("-")[2])),
+    ];
+
+    setAvailableDays(uniqueDays);
+  }, [approvedList]);
+
   const handleBack = () => {
     if (step === 1) {
       // Ở Step 1, back về trang Home (hoặc console.log)
@@ -113,20 +173,34 @@ export default function BookingPage() {
     }
   };
 
-  // Chuyển sang step 2
-  const handleNext = () => {
+  const handleNext = (key) => {
     if (isDayAvailable && selectedTime) {
       setStep(2);
+      setSelectedKey(key);
     }
   };
 
-  // Bấm Schedule => step=3
-  const handleSchedule = () => {
-    setStep(3);
-    // TODO: Gọi API, ...
+  const handleSchedule = async () => {
+    const [date, slotTimeId, index] = selectedKey.split("/");
+
+    try {
+      const result = await bookingMeeting(
+        babyId,
+        date,
+        parseInt(slotTimeId),
+        meetingNote
+      );
+      if (result) {
+        toast.success("Đã đăng ký lịch thành công!");
+        setStep(3);
+      } else {
+        toast.error("Đăng ký lịch thất bại, hãy thử lại!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  // Dùng chung: Tính giờ kết thúc
   const endTime = selectedTime ? getEndTime(selectedTime, duration) : "";
 
   return (
@@ -173,7 +247,7 @@ export default function BookingPage() {
                   availableDays={availableDays}
                   selectedDay={selectedDay}
                   onSelectDay={(day) => {
-                    setSelectedDay(day);
+                    setSelectedDay({ ...day, month: day.month + 1 });
                     setSelectedTime(null);
                   }}
                   onYearMonthChange={setYearMonth}
@@ -194,20 +268,22 @@ export default function BookingPage() {
                           (_, index) =>
                             parseInt(availableDays[index], 10) ===
                             selectedDay.day
-                        ) // So sánh chính xác
-                        .flat() // Chuyển về 1 mảng duy nhất
-                        .map((slot) => {
+                        )
+                        .flat()
+                        .map((slot, index) => {
                           const isChosen = selectedTime === slot.startTime;
+                          const uniqueKey = `${selectedDay.year}-${String(
+                            selectedDay.month
+                          ).padStart(2, "0")}-${String(
+                            selectedDay.day
+                          ).padStart(2, "0")}/${slot.id}/${index}`;
                           return isChosen ? (
-                            <div
-                              key={slot.slotId}
-                              className="flex gap-2 w-full"
-                            >
+                            <div key={uniqueKey} className="flex gap-2 w-full">
                               <button className="flex-1 bg-gray-500 text-white text-center py-2 rounded">
                                 {slot.startTime}
                               </button>
                               <button
-                                onClick={handleNext}
+                                onClick={() => handleNext(uniqueKey)}
                                 className="flex-1 bg-blue-500 text-white text-center py-2 rounded hover:bg-blue-600"
                               >
                                 Next
@@ -215,7 +291,7 @@ export default function BookingPage() {
                             </div>
                           ) : (
                             <button
-                              key={slot.slotId}
+                              key={uniqueKey}
                               onClick={() => setSelectedTime(slot.startTime)}
                               className="border border-blue-500 bg-white text-blue-500 text-center py-2 rounded cursor-pointer hover:bg-blue-50"
                             >
@@ -265,22 +341,19 @@ export default function BookingPage() {
             </div>
 
             {(() => {
-              const babyName = "Moon";
-              const babyBirthDate = "2022-06-15";
-              const babyGender = "Female";
               return (
                 <>
                   <div className="flex items-center gap-2 text-gray-600">
                     <UserIcon className="h-5 w-5" />
-                    <span>Baby: {babyName}</span>
+                    <span>Baby: {baby?.name}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
                     <ClockIcon className="h-5 w-5" />
-                    <span>Birth: {babyBirthDate}</span>
+                    <span>Birth: {baby?.birthDate}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
                     <UserIcon className="h-5 w-5" />
-                    <span>Gender: {babyGender}</span>
+                    <span>Gender: {baby?.gender}</span>
                   </div>
                 </>
               );
@@ -345,16 +418,14 @@ export default function BookingPage() {
               </span>
             </div>
 
-            {/* Timezone */}
             <div className="flex items-center text-gray-700">
               <GlobeAltIcon className="h-5 w-5 mr-2 text-gray-500" />
               <span>Indochina Time</span>
             </div>
           </div>
 
-          {/* Nút Back to Home */}
           <button
-            onClick={() => navigate(`/doctor/${doc.id}`)}
+            onClick={() => navigate("/my-family")}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
             BACK TO HOME

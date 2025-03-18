@@ -4,6 +4,7 @@ import axios from "axios";
 
 import DoctorConsultationBoard from "./DoctorConsultationBoard";
 import DoctorConsultationDetail from "./DoctorConsultationDetail";
+import { getAllConsultations } from "../../../services/APIServices";
 
 // Giả sử baseUrl từ env
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -14,63 +15,54 @@ const baseUrl = import.meta.env.VITE_API_BASE_URL;
  * - Khi bấm 1 request => hiển thị Detail
  */
 export default function DoctorConsultation() {
-    const [requests, setRequests] = useState([]);
-    const [selectedRequest, setSelectedRequest] = useState(null); // object
-    const [loading, setLoading] = useState(true);
+  const [requests, setRequests] = useState([]);
+  const doctorId = sessionStorage.getItem("userId");
+  const [selectedRequest, setSelectedRequest] = useState(null); // object
+  const [loading, setLoading] = useState(true);
 
-    // Lấy danh sách consultation => GET /consultation/all-request (hoặc /pending-request)
+  useEffect(() => {
     const fetchAllConsultations = async () => {
-        try {
-            setLoading(true);
-            const res = await axios.get(`${baseUrl}/consultation/all-request`);
-            // Dựa vào schema:
-            // {
-            //   success: true,
-            //   data: { content: [ { id, status, ... } ] }
-            // }
-            if (res.data.success) {
-                setRequests(res.data.data?.content || []);
-            }
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchAllConsultations();
-    }, []);
-
-    // Bấm 1 request => setSelectedRequest => sang màn hình Detail
-    const handleSelectRequest = (req) => {
-        setSelectedRequest(req);
-    };
-
-    // Từ Detail bấm "Back" => quay lại Board
-    const handleBackToBoard = () => {
-        setSelectedRequest(null);
-    };
-
-    if (loading) {
-        return <p className="p-4">Loading consultations...</p>;
-    }
-
-    // Nếu chưa chọn => hiển thị Board
-    if (!selectedRequest) {
-        return (
-            <DoctorConsultationBoard
-                requests={requests}
-                onSelectRequest={handleSelectRequest}
-            />
+      try {
+        setLoading(true);
+        const result = await getAllConsultations();
+        const filteredData = result.filter(
+          (item) => item?.doctorId === parseInt(doctorId)
         );
-    }
+        setRequests(filteredData);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllConsultations();
+  }, []);
 
-    // Ngược lại => hiển thị Detail
+  const handleSelectRequest = (req) => {
+    setSelectedRequest(req);
+  };
+
+  const handleBackToBoard = () => {
+    setSelectedRequest(null);
+  };
+
+  if (loading) {
+    return <p className="p-4">Loading consultations...</p>;
+  }
+
+  if (!selectedRequest) {
     return (
-        <DoctorConsultationDetail
-            requestData={selectedRequest}
-            onBack={handleBackToBoard}
-        />
+      <DoctorConsultationBoard
+        requests={requests}
+        onSelectRequest={handleSelectRequest}
+      />
     );
+  }
+
+  return (
+    <DoctorConsultationDetail
+      requestData={selectedRequest}
+      onBack={handleBackToBoard}
+    />
+  );
 }
