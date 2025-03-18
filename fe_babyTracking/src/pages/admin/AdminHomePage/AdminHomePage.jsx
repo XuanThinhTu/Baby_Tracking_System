@@ -67,7 +67,7 @@ const items2 = [
 ];
 
 function AdminHomePage() {
-  const [selectedKey, setSelectedKey] = useState("overview");
+  const [selectedKey, setSelectedKey] = useState("dashboard");
   const navigator = useNavigate();
   const [user, setUser] = useState(null);
   const token = sessionStorage.getItem("token");
@@ -160,7 +160,7 @@ function AdminHomePage() {
           <Menu
             mode="inline"
             defaultSelectedKeys={["1"]}
-            defaultOpenKeys={["dashboard"]}
+            defaultOpenKeys={["account-management"]}
             style={{ height: "100%" }}
             items={items2}
             onClick={({ key }) => setSelectedKey(key)}

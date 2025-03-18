@@ -589,3 +589,16 @@ export const assignConsultation = async (doctorId, consultationId) => {
     console.log(error);
   }
 };
+
+export const getAllChildren = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/admin/children?page=0&size=20`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

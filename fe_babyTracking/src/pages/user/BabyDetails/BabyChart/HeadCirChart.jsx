@@ -75,14 +75,12 @@ const HeadCirChart = ({ babyId }) => {
           headCir: item.headCircumference,
         }));
         setUserData(formatted);
-        console.log("head",formatted );
       } catch (error) {
         console.log(error);
       }
     };
     fetchGrowthData();
   }, [baby, babyId]);
-  
 
   useEffect(() => {
     const fetchPredictData = async () => {
@@ -119,7 +117,7 @@ const HeadCirChart = ({ babyId }) => {
             : await getGirlStandardIndex();
 
         const formatted = result.map((item) => ({
-          day: (item.periodType === "DAY" ? item.period : (item.period * 30) + 56), // ngày
+          day: item.periodType === "DAY" ? item.period : item.period * 30 + 56, // ngày
           SD4neg: item.headCircumferenceNeg4Sd,
           SD3neg: item.headCircumferenceNeg3Sd,
           SD2neg: item.headCircumferenceNeg2Sd,
@@ -145,7 +143,6 @@ const HeadCirChart = ({ babyId }) => {
     ? Math.max(...userData.map((d) => d.day))
     : Math.max(...growthData.map((d) => d.day));
 
-  
   const domainMax = userMaxDay + 60; // Dư 60 ngày
 
   // Tạo mảng tick bội số 30 => hiển thị "tháng"
@@ -193,8 +190,14 @@ const HeadCirChart = ({ babyId }) => {
           scale="linear"
           ticks={ticks}
           interval={0}
-          tickFormatter={(val) => (userData.length ? `${val / 30}` : `${val / 365}`)}
-          label={{ value: (userData.length ? "Tháng" : "Năm"), position: "insideBottomRight", offset: 0 }}
+          tickFormatter={(val) =>
+            userData.length ? `${val / 30}` : `${val / 365}`
+          }
+          label={{
+            value: userData.length ? "Tháng" : "Năm",
+            position: "insideBottomRight",
+            offset: 0,
+          }}
         />
 
         {/* Trục Y */}

@@ -54,7 +54,6 @@ const HeightChart = ({ babyId }) => {
     const fetchBabyInfo = async () => {
       try {
         const result = await getBabyInfo(babyId);
-        console.log("baby info",result);
         setBaby(result);
       } catch (error) {
         console.log(error);
@@ -117,7 +116,7 @@ const HeightChart = ({ babyId }) => {
             : await getGirlStandardIndex();
 
         const formatted = result?.map((item) => ({
-          day: (item.periodType === "DAY" ? item.period : (item.period * 30) + 56), // ngày
+          day: item.periodType === "DAY" ? item.period : item.period * 30 + 56, // ngày
           SD4neg: item.heightNeg4Sd,
           SD3neg: item.heightNeg3Sd,
           SD2neg: item.heightNeg2Sd,
@@ -143,7 +142,6 @@ const HeightChart = ({ babyId }) => {
     ? Math.max(...userData.map((d) => d.day))
     : Math.max(...growthData.map((d) => d.day));
 
-  
   const domainMax = userMaxDay + 60; // Dư 60 ngày
 
   // Tạo mảng tick bội số 30 => hiển thị "tháng"
@@ -177,10 +175,6 @@ const HeightChart = ({ babyId }) => {
     if (yMin < 0) yMin = 0;
   }
 
-  
-  console.log("us",userData[userData.length - 1]);
-  console.log("predict data",predictData);
-
   // Render chart
   const renderChart = () => (
     <ResponsiveContainer width="100%" height="100%">
@@ -195,8 +189,14 @@ const HeightChart = ({ babyId }) => {
           scale="linear"
           ticks={ticks}
           interval={0}
-          tickFormatter={(val) => (userData.length ? `${val / 30}` : `${val / 365}`)}
-          label={{ value: (userData.length ? "Tháng" : "Năm"), position: "insideBottomRight", offset: 0 }}
+          tickFormatter={(val) =>
+            userData.length ? `${val / 30}` : `${val / 365}`
+          }
+          label={{
+            value: userData.length ? "Tháng" : "Năm",
+            position: "insideBottomRight",
+            offset: 0,
+          }}
         />
 
         {/* Trục Y */}
@@ -217,7 +217,6 @@ const HeightChart = ({ babyId }) => {
           }}
         />
 
-        
         {/* Đường SD */}
         {growthData.length > 0 &&
           Object.keys(growthData[0])

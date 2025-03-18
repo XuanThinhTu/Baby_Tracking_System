@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaRuler, FaWeight, FaCalendarAlt, FaUserMd } from "react-icons/fa";
-import { getBabyInfo } from "../../../../services/APIServices";
+import {
+  getBabyGrowthData,
+  getBabyInfo,
+} from "../../../../services/APIServices";
 import dayjs from "dayjs";
 
 const BabyDetails = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
+  const [height, setHeight] = useState(0);
+  const [weight, setWeight] = useState(0);
+  const [bmi, setBmi] = useState(0);
 
   useEffect(() => {
     const fetchBabyInfo = async () => {
@@ -17,6 +23,24 @@ const BabyDetails = ({ babyId }) => {
       }
     };
     fetchBabyInfo();
+  }, []);
+
+  useEffect(() => {
+    const fetchGrowthData = async () => {
+      try {
+        const result = await getBabyGrowthData(babyId);
+        const latestData = result
+          .slice()
+          .sort((a, b) => new Date(b.measuredAt) - new Date(a.measuredAt))[0];
+
+        setHeight(latestData?.height);
+        setWeight(latestData?.weight);
+        setBmi(latestData?.bmi);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchGrowthData();
   }, []);
 
   const calculateAge = (birthDate) => {
@@ -77,20 +101,21 @@ const BabyDetails = ({ babyId }) => {
               <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
                 <FaRuler className="text-blue-500 text-5xl" />
                 <p className="text-xl font-semibold mt-2">
-                  {baby?.height || "N/A"}
+                  {height + "cm" || "N/A"}
                 </p>
                 <p className="text-gray-500 text-md">Chiều cao</p>
               </div>
               <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
                 <FaWeight className="text-green-500 text-5xl" />
                 <p className="text-xl font-semibold mt-2">
-                  {baby?.weight || "N/A"}
+                  {weight + "kg" || "N/A"}
                 </p>
                 <p className="text-gray-500 text-md">Cân nặng</p>
               </div>
               <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
                 <p className="text-4xl font-bold text-gray-700">BMI</p>
-                <p className="text-xl font-semibold">{baby?.bmi || "12.5"}</p>
+                <p className="text-xl font-semibold">{bmi || "12.5"}</p>
+                <p className="text-gray-500 text-md">Chỉ số bmi</p>
               </div>
             </div>
           </div>
