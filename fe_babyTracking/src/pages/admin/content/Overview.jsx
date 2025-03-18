@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Row,
@@ -21,14 +21,85 @@ import {
   FileTextOutlined,
 } from "@ant-design/icons";
 import { BarChart, PieChart } from "@mui/x-charts";
+import {
+  getAllChildren,
+  getAllConsultations,
+  getAllUserAccounts,
+  getApprovedList,
+} from "../../../services/APIServices";
 
 const Overview = () => {
+  const [users, setUsers] = useState(0);
+  const [doctors, setDoctors] = useState(0);
+  const [consultations, setConsultations] = useState(0);
+  const [babies, setBabies] = useState(0);
+  const [workSchedules, setWorkSchedules] = useState(0);
+
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const result = await getAllUserAccounts();
+        setUsers(result.data.filter((acc) => acc.role === "ROLE_USER").length);
+        setDoctors(
+          result.data.filter((acc) => acc.role === "ROLE_DOCTOR").length
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchAccounts();
+  }, [users, doctors]);
+
+  useEffect(() => {
+    const fetchConsultations = async () => {
+      try {
+        const result = await getAllConsultations();
+        setConsultations(result.length);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchConsultations();
+  }, [consultations]);
+
+  useEffect(() => {
+    const fetchBabies = async () => {
+      try {
+        const result = await getAllChildren();
+        setBabies(result.data.content.length);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchBabies();
+  }, [babies]);
+
+  useEffect(() => {
+    const fetchWorkSchedules = async () => {
+      try {
+        const result = await getApprovedList();
+        setWorkSchedules(result.length);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchWorkSchedules();
+  }, [workSchedules]);
+
   const stats = [
-    { title: "Total Babies", value: 120, icon: <UserOutlined /> },
-    { title: "Total Users", value: 200, icon: <SolutionOutlined /> },
-    { title: "Total Doctors", value: 15, icon: <ProfileOutlined /> },
-    { title: "Consultations", value: 50, icon: <SolutionOutlined /> },
-    { title: "Appointments", value: 80, icon: <CalendarOutlined /> },
+    { title: "Total Babies", value: babies, icon: <UserOutlined /> },
+    { title: "Total Users", value: users, icon: <SolutionOutlined /> },
+    { title: "Total Doctors", value: doctors, icon: <ProfileOutlined /> },
+    {
+      title: "Consultations",
+      value: consultations,
+      icon: <SolutionOutlined />,
+    },
+    {
+      title: "Work Slots",
+      value: workSchedules,
+      icon: <CalendarOutlined />,
+    },
   ];
 
   const columns = [

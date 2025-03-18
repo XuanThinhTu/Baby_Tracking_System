@@ -14,19 +14,18 @@ const MyFamily = () => {
   const [editingBaby, setEditingBaby] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
 
-  useEffect(() => {
-    fetchBabies();
-  }, [babies]);
-
   const fetchBabies = async () => {
     try {
-      // setBabies([]);
       const babiesData = await getAllBabies();
       setBabies(babiesData.data);
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    fetchBabies();
+  }, [babies]);
 
   return (
     <>
