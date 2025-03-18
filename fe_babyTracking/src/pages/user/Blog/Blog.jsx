@@ -1,71 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-// Mock data cho danh sách bài viết
-const mockBlogs = [
-    {
-        id: 1,
-        title: 'Bài viết đầu tiên',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-        createdAt: '2025-03-16T17:17:19.212Z',
-        authorName: 'Tác giả 1',
-        blogImages: [
-            { id: 1, url: 'https://via.placeholder.com/1200x600', publicId: 'image1' }
-        ],
-        category: 'Category A',
-    },
-    {
-        id: 2,
-        title: 'Bài viết thứ hai',
-        content: 'Quisque vel urna a arcu lacinia vestibulum. Nulla facilisi. Fusce posuere, tortor sed cursus feugiat, nunc augue blandit nunc, id blandit felis ligula ut est.',
-        createdAt: '2025-03-15T12:00:00.000Z',
-        authorName: 'Tác giả 2',
-        blogImages: [
-            { id: 2, url: 'https://via.placeholder.com/1200x600', publicId: 'image2' }
-        ],
-        category: 'Category B',
-    },
-    {
-        id: 3,
-        title: 'Bài viết thứ ba',
-        content: 'Suspendisse potenti. Proin ut dui sed metus pharetra hendrerit vel non mi. Nulla ornare faucibus ex, non facilisis nisl. Aliquam erat volutpat.',
-        createdAt: '2025-03-14T08:30:00.000Z',
-        authorName: 'Tác giả 3',
-        blogImages: [
-            { id: 3, url: 'https://via.placeholder.com/1200x600', publicId: 'image3' }
-        ],
-        category: 'Category A',
-    },
-];
-
-// Mock data cho Categories (ví dụ)
-const categories = ['Category A', 'Category B', 'Category C'];
+import { getAllBlogs, getAllCategories } from '../../../services/APIServices';
 
 const Blog = () => {
+    const [blogs, setBlogs] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Lọc bài viết theo từ khóa (dựa trên tiêu đề)
-    const filteredBlogs = mockBlogs.filter(blog =>
+    useEffect(() => {
+        const fetchBlogs = async () => {
+            try {
+                const res = await getAllBlogs();
+                if (res.success) {
+                    setBlogs(res.data.content || []);
+                } else {
+                    console.error(res.message || 'Không thể lấy danh sách blog');
+                }
+            } catch (error) {
+                console.error('Lỗi khi gọi API blog:', error);
+            }
+        };
+
+        const fetchCategories = async () => {
+            try {
+                const catRes = await getAllCategories();
+                if (catRes.success) {
+                    setCategories(catRes.data);
+                } else {
+                    console.error(catRes.message || 'Không thể lấy danh sách danh mục');
+                }
+            } catch (error) {
+                console.error('Lỗi khi gọi API categories:', error);
+            }
+        };
+
+        fetchBlogs();
+        fetchCategories();
+    }, []);
+
+    // Lọc blog theo từ khóa (title)
+    const filteredBlogs = blogs.filter((blog) =>
         blog.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Ví dụ: Related Posts hiển thị các bài cùng Category của bài đầu tiên
-    const relatedPosts = mockBlogs.filter(blog => blog.category === 'Category A');
+    // Related Posts: lấy category của blog đầu tiên, rồi lọc ra các bài cùng category
+    let relatedPosts = [];
+    if (filteredBlogs.length > 0) {
+        const firstCategory = filteredBlogs[0].categoryName;
+        relatedPosts = blogs.filter((blog) => blog.categoryName === firstCategory);
+    }
 
     return (
         <div className="container mx-auto p-8">
             <div className="flex flex-col md:flex-row gap-8">
                 {/* Left Column (2/3) */}
                 <div className="md:w-2/3">
-                    {filteredBlogs.map(post => (
-                        <div key={post.id} className="mb-12 bg-white rounded shadow overflow-hidden">
-                            {post.blogImages && post.blogImages.length > 0 && (
-                                <img
-                                    src={post.blogImages[0].url}
-                                    alt={post.title}
-                                    className="w-full h-64 object-cover"
-                                />
-                            )}
+                    {filteredBlogs.map((post) => (
+                        <div
+                            key={post.id}
+                            className="mb-12 bg-white rounded shadow"
+                        >
+                            {/* Bọc ảnh trong một div để overflow-hidden */}
+                            <div className="overflow-hidden">
+                                {post.blogImages && post.blogImages.length > 0 && (
+                                    <img
+                                        src={post.blogImages[0].url}
+                                        alt={post.title}
+                                        className="w-full h-[500px] object-cover 
+                               transition-transform duration-300 ease-in-out 
+                               hover:scale-105"
+                                    />
+                                )}
+                            </div>
                             <div className="p-6">
                                 <div className="text-gray-600 text-sm mb-2">
                                     {new Date(post.createdAt).toLocaleDateString()} - {post.authorName}
@@ -103,9 +109,12 @@ const Blog = () => {
                     <div className="p-4 bg-white rounded shadow">
                         <h2 className="text-xl font-bold mb-4">Categories</h2>
                         <ul className="space-y-2">
-                            {categories.map((category, index) => (
-                                <li key={index}>
-                                    <button className="text-green-800 hover:underline">{category}</button>
+                            {categories.map((cat) => (
+                                <li key={cat.id}>
+                                    {/* tuỳ logic click category */}
+                                    <button className="text-green-800 hover:underline">
+                                        {cat.title}
+                                    </button>
                                 </li>
                             ))}
                         </ul>
@@ -115,7 +124,7 @@ const Blog = () => {
                     <div className="p-4 bg-white rounded shadow">
                         <h2 className="text-xl font-bold mb-4">Related Posts</h2>
                         <ul className="space-y-4">
-                            {relatedPosts.map(post => (
+                            {relatedPosts.map((post) => (
                                 <li key={post.id} className="flex gap-4">
                                     {post.blogImages && post.blogImages.length > 0 && (
                                         <img
@@ -125,7 +134,10 @@ const Blog = () => {
                                         />
                                     )}
                                     <div>
-                                        <Link to={`/blog/${post.id}`} className="text-green-800 font-semibold hover:underline">
+                                        <Link
+                                            to={`/blog/${post.id}`}
+                                            className="text-green-800 font-semibold hover:underline"
+                                        >
                                             {post.title}
                                         </Link>
                                         <div className="text-gray-600 text-xs">

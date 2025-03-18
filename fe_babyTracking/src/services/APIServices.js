@@ -337,6 +337,50 @@ export const getAvailableShift = async (yearMonth) => {
   }
 };
 
+// create blogs
+export const createBlog = async (formData) => {
+  try {
+    const response = await axios.post(`${baseUrl}/blogs/create`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
+
+// get all blogs
+export const getAllBlogs = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/blogs/all`);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
+
+// Get All Categories
+export const getAllCategories = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/category/all`);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
+
 //============ADMIN API ================
 export const getAllUserAccounts = async () => {
   try {
@@ -457,23 +501,5 @@ export const rejectWorkShift = async (slots) => {
     return result.data;
   } catch (error) {
     console.log(error);
-  }
-};
-
-// Blogs
-export const createBlog = async (blogData) => {
-  try {
-    const response = await axios.post(`${baseUrl}/blogs/create`, blogData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    return response.data;
-  } catch (error) {
-    if (error.response) {
-      throw error.response.data;
-    }
-    throw error;
   }
 };

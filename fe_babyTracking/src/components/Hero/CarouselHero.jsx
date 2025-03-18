@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const images = [
-  "https://static1.squarespace.com/static/64cd675de4f3100609eeaa1d/t/6715a42f133a002dc9f5ad8b/1729471535323/2409_CB_logo_blk%40300ppi.png?format=1500w",
+  "https://www.mamasandpapas.ie/cdn/shop/articles/cropped-Brand_Weaning_3_1440x810_crop_center.jpg?v=1602071300",
   "https://images.ctfassets.net/6m9bd13t776q/1ZrwJJgadUFW8LOMKTLepe/01766d7715bf1377106a6393004eeecb/BWBW-week-6-3776703.png?fm=webp&q=75&w=780",
   "https://cdn-azure.notinoimg.com/cdn-cgi/image/w=1040,q=80/blog/article/01_8e1a76.jpg",
   "https://t3.ftcdn.net/jpg/00/17/30/74/360_F_17307408_RcdYtwlTOMmQAqqqYLZkJBDgb1SKHOXZ.jpg",
@@ -56,11 +56,10 @@ function CarouselHero() {
       <div className="absolute inset-0 flex items-center z-30 px-8 ml-16">
         <div className="max-w-lg text-white text-left">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Nutrition for a healthy lifestyle
+            Supporting Every Step, Celebrating Every Growth
           </h1>
           <p className="text-lg md:text-xl mb-6">
-            Nullam erat lectus, ullamcorper sed nibh ac, vulputate porttitor diam
-            nulla, nascetur magna sed exm efficitur pellentesque.
+            BabyTracking helps parents easily monitor their child's development, ensuring each milestone is met with care and confidence.
           </p>
           <button className="bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded">
             READ MORE

@@ -1,53 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BlogCreationForm from './BlogCreationForm';
-
-// Mock data ban đầu cho danh sách blog của doctor
-const initialBlogs = [
-    {
-        id: 1,
-        title: 'Bài viết đầu tiên của Doctor',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-        createdAt: '2025-03-16T17:17:19.212Z',
-        featuredImage: 'https://via.placeholder.com/1200x600',
-    },
-    {
-        id: 2,
-        title: 'Bài viết thứ hai của Doctor',
-        content: 'Quisque vel urna a arcu lacinia vestibulum. Nulla facilisi. Fusce posuere, tortor sed cursus feugiat.',
-        createdAt: '2025-03-15T12:00:00.000Z',
-        featuredImage: 'https://via.placeholder.com/1200x600',
-    },
-];
+import { getAllBlogs } from '../../../services/APIServices';
 
 const BlogCreation = () => {
-    const [blogs, setBlogs] = useState(initialBlogs);
+    const [blogs, setBlogs] = useState([]);          // Danh sách blog từ API
     const [editingBlog, setEditingBlog] = useState(null);
 
+    // Lấy danh sách blog khi component mount
+    useEffect(() => {
+        const fetchBlogs = async () => {
+            try {
+                const res = await getAllBlogs();
+                // Giả định server trả về { success, data: { content: [...] } }
+                if (res.success) {
+                    // Lưu ý: res.data.content là mảng blog
+                    // Mỗi blog có thể có blogImages, authorId, categoryId...
+                    setBlogs(res.data.content || []);
+                } else {
+                    console.error(res.message || 'Không thể lấy danh sách blog');
+                }
+            } catch (err) {
+                console.error('Lỗi khi gọi API lấy danh sách blog:', err);
+            }
+        };
+        fetchBlogs();
+    }, []);
+
+    // Khi tạo blog thành công
     const handlePublish = (newBlog) => {
-        // Thêm blog mới từ API vào đầu danh sách
-        setBlogs([newBlog, ...blogs]);
+        // newBlog là dữ liệu trả về từ API createBlog
+        // Đưa blog mới lên đầu danh sách
+        setBlogs((prev) => [newBlog, ...prev]);
     };
 
+    // Xóa blog khỏi state (demo, chưa gọi API xóa)
     const handleDelete = (id) => {
-        if (window.confirm("Are you sure you want to delete this blog?")) {
-            setBlogs(blogs.filter(blog => blog.id !== id));
+        if (window.confirm('Are you sure you want to delete this blog?')) {
+            setBlogs((prev) => prev.filter((blog) => blog.id !== id));
         }
     };
 
+    // Cập nhật blog trong state (demo, chưa gọi API update)
     const handleUpdate = (updatedBlog) => {
-        setBlogs(blogs.map(blog => (blog.id === updatedBlog.id ? updatedBlog : blog)));
+        setBlogs((prev) =>
+            prev.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+        );
         setEditingBlog(null);
     };
 
     return (
         <div className="p-4">
-            {/* Form Tạo Blog sử dụng API */}
+            {/* Form Tạo Blog */}
             <BlogCreationForm onPublish={handlePublish} />
 
             {/* Danh sách blog của Doctor */}
             <h2 className="text-2xl font-bold mb-4">Your Blogs</h2>
             <div className="space-y-8">
-                {blogs.map(blog => (
+                {blogs.map((blog) => (
                     <div key={blog.id} className="p-4 bg-white rounded shadow">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-xl font-bold">{blog.title}</h3>
@@ -66,8 +75,13 @@ const BlogCreation = () => {
                                 </button>
                             </div>
                         </div>
-                        {blog.featuredImage && (
-                            <img src={blog.featuredImage} alt={blog.title} className="w-full h-64 object-cover rounded mb-4" />
+                        {/* Hiển thị ảnh đầu tiên nếu blogImages không rỗng */}
+                        {blog.blogImages && blog.blogImages.length > 0 && (
+                            <img
+                                src={blog.blogImages[0].url}
+                                alt={blog.title}
+                                className="w-full h-64 object-cover rounded mb-4"
+                            />
                         )}
                         <p className="text-gray-600 text-sm mb-2">
                             {new Date(blog.createdAt).toLocaleDateString()}
@@ -81,9 +95,8 @@ const BlogCreation = () => {
 
             {/* Form Chỉnh Sửa Blog (hiển thị khi có bài cần chỉnh sửa) */}
             {editingBlog && (
-                // Tích hợp BlogEditForm tương tự nếu cần
                 <div>
-                    {/* BlogEditForm component ở đây */}
+                    {/* BlogEditForm component ở đây, nếu bạn muốn cho phép update */}
                 </div>
             )}
         </div>
