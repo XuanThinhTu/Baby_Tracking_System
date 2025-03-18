@@ -23,9 +23,8 @@ function isLeapYear(year) {
 
 // Số ngày trong tháng
 function getDaysInMonth(year, month) {
-  // month: 0=Jan,1=Feb,...11=Dec
   switch (month) {
-    case 1: // February
+    case 1:
       return isLeapYear(year) ? 29 : 28;
     case 3:
     case 5:
