@@ -30,7 +30,26 @@ const HeightChart = ({ babyId }) => {
     const measured = dayjs(measuredAt);
     return measured.diff(birth, "day");
   };
+  // Hàm tìm dòng dữ liệu chuẩn gần nhất với ngày target
+  const getClosestStandardData = (targetDay) =>
+    growthData.reduce((closest, current) =>
+      Math.abs(current.day - targetDay) < Math.abs(closest.day - targetDay)
+        ? current
+        : closest
+    );
 
+  // Hàm lấy mảng các chỉ số chuẩn từ dữ liệu chuẩn
+  const getStandardValues = (data) => [
+    data.SD4neg,
+    data.SD3neg,
+    data.SD2neg,
+    data.SD1neg,
+    data.SD0,
+    data.SD1,
+    data.SD2,
+    data.SD3,
+    data.SD4,
+  ];
   useEffect(() => {
     const fetchBabyInfo = async () => {
       try {
@@ -64,19 +83,27 @@ const HeightChart = ({ babyId }) => {
 
   useEffect(() => {
     const fetchPredictData = async () => {
+      if (!baby || !userData.length) return;
       try {
         const result = await getPredictGrowthData(babyId);
         const formattedData = result.map((item) => ({
-          day: calculateDays(baby?.birthDate, item.predictedDate),
+          day: calculateDays(baby.birthDate, item.predictedDate),
           predictHeight: item.predictedHeight,
         }));
-        setPredictData(formattedData);
+        // Lấy dữ liệu của ngày cuối cùng của bé và chuyển đổi sang object có 2 thuộc tính: day và predictHeight
+        const lastDayData = userData[userData.length - 1];
+        const lastDayPredict = {
+          day: lastDayData.day,
+          predictHeight: lastDayData.height,
+        };
+
+        setPredictData([lastDayPredict, ...formattedData]);
       } catch (error) {
         console.log(error);
       }
     };
     fetchPredictData();
-  }, [baby, babyId]);
+  }, [baby, babyId, userData]);
 
   // Lấy dữ liệu chuẩn
   useEffect(() => {
@@ -89,7 +116,7 @@ const HeightChart = ({ babyId }) => {
             : await getGirlStandardIndex();
 
         const formatted = result?.map((item) => ({
-          day: item.period, // ngày
+          day: item.periodType === "DAY" ? item.period : item.period * 30 + 56, // ngày
           SD4neg: item.heightNeg4Sd,
           SD3neg: item.heightNeg3Sd,
           SD2neg: item.heightNeg2Sd,
@@ -110,36 +137,41 @@ const HeightChart = ({ babyId }) => {
 
   // === Tính domain X ===
   // Lấy ngày lớn nhất của bé + 60
+
   const userMaxDay = userData.length
     ? Math.max(...userData.map((d) => d.day))
-    : 0;
+    : Math.max(...growthData.map((d) => d.day));
+
   const domainMax = userMaxDay + 60; // Dư 60 ngày
 
   // Tạo mảng tick bội số 30 => hiển thị "tháng"
   const ticks = [];
-  for (let i = 30; i <= domainMax; i += 30) {
+  let period = userData.length ? 30 : 365;
+  for (let i = period; i <= domainMax; i += period) {
     ticks.push(i);
   }
 
   // === Tính domain Y “center” quanh dữ liệu bé (bỏ qua SD lines) ===
+  // Tính domain Y dựa trên so sánh giữa dữ liệu của bé và chỉ số chuẩn
   let yMin = 0;
-  let yMax = 130; // fallback nếu userData rỗng
+  let yMax = 130; // fallback
 
-  if (userData.length > 0) {
-    const userMin = Math.min(...userData.map((d) => d.height));
-    const userMax = Math.max(...userData.map((d) => d.height));
-    const mid = (userMin + userMax) / 2;
-    let range = userMax - userMin;
-    if (range < 1) range = 1; // tránh chia 0
+  if (userData.length && growthData.length) {
+    const babyHeights = userData.map((d) => d.height);
+    const babyMin = Math.min(...babyHeights);
+    const babyMax = Math.max(...babyHeights);
 
-    // factor=12 => 50..55 => domain ~ [20..80]
-    const factor = 4;
-    const half = (range * factor) / 4;
+    const babyMinDay = userData.find((d) => d.height === babyMin).day;
+    const babyMaxDay = userData.find((d) => d.height === babyMax).day;
 
-    yMin = mid - half;
-    yMax = mid + half;
+    const closestStandardMin = getClosestStandardData(babyMinDay);
+    const closestStandardMax = getClosestStandardData(babyMaxDay);
 
-    // Không âm
+    const standardMin = Math.min(...getStandardValues(closestStandardMin));
+    const standardMax = Math.max(...getStandardValues(closestStandardMax));
+
+    yMin = Math.min(babyMin, standardMin);
+    yMax = Math.max(babyMax, standardMax);
     if (yMin < 0) yMin = 0;
   }
 
@@ -156,8 +188,15 @@ const HeightChart = ({ babyId }) => {
           domain={[0, domainMax]}
           scale="linear"
           ticks={ticks}
-          tickFormatter={(val) => `${val / 30}`}
-          label={{ value: "Tháng", position: "insideBottomRight", offset: 0 }}
+          interval={0}
+          tickFormatter={(val) =>
+            userData.length ? `${val / 30}` : `${val / 365}`
+          }
+          label={{
+            value: userData.length ? "Tháng" : "Năm",
+            position: "insideBottomRight",
+            offset: 0,
+          }}
         />
 
         {/* Trục Y */}

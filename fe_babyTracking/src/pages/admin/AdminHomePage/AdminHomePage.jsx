@@ -16,22 +16,17 @@ import { useEffect, useState } from "react";
 import UserManagement from "../content/UserManagement";
 import DoctorManagement from "../content/DoctorManagement";
 import AppointmentManagement from "../content/AppointmentManagement";
-import PieChart from "../content/charts/PieChart";
-import BarChart from "../content/charts/BarChart";
-import Analytics from "../content/Analytics";
 import Standard from "../content/Standard";
-import Mail from "../content/Mail";
 import Overview from "../content/Overview";
 import { useNavigate } from "react-router-dom";
 import AccountManagement from "../content/AccountManagement";
 import { getUserInformation } from "../../../services/APIServices";
 import Schedule from "../content/Schedule";
+import Consultation from "../content/Consultation";
 
 const items1 = [
   { key: "home", label: "Home" },
   { key: "users", label: "Users" },
-  { key: "charts", label: "Charts" },
-  { key: "settings", label: "Settings" },
 ];
 
 const items2 = [
@@ -39,10 +34,6 @@ const items2 = [
     key: "dashboard",
     icon: <LaptopOutlined />,
     label: "Dashboard",
-    children: [
-      { key: "overview", label: "Overview" },
-      { key: "analytics", label: "Analytics" },
-    ],
   },
   {
     key: "account-management",
@@ -54,23 +45,14 @@ const items2 = [
     ],
   },
   {
-    key: "charts",
-    icon: <AreaChartOutlined />,
-    label: "Charts",
-    children: [
-      { key: "pie", icon: <PieChartOutlined />, label: "Pie Chart" },
-      { key: "bar", icon: <BarChartOutlined />, label: "Bar Chart" },
-    ],
-  },
-  {
     key: "standard",
     icon: <ProfileOutlined />,
     label: "Growth Standard",
   },
   {
-    key: "mail",
+    key: "consultation",
     icon: <MailOutlined />,
-    label: "Mail",
+    label: "Consultation",
   },
   {
     key: "appointment",
@@ -85,7 +67,7 @@ const items2 = [
 ];
 
 function AdminHomePage() {
-  const [selectedKey, setSelectedKey] = useState("overview");
+  const [selectedKey, setSelectedKey] = useState("dashboard");
   const navigator = useNavigate();
   const [user, setUser] = useState(null);
   const token = sessionStorage.getItem("token");
@@ -114,17 +96,11 @@ function AdminHomePage() {
         return <DoctorManagement />;
       case "appointment":
         return <AppointmentManagement />;
-      case "pie":
-        return <PieChart />;
-      case "bar":
-        return <BarChart />;
-      case "analytics":
-        return <Analytics />;
       case "standard":
         return <Standard />;
-      case "mail":
-        return <Mail />;
-      case "overview":
+      case "consultation":
+        return <Consultation />;
+      case "dashboard":
         return <Overview />;
       case "users":
         return <AccountManagement />;
@@ -184,7 +160,7 @@ function AdminHomePage() {
           <Menu
             mode="inline"
             defaultSelectedKeys={["1"]}
-            defaultOpenKeys={["dashboard"]}
+            defaultOpenKeys={["account-management"]}
             style={{ height: "100%" }}
             items={items2}
             onClick={({ key }) => setSelectedKey(key)}
@@ -208,10 +184,14 @@ function AdminHomePage() {
           textAlign: "center",
           background: "#fff",
           padding: "10px 0",
-          marginTop: "20px",
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          boxShadow: "0 -2px 5px rgba(0,0,0,0.1)",
         }}
       >
-        Footer
+        © 2025 Baby Tracking. All rights reserved.
       </Footer>
     </Layout>
   );

@@ -22,9 +22,10 @@ import BookingPage from "../pages/user/Calendar";
 import DoctorPage from "../pages/user/Doctor";
 import DoctorDetail from "../pages/user/Doctor/DoctorDetail";
 import DoctorDashboard from "../pages/doctor";
-import MembershipPage from "../pages/user/Membership";
+import MembershipPage from "../pages/user/Membership/index";
 import FAQPage from "../pages/user/FAQ/FAQPage";
 import VerifyAccount from "../pages/user/Auth/Register/VerifyAccount";
+import PaymentCallback from "../pages/user/PaypalPayment/PaymentCallback";
 import Blog from "../pages/user/Blog/Blog";
 import BlogDetail from "../pages/user/Blog/BlogDetail";
 
@@ -47,11 +48,11 @@ function UserLayout() {
     "/add-baby-info/",
     "/doctor/",
     "/consultation-detail/",
+    "/paypal/success",
     "/blog",
-    "/blog/"
+    "/blog/",
   ];
 
-  // Kiểm tra xem location.pathname có bắt đầu bằng bất kỳ prefix nào
   const isContentPage = contentPaths.some((path) =>
     location.pathname.startsWith(path)
   );
@@ -69,9 +70,16 @@ function UserLayout() {
             <Route path="/my-family" element={<MyFamily />} />
             <Route path="/baby-details/:babyId" element={<BabyOverview />} />
             <Route path="/add-baby-info/:babyId" element={<AddBabyInfo />} />
-            <Route path="/consultation-request" element={<ConsultationRequest />} />
-            <Route path="/consultation-detail/:id" element={<ConsultationDetail />} />
-            <Route path="/booking-meeting" element={<BookingPage />} />
+            <Route path="/booking-meeting/:babyId" element={<BookingPage />} />
+            <Route path="/paypal/success" element={<PaymentCallback />} />
+            <Route
+              path="/consultation-request/:babyId"
+              element={<ConsultationRequest />}
+            />
+            <Route
+              path="/consultation-detail/:id"
+              element={<ConsultationDetail />}
+            />
             <Route path="/doctor" element={<DoctorPage />} />
             <Route path="/doctor/:doctorId" element={<DoctorDetail />} />
             <Route path="/faq" element={<FAQPage />} />

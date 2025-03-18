@@ -54,34 +54,34 @@ const MembershipPackages = () => {
                         <div
                             key={pkg.id}
                             className={`p-8 md:p-10 rounded-3xl shadow-lg flex flex-col w-full ${pkg.featured
-                                ? "bg-gradient-to-r from-green-400 to-green-500 text-white"
-                                : "bg-green-100 hover:scale-105 transition-transform duration-300"
+                                    ? "bg-gradient-to-r from-green-400 to-green-500 text-white"
+                                    : "bg-green-100 hover:scale-105 transition-transform duration-300"
                                 }`}
                         >
                             <div className="flex flex-col md:flex-row justify-between items-center w-full">
                                 {/* Header Section */}
                                 <div className="w-full md:w-1/2 flex flex-col items-start">
                                     <span
-                                        className={`text-xs md:text-sm ${pkg.featured ? "bg-white text-green-600" : "bg-green-300 text-gray-700"} px-3 py-1 rounded-full font-medium`}
+                                        className={`text-xs md:text-sm ${pkg.featured
+                                                ? "bg-white text-green-600"
+                                                : "bg-green-300 text-gray-700"
+                                            } px-3 py-1 rounded-full font-medium`}
                                     >
                                         {pkg.featured ? "FEATURED" : "STANDARD"}
                                     </span>
                                     <h3 className="text-4xl md:text-5xl font-bold mt-4">{`$${pkg.price}`}</h3>
-                                    <p className="text-sm md:text-base mt-2">{pkg.billingCycle}</p>
+                                    <p className="text-sm md:text-base mt-2">
+                                        {pkg.billingCycle}
+                                    </p>
                                 </div>
 
                                 {/* Vertical Divider */}
-                                <div className="hidden md:block w-px bg-white h-24 mx-6"></div>
+                                <div className="hidden md:block w-px bg-black h-24 mx-6"></div>
 
                                 {/* Features Section */}
                                 <ul className="w-full md:w-1/2 space-y-3 text-sm md:text-base">
-                                    {pkg.features?.length ? (
-                                        pkg.features.map((feature) => (
-                                            <li key={feature} className="flex items-center space-x-2">
-                                                <FaCheckCircle className="text-white text-lg" />
-                                                <span>{feature}</span>
-                                            </li>
-                                        ))
+                                    {pkg.description ? (
+                                        <li>{pkg.description}</li>
                                     ) : (
                                         <li className="text-gray-400 italic">No features listed</li>
                                     )}
@@ -92,8 +92,8 @@ const MembershipPackages = () => {
                             <div className="mt-6">
                                 <button
                                     className={`w-full px-6 py-4 font-semibold rounded-full text-white transition-all ${pkg.featured
-                                        ? "bg-green-700 hover:bg-green-800"
-                                        : "bg-green-600 hover:bg-green-500"
+                                            ? "bg-green-700 hover:bg-green-800"
+                                            : "bg-green-600 hover:bg-green-500"
                                         }`}
                                 >
                                     {pkg.featured ? "Start for free" : "Purchase"}
