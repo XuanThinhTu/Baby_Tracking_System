@@ -16,9 +16,6 @@ import { useEffect, useState } from "react";
 import UserManagement from "../content/UserManagement";
 import DoctorManagement from "../content/DoctorManagement";
 import AppointmentManagement from "../content/AppointmentManagement";
-import PieChart from "../content/charts/PieChart";
-import BarChart from "../content/charts/BarChart";
-import Analytics from "../content/Analytics";
 import Standard from "../content/Standard";
 import Overview from "../content/Overview";
 import { useNavigate } from "react-router-dom";
@@ -30,8 +27,6 @@ import Consultation from "../content/Consultation";
 const items1 = [
   { key: "home", label: "Home" },
   { key: "users", label: "Users" },
-  { key: "charts", label: "Charts" },
-  { key: "settings", label: "Settings" },
 ];
 
 const items2 = [
@@ -39,10 +34,6 @@ const items2 = [
     key: "dashboard",
     icon: <LaptopOutlined />,
     label: "Dashboard",
-    children: [
-      { key: "overview", label: "Overview" },
-      { key: "analytics", label: "Analytics" },
-    ],
   },
   {
     key: "account-management",
@@ -51,15 +42,6 @@ const items2 = [
     children: [
       { key: "user-management", label: "User Accounts" },
       { key: "doctor-management", label: "Doctor Accounts" },
-    ],
-  },
-  {
-    key: "charts",
-    icon: <AreaChartOutlined />,
-    label: "Charts",
-    children: [
-      { key: "pie", icon: <PieChartOutlined />, label: "Pie Chart" },
-      { key: "bar", icon: <BarChartOutlined />, label: "Bar Chart" },
     ],
   },
   {
@@ -114,17 +96,11 @@ function AdminHomePage() {
         return <DoctorManagement />;
       case "appointment":
         return <AppointmentManagement />;
-      case "pie":
-        return <PieChart />;
-      case "bar":
-        return <BarChart />;
-      case "analytics":
-        return <Analytics />;
       case "standard":
         return <Standard />;
       case "consultation":
         return <Consultation />;
-      case "overview":
+      case "dashboard":
         return <Overview />;
       case "users":
         return <AccountManagement />;
@@ -208,10 +184,14 @@ function AdminHomePage() {
           textAlign: "center",
           background: "#fff",
           padding: "10px 0",
-          marginTop: "20px",
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          boxShadow: "0 -2px 5px rgba(0,0,0,0.1)",
         }}
       >
-        Footer
+        © 2025 Baby Tracking. All rights reserved.
       </Footer>
     </Layout>
   );

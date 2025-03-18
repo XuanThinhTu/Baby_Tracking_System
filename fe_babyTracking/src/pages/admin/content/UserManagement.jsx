@@ -90,11 +90,6 @@ function UserManagement() {
       key: "phone",
     },
     {
-      title: "Password",
-      dataIndex: "password",
-      key: "password",
-    },
-    {
       title: "Role",
       dataIndex: "role",
       key: "role",

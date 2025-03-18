@@ -29,8 +29,6 @@ const Overview = () => {
     { title: "Total Doctors", value: 15, icon: <ProfileOutlined /> },
     { title: "Consultations", value: 50, icon: <SolutionOutlined /> },
     { title: "Appointments", value: 80, icon: <CalendarOutlined /> },
-    { title: "Health Records", value: 300, icon: <FileTextOutlined /> },
-    { title: "Vaccinations", value: 95, icon: <HeartOutlined /> },
   ];
 
   const columns = [

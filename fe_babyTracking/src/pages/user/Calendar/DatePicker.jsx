@@ -72,24 +72,6 @@ export default function DatePicker({
     rows.push(cells.slice(r * 7, r * 7 + 7));
   }
 
-  // Xử lý Prev/Next tháng
-  // const handlePrevMonth = () => {
-  //   let newMonth = month - 1;
-  //   let newYear = year;
-  //   if (newMonth < 0) {
-  //     newMonth = 12;
-  //     newYear--;
-  //   }
-  //   setMonth(newMonth);
-  //   setYear(newYear);
-
-  //   if (month < 10) {
-  //     setYearMonth(`${year}-0${month}`);
-  //   } else {
-  //     setYearMonth(`${year}-${month}`);
-  //   }
-  //   onYearMonthChange(yearMonth);
-  // };
   const handlePrevMonth = () => {
     let newMonth = month - 1;
     let newYear = year;
@@ -106,24 +88,6 @@ export default function DatePicker({
     setYearMonth(newYearMonth);
     onYearMonthChange(newYearMonth);
   };
-
-  // const handleNextMonth = () => {
-  //   let newMonth = month + 1;
-  //   let newYear = year;
-  //   if (newMonth > 11) {
-  //     newMonth = 0;
-  //     newYear++;
-  //   }
-  //   setMonth(newMonth);
-  //   setYear(newYear);
-
-  //   if (month < 10) {
-  //     setYearMonth(`${newYear}-0${newMonth + 1}`);
-  //   } else {
-  //     setYearMonth(`${newYear}-${newMonth + 1}`);
-  //   }
-  //   onYearMonthChange(yearMonth);
-  // };
 
   const handleNextMonth = () => {
     let newMonth = month + 1;
@@ -143,6 +107,7 @@ export default function DatePicker({
     setYearMonth(newYearMonth);
     onYearMonthChange(newYearMonth);
   };
+
   const isSelectedDay = (dayNumber) => {
     return (
       selectedDay &&
