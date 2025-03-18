@@ -18,10 +18,10 @@ const PaymentCallback = () => {
         console.log("payerId", payerId);
         const response = await paymentCallback(paymentId, payerId);
         if (response) {
-          toast.success("Thành công!");
+          toast.success("Thanh toán thành công!");
           navigate("/");
         } else {
-          toast.error("Thất bại!");
+          toast.error("Thanh toán thất bại!");
         }
       } catch (error) {
         console.error("Error processing payment callback: ", error);

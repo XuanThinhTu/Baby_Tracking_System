@@ -78,17 +78,12 @@ const MembershipPackages = () => {
                 </div>
 
                 {/* Vertical Divider */}
-                <div className="hidden md:block w-px bg-white h-24 mx-6"></div>
+                <div className="hidden md:block w-px bg-black h-24 mx-6"></div>
 
                 {/* Features Section */}
                 <ul className="w-full md:w-1/2 space-y-3 text-sm md:text-base">
-                  {pkg.description?.length ? (
-                    pkg.description.map((feature) => (
-                      <li key={feature} className="flex items-center space-x-2">
-                        <FaCheckCircle className="text-white text-lg" />
-                        <span>{feature}</span>
-                      </li>
-                    ))
+                  {pkg.description ? (
+                    <li>{pkg.description}</li>
                   ) : (
                     <li className="text-gray-400 italic">No features listed</li>
                   )}
