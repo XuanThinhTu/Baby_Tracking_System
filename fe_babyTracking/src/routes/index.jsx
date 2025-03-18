@@ -25,12 +25,9 @@ import DoctorDashboard from "../pages/doctor";
 import MembershipPage from "../pages/user/Membership/index";
 import FAQPage from "../pages/user/FAQ/FAQPage";
 import VerifyAccount from "../pages/user/Auth/Register/VerifyAccount";
-<<<<<<< HEAD
 import PaymentCallback from "../pages/user/PaypalPayment/PaymentCallback";
-=======
 import Blog from "../pages/user/Blog/Blog";
 import BlogDetail from "../pages/user/Blog/BlogDetail";
->>>>>>> 4c32c069b34deedba6f39074bcff49b0424ff421
 
 function UserLayout() {
   const location = useLocation();
