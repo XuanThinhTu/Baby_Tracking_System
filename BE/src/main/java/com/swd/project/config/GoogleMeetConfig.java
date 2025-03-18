@@ -70,9 +70,17 @@ public class GoogleMeetConfig {
                 .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
                 .setAccessType("offline")
                 .build();
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setHost("azbtsappdp.livelydesert-5fef761c.eastasia.azurecontainerapps.io/").setPort(8888).build();
-        Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-        //returns an authorized Credential object.
+        // Use a custom redirect URI instead of LocalServerReceiver
+        String redirectUri = "https://azbtsappdp.livelydesert-5fef761c.eastasia.azurecontainerapps.io/callback";
+        AuthorizationCodeInstalledApp app = new AuthorizationCodeInstalledApp(
+                flow,
+                new LocalServerReceiver.Builder().setPort(8888).build()) {
+            protected String getRedirectUri() {
+                return redirectUri; // Override to use your HTTPS server
+            }
+        };
+
+        Credential credential = app.authorize("user");
         return credential;
     }
 

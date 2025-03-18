@@ -13,14 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Slf4j
 class BabyTrackingSystemApplicationTests {
 
-	@Autowired
-	private MembershipSubscriptionRepository membershipSubscriptionRepository;
-
 	@Test
 	void contextLoads() {
-		MembershipSubscription subscription = membershipSubscriptionRepository
-				.findByUserIdAndPaymentStatusAndStatus(2, PaymentStatus.PENDING, MembershipSubscriptionStatus.UNAVAILABLE);
-		log.info("Subscription: {}", subscription.getId());
 	}
 
 }
