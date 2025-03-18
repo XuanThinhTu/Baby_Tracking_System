@@ -6,6 +6,7 @@ import com.swd.project.mapper.StandardIndexMapper;
 import com.swd.project.repository.BmiStandardsRepository;
 import com.swd.project.service.IStandardIndexService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class StandardIndexService implements IStandardIndexService {
 
     private final StandardIndexMapper standardIndexMapper;
 
+    @Cacheable("standards")
     @Override
     public List<StandardIndexResponse> getALLStandardIndex() {
 
