@@ -75,8 +75,8 @@ const MembershipPackages = () => {
 
                                 {/* Features Section */}
                                 <ul className="w-full md:w-1/2 space-y-3 text-sm md:text-base">
-                                    {pkg.description?.length ? (
-                                        pkg.description.map((feature) => (
+                                    {pkg.features?.length ? (
+                                        pkg.features.map((feature) => (
                                             <li key={feature} className="flex items-center space-x-2">
                                                 <FaCheckCircle className="text-white text-lg" />
                                                 <span>{feature}</span>
