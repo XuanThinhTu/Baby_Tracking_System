@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import LinkToGoogle from "../Google/LinkToGoogle";
-import axios from "axios";
 import { registerFunction } from "../../../../services/APIServices";
 
 const RegisterForm = () => {

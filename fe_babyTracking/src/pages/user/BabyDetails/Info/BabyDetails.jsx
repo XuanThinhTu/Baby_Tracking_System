@@ -22,133 +22,115 @@ const BabyDetails = ({ babyId }) => {
   const calculateAge = (birthDate) => {
     const birth = new Date(birthDate);
     const today = new Date();
-
     let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    const dayDiff = today.getDate() - birth.getDate();
-
-    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+    if (
+      today.getMonth() < birth.getMonth() ||
+      (today.getMonth() === birth.getMonth() &&
+        today.getDate() < birth.getDate())
+    ) {
       age--;
     }
-
     return age;
   };
 
   const calculateTotalWeeks = (startDate) => {
     const start = new Date(startDate);
     const today = new Date();
-
-    const differenceInMilliseconds = today - start;
-
-    const totalWeeks = Math.floor(
-      differenceInMilliseconds / (7 * 24 * 60 * 60 * 1000)
-    );
-
-    return totalWeeks;
+    return Math.floor((today - start) / (7 * 24 * 60 * 60 * 1000));
   };
 
   return (
-    <div className="w-full flex flex-col items-center text-center px-4">
-      {/* Background Cover */}
-      <div
-        className="w-full h-1/3 bg-cover bg-center flex flex-col items-center justify-center"
-        style={{ backgroundImage: `url(${baby?.background})` }}
-      >
-        <img
-          src={baby?.avatar}
-          alt="Baby Avatar"
-          className="w-32 h-32 rounded-full border-4 border-white shadow-lg"
-        />
-      </div>
+    <div className="container mx-auto px-6 py-10">
+      <div className="grid grid-cols-12 gap-10">
+        {/* Sidebar Left */}
+        <aside className="col-span-4 bg-white shadow-lg rounded-lg p-6">
+          <div className="text-center">
+            <img
+              src={baby?.avatar || "https://via.placeholder.com/150"}
+              alt="Baby Avatar"
+              className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-md mx-auto"
+            />
+            <h2 className="text-3xl font-semibold text-gray-800 mt-4">
+              {baby?.name}
+            </h2>
+            <p className="text-gray-500 text-lg mt-1">
+              Ngày sinh: {dayjs(baby?.birthDate).format("DD/MM/YYYY")}
+            </p>
+            <p className="text-gray-600 text-md">
+              Tuổi: {calculateAge(baby?.birthDate)} tuổi
+            </p>
+            <p className="text-gray-600 text-md">
+              Tuần: {calculateTotalWeeks(baby?.birthDate)} tuần tuổi
+            </p>
+          </div>
+        </aside>
 
-      {/* Baby Info */}
-      <div className="w-full max-w-7xl flex flex-col items-center justify-center py-6">
-        <h3 className="text-4xl font-semibold text-gray-900">{baby?.name}</h3>
-        <p className="text-gray-600 text-lg mt-2">
-          Ngày sinh: {dayjs(baby?.birthDate).format("DD/MM/YYYY")}
-        </p>
-        <p className="text-gray-600 text-lg">
-          Tuổi: {calculateAge(baby?.birthDate)}
-        </p>
-        <p className="text-gray-600 text-lg">
-          Tuần: {calculateTotalWeeks(baby?.birthDate)} tuần tuổi
-        </p>
-      </div>
+        {/* Main Content */}
+        <section className="col-span-8">
+          <div className="bg-white shadow-lg rounded-lg p-6">
+            <h3 className="text-2xl font-medium text-gray-700 mb-4">
+              Chỉ số sức khỏe
+            </h3>
 
-      {/* Growth Stats */}
-      <div className="grid grid-cols-3 gap-8 w-full max-w-full py-4 px-4">
-        <div className="flex flex-col items-center">
-          <FaRuler className="text-blue-500 text-7xl" />
-          <p className="text-3xl font-semibold mt-2">{baby?.height}</p>
-          <p className="text-gray-600 text-lg">Chiều cao</p>
-        </div>
-        <div className="flex flex-col items-center">
-          <FaWeight className="text-green-500 text-7xl" />
-          <p className="text-3xl font-semibold mt-2">{baby?.weight}</p>
-          <p className="text-gray-600 text-lg">Cân nặng</p>
-        </div>
-        <div className="flex flex-col items-center">
-          <p className="text-7xl text-gray-600 font-montserrat">BMI</p>
-          <p className="text-gray-600 text-lg">BMI: 12.5</p>
-        </div>
-      </div>
+            {/* Baby Growth Stats - Grid Layout */}
+            <div className="grid grid-cols-3 gap-6">
+              <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
+                <FaRuler className="text-blue-500 text-5xl" />
+                <p className="text-xl font-semibold mt-2">
+                  {baby?.height || "N/A"}
+                </p>
+                <p className="text-gray-500 text-md">Chiều cao</p>
+              </div>
+              <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
+                <FaWeight className="text-green-500 text-5xl" />
+                <p className="text-xl font-semibold mt-2">
+                  {baby?.weight || "N/A"}
+                </p>
+                <p className="text-gray-500 text-md">Cân nặng</p>
+              </div>
+              <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
+                <p className="text-4xl font-bold text-gray-700">BMI</p>
+                <p className="text-xl font-semibold">{baby?.bmi || "12.5"}</p>
+              </div>
+            </div>
+          </div>
 
-      {/* Feature Buttons */}
-      <h4 className="text-2xl font-medium text-gray-700 mt-8">
-        Theo dõi sự phát triển của bé bằng các tính năng
-      </h4>
-      <div className="grid grid-cols-3 gap-8 w-full max-w-full px-4 mt-6">
-        <Link
-          to={`/add-baby-info/${babyId}`}
-          className="
-          flex flex-col items-center p-4 
-          bg-white shadow rounded-lg 
-          transition 
-          transform 
-          hover:scale-105 
-          hover:shadow-lg 
-          cursor-pointer
-        "
-        >
-          <FaRuler className="text-blue-500 text-7xl mb-2" />
-          <p className="text-gray-700 text-lg font-medium">
-            Chiều cao, cân nặng
-          </p>
-        </Link>
+          {/* Features Section */}
+          <div className="mt-6">
+            <h3 className="text-2xl font-medium text-gray-700">
+              Tính năng theo dõi
+            </h3>
+            <div className="grid grid-cols-3 gap-6 mt-4">
+              <Link
+                to={`/add-baby-info/${babyId}`}
+                className="flex flex-col items-center bg-white shadow-md rounded-lg p-6 transition hover:shadow-lg hover:bg-gray-50"
+              >
+                <FaRuler className="text-blue-500 text-5xl mb-3" />
+                <p className="text-gray-700 text-lg font-medium">
+                  Chiều cao, cân nặng
+                </p>
+              </Link>
 
-        <Link
-          to={`/consultation-request/${babyId}`}
-          className="
-          flex flex-col items-center p-4 
-          bg-white shadow rounded-lg 
-          transition 
-          transform 
-          hover:scale-105 
-          hover:shadow-lg 
-          cursor-pointer
-        "
-        >
-          <FaUserMd className="text-yellow-500 text-7xl mb-2" />
-          <p className="text-gray-700 text-lg font-medium">
-            Consultation Request
-          </p>
-        </Link>
+              <Link
+                to="/consultation-request"
+                className="flex flex-col items-center bg-white shadow-md rounded-lg p-6 transition hover:shadow-lg hover:bg-gray-50"
+              >
+                <FaUserMd className="text-yellow-500 text-5xl mb-3" />
+                <p className="text-gray-700 text-lg font-medium">
+                  Consultation Request
+                </p>
+              </Link>
 
-        <Link
-          to={`/booking-meeting/${babyId}`}
-          className="
-          flex flex-col items-center p-4 
-          bg-white shadow rounded-lg 
-          transition 
-          transform 
-          hover:scale-105 
-          hover:shadow-lg 
-          cursor-pointer
-        "
-        >
-          <FaCalendarAlt className="text-red-500 text-7xl mb-2" />
-          <p className="text-gray-700 text-lg font-medium">Book lịch</p>
-        </Link>
+              <Link
+                to="/booking-meeting"
+                className="flex flex-col items-center bg-white shadow-md rounded-lg p-6 transition hover:shadow-lg hover:bg-gray-50"
+              >
+                <FaCalendarAlt className="text-red-500 text-5xl mb-3" />
+                <p className="text-gray-700 text-lg font-medium">Book lịch</p>
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );

@@ -30,6 +30,27 @@ const HeadCirChart = ({ babyId }) => {
     return measured.diff(birth, "day");
   };
 
+  // Hàm tìm dòng dữ liệu chuẩn gần nhất với ngày target
+  const getClosestStandardData = (targetDay) =>
+    growthData.reduce((closest, current) =>
+      Math.abs(current.day - targetDay) < Math.abs(closest.day - targetDay)
+        ? current
+        : closest
+    );
+
+  // Hàm lấy mảng các chỉ số chuẩn từ dữ liệu chuẩn
+  const getStandardValues = (data) => [
+    data.SD4neg,
+    data.SD3neg,
+    data.SD2neg,
+    data.SD1neg,
+    data.SD0,
+    data.SD1,
+    data.SD2,
+    data.SD3,
+    data.SD4,
+  ];
+
   // Lấy thông tin bé
   useEffect(() => {
     const fetchBabyInfo = async () => {
@@ -54,28 +75,38 @@ const HeadCirChart = ({ babyId }) => {
           headCir: item.headCircumference,
         }));
         setUserData(formatted);
+        console.log("head",formatted );
       } catch (error) {
         console.log(error);
       }
     };
     fetchGrowthData();
   }, [baby, babyId]);
+  
 
   useEffect(() => {
     const fetchPredictData = async () => {
+      if (!baby || !userData.length) return;
       try {
         const result = await getPredictGrowthData(babyId);
         const formattedData = result.map((item) => ({
-          day: calculateDays(baby?.birthDate, item.predictedDate),
+          day: calculateDays(baby.birthDate, item.predictedDate),
           predictHeadCir: item.predictedHeadCircumference,
         }));
-        setPredictData(formattedData);
+        // Lấy dữ liệu của ngày cuối cùng của bé và chuyển đổi sang object có 2 thuộc tính: day và predictHeight
+        const lastDayData = userData[userData.length - 1];
+        const lastDayPredict = {
+          day: lastDayData.day,
+          predictHeadCir: lastDayData.headCir,
+        };
+
+        setPredictData([lastDayPredict, ...formattedData]);
       } catch (error) {
         console.log(error);
       }
     };
     fetchPredictData();
-  }, [baby, babyId]);
+  }, [baby, babyId, userData]);
 
   // Lấy dữ liệu chuẩn (headCircumference)
   useEffect(() => {
@@ -88,7 +119,7 @@ const HeadCirChart = ({ babyId }) => {
             : await getGirlStandardIndex();
 
         const formatted = result.map((item) => ({
-          day: item.period,
+          day: (item.periodType === "DAY" ? item.period : (item.period * 30) + 56), // ngày
           SD4neg: item.headCircumferenceNeg4Sd,
           SD3neg: item.headCircumferenceNeg3Sd,
           SD2neg: item.headCircumferenceNeg2Sd,
@@ -108,35 +139,44 @@ const HeadCirChart = ({ babyId }) => {
   }, [baby]);
 
   // === Tính domain X ===
+  // Lấy ngày lớn nhất của bé + 60
+
   const userMaxDay = userData.length
     ? Math.max(...userData.map((d) => d.day))
-    : 0;
+    : Math.max(...growthData.map((d) => d.day));
+
+  
   const domainMax = userMaxDay + 60; // Dư 60 ngày
 
   // Tạo mảng tick bội số 30 => hiển thị "tháng"
   const ticks = [];
-  for (let i = 30; i <= domainMax; i += 30) {
+  let period = userData.length ? 30 : 365;
+  for (let i = period; i <= domainMax; i += period) {
     ticks.push(i);
   }
 
   // === Tính domain Y “center” quanh userData (bỏ qua SD lines) ===
+  // Tính domain Y dựa trên so sánh giữa dữ liệu của bé và chỉ số chuẩn
   let yMin = 0;
-  let yMax = 60; // fallback nếu userData rỗng
+  let yMax = 60; // fallback
 
-  if (userData.length > 0) {
-    const userMin = Math.min(...userData.map((d) => d.headCir));
-    const userMax = Math.max(...userData.map((d) => d.headCir));
-    const mid = (userMin + userMax) / 2;
-    let range = userMax - userMin;
-    if (range < 1) range = 1; // tránh chia 0
+  if (userData.length && growthData.length) {
+    const babyHeadCir = userData.map((d) => d.headCir);
+    const babyMin = Math.min(...babyHeadCir);
+    const babyMax = Math.max(...babyHeadCir);
 
-    // Tăng factor => domain rộng hơn
-    const factor = 6; // tuỳ ý
-    const half = (range * factor) / 2;
+    const babyMinDay = userData.find((d) => d.headCir === babyMin).day;
+    const babyMaxDay = userData.find((d) => d.headCir === babyMax).day;
 
-    yMin = mid - half;
+    const closestStandardMin = getClosestStandardData(babyMinDay);
+    const closestStandardMax = getClosestStandardData(babyMaxDay);
+
+    const standardMin = Math.min(...getStandardValues(closestStandardMin));
+    const standardMax = Math.max(...getStandardValues(closestStandardMax));
+
+    yMin = Math.min(babyMin, standardMin);
+    yMax = Math.max(babyMax, standardMax);
     if (yMin < 0) yMin = 0;
-    yMax = mid + half;
   }
 
   // Render chart
@@ -152,8 +192,9 @@ const HeadCirChart = ({ babyId }) => {
           domain={[0, domainMax]}
           scale="linear"
           ticks={ticks}
-          tickFormatter={(val) => `${val / 30}`}
-          label={{ value: "Tháng", position: "insideBottomRight", offset: 0 }}
+          interval={0}
+          tickFormatter={(val) => (userData.length ? `${val / 30}` : `${val / 365}`)}
+          label={{ value: (userData.length ? "Tháng" : "Năm"), position: "insideBottomRight", offset: 0 }}
         />
 
         {/* Trục Y */}
