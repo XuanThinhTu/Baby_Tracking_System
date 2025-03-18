@@ -112,7 +112,7 @@ const BabyDetails = ({ babyId }) => {
               </Link>
 
               <Link
-                to="/consultation-request"
+                to={`/consultation-request/${babyId}`}
                 className="flex flex-col items-center bg-white shadow-md rounded-lg p-6 transition hover:shadow-lg hover:bg-gray-50"
               >
                 <FaUserMd className="text-yellow-500 text-5xl mb-3" />
@@ -122,7 +122,7 @@ const BabyDetails = ({ babyId }) => {
               </Link>
 
               <Link
-                to="/booking-meeting"
+                to={`/booking-meeting/${babyId}`}
                 className="flex flex-col items-center bg-white shadow-md rounded-lg p-6 transition hover:shadow-lg hover:bg-gray-50"
               >
                 <FaCalendarAlt className="text-red-500 text-5xl mb-3" />

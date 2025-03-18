@@ -22,11 +22,7 @@ import BookingPage from "../pages/user/Calendar";
 import DoctorPage from "../pages/user/Doctor";
 import DoctorDetail from "../pages/user/Doctor/DoctorDetail";
 import DoctorDashboard from "../pages/doctor";
-<<<<<<< HEAD
-import MembershipPage from "../pages/user/Membership";
-=======
 import MembershipPage from "../pages/user/Membership/index";
->>>>>>> ecdba07c1e9027adeda553ce93fd702ca7905513
 import FAQPage from "../pages/user/FAQ/FAQPage";
 import VerifyAccount from "../pages/user/Auth/Register/VerifyAccount";
 import PaymentCallback from "../pages/user/PaypalPayment/PaymentCallback";
