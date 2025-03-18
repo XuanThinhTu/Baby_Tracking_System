@@ -25,7 +25,7 @@ public class Blog {
     private Date updatedAt;
     @ManyToOne
     private User user;
-    @OneToMany(mappedBy = "blog")
+    @OneToMany(mappedBy = "blog", cascade = {CascadeType.ALL, CascadeType.REMOVE})
     private List<BlogImage> blogImages;
     @ManyToOne
     private Category category;

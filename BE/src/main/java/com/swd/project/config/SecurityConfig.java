@@ -66,6 +66,7 @@ public class SecurityConfig {
             "/category/create",
             "/category/update/**",
             "/blogs/create",
+            "/blogs/delete/**",
             "/feedback/send"
     );
 
