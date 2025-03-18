@@ -12,4 +12,8 @@ public interface IBlogService {
     BlogDTO createBlog(String title, String content, int categoryId, MultipartFile[] images) throws IOException;
 
     Page<BlogDTO> getAllBlogs(int page, int size);
+
+    void deleteBlog(int blogId) throws IOException;
+
+    BlogDTO getBlogById(int blogId);
 }

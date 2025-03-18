@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -79,5 +80,29 @@ public class BlogService implements IBlogService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Blog> blogs = blogRepository.findAll(pageable);
         return blogs.map((blogMapper::toBlogDTO));
+    }
+
+    @Override
+    public void deleteBlog(int blogId) throws IOException {
+        User currentUser = userService.getAuthenticatedUser();
+        List<BlogImage> blogImages = blogImageRepository.findByBlogId(blogId);
+        for(BlogImage blogImage : blogImages){
+            log.info("Deleting image with public id {}", blogImage.getPublicId());
+            cloudinaryService.delete(blogImage.getPublicId());
+        }
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new RuntimeException("Blog not found"));
+        if(blog.getUser().getId() != currentUser.getId()){
+            log.warn("User {} is not allowed to delete blog {}", currentUser.getId(), blogId);
+            throw new RuntimeException("You are not allowed to delete this blog");
+        }
+        blogRepository.delete(blog);
+    }
+
+    @Override
+    public BlogDTO getBlogById(int blogId) {
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new RuntimeException("Blog not found"));
+        return blogMapper.toBlogDTO(blog);
     }
 }
