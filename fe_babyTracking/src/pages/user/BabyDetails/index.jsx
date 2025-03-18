@@ -12,7 +12,7 @@ const BabyOverview = () => {
   return (
     <>
       <BabyDetails babyId={babyId} />
-      <BabyGeneralChart />
+      <BabyGeneralChart babyId={babyId} />
       <WeightChart babyId={babyId} />
       <HeightChart babyId={babyId} />
       <HeadCirChart babyId={babyId} />

@@ -4,6 +4,7 @@ import {
   addBabyGrowthData,
   getBabyInfo,
 } from "../../../../services/APIServices";
+import toast from "react-hot-toast";
 
 const AddBabyInfo = () => {
   const { babyId } = useParams();
@@ -49,7 +50,7 @@ const AddBabyInfo = () => {
         date: new Date().toISOString().split("T")[0],
       });
       navigate(`/baby-details/${babyId}`);
-      alert("Chỉ số đã được thêm thành công!");
+      toast.success("Thêm chỉ số thành công!");
     } catch (error) {
       console.log(error);
     }
