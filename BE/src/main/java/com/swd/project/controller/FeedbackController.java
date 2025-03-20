@@ -17,7 +17,7 @@ public class FeedbackController {
 
     private final IFeedbackService feedbackService;
 
-    @Operation(summary = "Create feedback, feedbackType is CONSULTATION or APPOINTMENT")
+    @Operation(summary = "Create feedback, feedbackType is CONSULTATION or APPOINTMENT, rating 0-5")
     @PostMapping("/send")
     @SecurityRequirement(name = "bearerAuth")
     @ResponseStatus(HttpStatus.CREATED)
@@ -25,6 +25,15 @@ public class FeedbackController {
         return ApiResponse.<FeedbackDTO>builder()
                 .message("Feedback created")
                 .data(feedbackService.createFeedback(request))
+                .build();
+    }
+
+
+    @GetMapping("/doctor/{doctorId}")
+    public ApiResponse<?> getDoctorFeedback(@PathVariable int doctorId) {
+        return ApiResponse.builder()
+                .message("Doctor feedback")
+                .data(feedbackService.getAllFeedbacksByDoctorID(doctorId))
                 .build();
     }
 }

@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 public interface IBlogService {
 
@@ -16,4 +15,6 @@ public interface IBlogService {
     void deleteBlog(int blogId) throws IOException;
 
     BlogDTO getBlogById(int blogId);
+
+    BlogDTO updateBlog(int blogId, String title, String content, int categoryId, MultipartFile[] images) throws IOException;
 }

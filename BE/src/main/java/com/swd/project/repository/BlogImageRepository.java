@@ -8,4 +8,6 @@ import java.util.List;
 public interface BlogImageRepository extends JpaRepository<BlogImage, Integer> {
 
     List<BlogImage> findByBlogId(int blogId);
+
+    void deleteByPublicId(String publicId);
 }

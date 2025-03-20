@@ -1,12 +1,10 @@
 package com.swd.project.controller;
 
-import com.swd.project.dto.response.ApiResponse;
-import com.swd.project.dto.response.ChildrenDTO;
-import com.swd.project.dto.response.ConsultationRequestDTO;
-import com.swd.project.dto.response.WorkingScheduleDTO;
+import com.swd.project.dto.response.*;
 import com.swd.project.enums.WorkingScheduleStatus;
 import com.swd.project.service.IChildrenService;
 import com.swd.project.service.IConsultationRequestService;
+import com.swd.project.service.IFeedbackService;
 import com.swd.project.service.IWorkingScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -26,6 +24,7 @@ public class AdminController {
     private final IChildrenService childrenService;
     private final IConsultationRequestService consultationRequestService;
     private final IWorkingScheduleService workingScheduleService;
+    private final IFeedbackService feedbackService;
 
     @GetMapping("/children/{parentId}")
     @SecurityRequirement(name = "bearerAuth")
@@ -94,4 +93,14 @@ public class AdminController {
                 .build();
     }
 
+    @Operation(summary = "Get All Feedback for Admin")
+    @GetMapping("/feedbacks")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ApiResponse<?> getAllFeedback(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+        return ApiResponse.<Page<FeedbackDTO>>builder()
+                .data(feedbackService.getAllFeedbacks(page, size))
+                .message("List Feedback")
+                .build();
+    }
 }

@@ -59,4 +59,18 @@ public class BlogController {
                 .message("Blog deleted")
                 .build();
     }
+
+    @PutMapping("/update/{blogId}")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_DOCTOR')")
+    public ApiResponse<BlogDTO> updateBlog(@PathVariable int blogId,
+                                          @RequestParam("title") String title,
+                                          @RequestParam("content") String content,
+                                          @RequestParam("categoryId") int categoryId,
+                                          @RequestParam(name = "images", required = false) MultipartFile[] images) throws IOException {
+        return ApiResponse.<BlogDTO>builder()
+                .message("Blog updated")
+                .data(blogService.updateBlog(blogId, title, content, categoryId, images))
+                .build();
+    }
 }

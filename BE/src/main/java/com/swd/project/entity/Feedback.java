@@ -2,6 +2,8 @@ package com.swd.project.entity;
 
 import com.swd.project.enums.FeedbackType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +23,11 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Min(value = 0, message = "Feedback rating must be greater than 0")
+    @Max(value = 5, message = "Feedback rating must be smaller than 5")
     private double rating;
 
+    @Column(length = 5000, columnDefinition = "TEXT")
     private String comment;
 
     private LocalDateTime createdAt;
