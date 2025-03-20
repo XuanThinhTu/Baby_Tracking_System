@@ -38,6 +38,16 @@ public class CategoryController {
                 .build();
     }
 
+    @PutMapping("/delete/{id}")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ApiResponse<?> delete(@PathVariable int id) {
+        categoryService.deleteCategory(id);
+        return ApiResponse.<CategoryDTO>builder()
+                .message("Successfully deleted category")
+                .build();
+    }
+
     @GetMapping("/all")
     public ApiResponse<List<CategoryDTO>> getAllCategories() {
         return ApiResponse.<List<CategoryDTO>>builder()

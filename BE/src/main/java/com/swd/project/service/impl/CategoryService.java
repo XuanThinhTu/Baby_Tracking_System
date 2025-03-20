@@ -30,7 +30,7 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public CategoryDTO updateCategory(int id, CategoryCreationRequest updateRequest) {
-        Category category = categoryRepository.findById(id)
+        Category category = categoryRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         category.setTitle(updateRequest.getTitle());
         category.setDescription(updateRequest.getDescription());
@@ -40,7 +40,15 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public List<CategoryDTO> getAllCategory() {
-        List<Category> categories = categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findAllByIsDeletedFalse();
         return categories.stream().map(categoryMapper::toCategoryDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteCategory(int id) {
+        Category category = categoryRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+        category.setDeleted(true);
+        categoryRepository.save(category);
     }
 }

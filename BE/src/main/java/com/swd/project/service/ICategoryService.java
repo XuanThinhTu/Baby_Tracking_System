@@ -12,4 +12,6 @@ public interface ICategoryService {
     CategoryDTO updateCategory(int id, CategoryCreationRequest updateRequest);
 
     List<CategoryDTO> getAllCategory();
+
+    void deleteCategory(int id);
 }
