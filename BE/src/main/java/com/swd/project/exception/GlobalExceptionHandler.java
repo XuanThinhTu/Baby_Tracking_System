@@ -115,7 +115,10 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         }
 
-        response.put("message", errors.get("birthDate"));
+        if(errors.get("birthDate") != null) {
+            response.put("message", errors.get("birthDate"));
+        }
+        response.put("message", errors);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ApiResponse.builder()

@@ -20,6 +20,6 @@ public class BlogImage {
     private String url;
     private String publicId;
     @JsonIgnore
-    @ManyToOne(cascade = {CascadeType.ALL, CascadeType.REMOVE})
+    @ManyToOne
     private Blog blog;
 }
