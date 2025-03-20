@@ -1,17 +1,25 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaRuler, FaWeight, FaCalendarAlt, FaUserMd } from "react-icons/fa";
-import {
-  getBabyGrowthData,
-  getBabyInfo,
-} from "../../../../services/APIServices";
+import { FaRuler, FaWeight, FaCalendarAlt, FaUserMd, FaBaby, FaChild, FaBabyCarriage, FaUser } from "react-icons/fa";
+import { getBabyGrowthData, getBabyInfo } from "../../../../services/APIServices";
 import dayjs from "dayjs";
+
+const fallbackIcons = [FaBaby, FaChild, FaBabyCarriage, FaUser];
 
 const BabyDetails = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
   const [height, setHeight] = useState(0);
   const [weight, setWeight] = useState(0);
   const [bmi, setBmi] = useState(0);
+
+  // Icon ngẫu nhiên nếu không có avatar
+  const [randomIcon, setRandomIcon] = useState(null);
+
+  // Chọn icon ngẫu nhiên chỉ 1 lần khi component mount
+  useEffect(() => {
+    const Icon = fallbackIcons[Math.floor(Math.random() * fallbackIcons.length)];
+    setRandomIcon(() => Icon);
+  }, []);
 
   useEffect(() => {
     const fetchBabyInfo = async () => {
@@ -23,12 +31,13 @@ const BabyDetails = ({ babyId }) => {
       }
     };
     fetchBabyInfo();
-  }, []);
+  }, [babyId]);
 
   useEffect(() => {
     const fetchGrowthData = async () => {
       try {
         const result = await getBabyGrowthData(babyId);
+        // Lấy dữ liệu đo gần nhất (theo ngày đo)
         const latestData = result
           .slice()
           .sort((a, b) => new Date(b.measuredAt) - new Date(a.measuredAt))[0];
@@ -41,9 +50,10 @@ const BabyDetails = ({ babyId }) => {
       }
     };
     fetchGrowthData();
-  }, []);
+  }, [babyId]);
 
   const calculateAge = (birthDate) => {
+    if (!birthDate) return 0;
     const birth = new Date(birthDate);
     const today = new Date();
     let age = today.getFullYear() - birth.getFullYear();
@@ -58,9 +68,32 @@ const BabyDetails = ({ babyId }) => {
   };
 
   const calculateTotalWeeks = (startDate) => {
+    if (!startDate) return 0;
     const start = new Date(startDate);
     const today = new Date();
     return Math.floor((today - start) / (7 * 24 * 60 * 60 * 1000));
+  };
+
+  // Xử lý hiển thị avatar hoặc icon
+  const AvatarOrIcon = () => {
+    if (baby?.avatar) {
+      return (
+        <img
+          src={baby.avatar}
+          alt="Baby Avatar"
+          className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-md mx-auto object-cover"
+        />
+      );
+    }
+    if (randomIcon) {
+      const IconComp = randomIcon;
+      return (
+        <div className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-md mx-auto flex items-center justify-center bg-gray-100">
+          <IconComp className="text-6xl text-gray-400" />
+        </div>
+      );
+    }
+    return null; // trường hợp chưa load icon xong
   };
 
   return (
@@ -69,16 +102,12 @@ const BabyDetails = ({ babyId }) => {
         {/* Sidebar Left */}
         <aside className="col-span-4 bg-white shadow-lg rounded-lg p-6">
           <div className="text-center">
-            <img
-              src={baby?.avatar || "https://via.placeholder.com/150"}
-              alt="Baby Avatar"
-              className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-md mx-auto"
-            />
+            <AvatarOrIcon />
             <h2 className="text-3xl font-semibold text-gray-800 mt-4">
               {baby?.name}
             </h2>
             <p className="text-gray-500 text-lg mt-1">
-              Ngày sinh: {dayjs(baby?.birthDate).format("DD/MM/YYYY")}
+              Ngày sinh: {baby?.birthDate ? dayjs(baby.birthDate).format("DD/MM/YYYY") : "N/A"}
             </p>
             <p className="text-gray-600 text-md">
               Tuổi: {calculateAge(baby?.birthDate)} tuổi
@@ -101,20 +130,20 @@ const BabyDetails = ({ babyId }) => {
               <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
                 <FaRuler className="text-blue-500 text-5xl" />
                 <p className="text-xl font-semibold mt-2">
-                  {height + "cm" || "N/A"}
+                  {height ? `${height} cm` : "N/A"}
                 </p>
                 <p className="text-gray-500 text-md">Chiều cao</p>
               </div>
               <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
                 <FaWeight className="text-green-500 text-5xl" />
                 <p className="text-xl font-semibold mt-2">
-                  {weight + "kg" || "N/A"}
+                  {weight ? `${weight} kg` : "N/A"}
                 </p>
                 <p className="text-gray-500 text-md">Cân nặng</p>
               </div>
               <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
                 <p className="text-4xl font-bold text-gray-700">BMI</p>
-                <p className="text-xl font-semibold">{bmi || "12.5"}</p>
+                <p className="text-xl font-semibold">{bmi || "N/A"}</p>
                 <p className="text-gray-500 text-md">Chỉ số bmi</p>
               </div>
             </div>

@@ -25,7 +25,11 @@ const MyFamily = () => {
 
   useEffect(() => {
     fetchBabies();
-  }, [babies]);
+  }, []);
+
+  const handleRefreshBabies = () => {
+    fetchBabies();
+  };
 
   return (
     <>
@@ -79,10 +83,16 @@ const MyFamily = () => {
           <EditBabyForm
             baby={editingBaby}
             onClose={() => setEditingBaby(null)}
+            onSuccess={handleRefreshBabies}
           />
         )}
 
-        {isAdding && <BabyForm onClose={() => setIsAdding(false)} />}
+        {isAdding && (
+          <BabyForm
+            onClose={() => setIsAdding(false)}
+            onSuccess={handleRefreshBabies}
+          />
+        )}
       </div>
     </>
   );

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { getUserInformation } from "../../services/APIServices";
 import { AiOutlineUser } from "react-icons/ai";
+import babytrackingLogo from '../../assets/images/logo/babyLogo2.png';
 
 function UserHeader() {
   const token = sessionStorage.getItem("token");
@@ -48,7 +49,7 @@ function UserHeader() {
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
           <a href="/" className="flex items-center">
             <img
-              src="https://flowbite.com/docs/images/logo.svg"
+              src={babytrackingLogo}
               className="mr-3 h-6 sm:h-9"
               alt="Flowbite Logo"
             />

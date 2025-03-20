@@ -2,13 +2,18 @@ import React, { useEffect, useState } from "react";
 import { FaCamera, FaTimes, FaCalendarAlt } from "react-icons/fa";
 import { addNewBaby } from "../../../services/APIServices";
 import toast from "react-hot-toast";
+import dayjs from "dayjs";
 
 const BabyForm = ({ onClose }) => {
   const [newChild, setNewChild] = useState({
     name: "",
     birthday: "",
     gender: "",
+    avatar: "",
   });
+
+  // Lấy ngày hiện tại (định dạng YYYY-MM-DD) để gán cho max attribute
+  const today = dayjs().format("YYYY-MM-DD");
 
   useEffect(() => {
     console.log(newChild);
@@ -26,6 +31,17 @@ const BabyForm = ({ onClose }) => {
   };
 
   const handleAddBaby = async () => {
+    // 1. Kiểm tra đã chọn ngày chưa
+    if (!newChild.birthday) {
+      toast.error("Please select a birthday!");
+      return;
+    }
+    // 2. Kiểm tra ngày sinh có ở tương lai không
+    if (dayjs(newChild.birthday).isAfter(dayjs(), "day")) {
+      toast.error("Birthday cannot be in the future!");
+      return;
+    }
+    // 3. Gọi API
     try {
       const result = await addNewBaby(
         newChild.name,
@@ -34,13 +50,14 @@ const BabyForm = ({ onClose }) => {
       );
       if (result) {
         toast.success("Add baby success!");
-        setNewChild({ name: "", birthday: "", gender: "" });
+        setNewChild({ name: "", birthday: "", gender: "", avatar: "" });
         onClose();
       } else {
         toast.error("Add baby failed!");
       }
     } catch (error) {
       console.log(error);
+      toast.error("An error occurred while adding baby.");
     }
   };
 
@@ -63,7 +80,7 @@ const BabyForm = ({ onClose }) => {
           <label className="relative cursor-pointer">
             {newChild?.avatar ? (
               <img
-                src={newChild?.avatar}
+                src={newChild.avatar}
                 alt="Avatar"
                 className="w-16 h-16 rounded-full object-cover"
               />
@@ -84,9 +101,12 @@ const BabyForm = ({ onClose }) => {
           </label>
         </div>
 
+        {/* Ngày sinh: thêm max={today} để ngăn chọn ngày tương lai */}
         <div className="relative">
           <input
             type="date"
+            max={today}
+            value={newChild.birthday}
             className="w-full p-2 pl-10 rounded-md bg-gray-100 text-black border border-gray-300 focus:outline-none"
             onChange={(e) =>
               setNewChild({ ...newChild, birthday: e.target.value })
@@ -98,6 +118,7 @@ const BabyForm = ({ onClose }) => {
         <input
           type="text"
           placeholder="Baby’s name"
+          value={newChild.name}
           className="w-full p-2 mt-3 rounded-md bg-gray-100 text-black border border-gray-300 focus:outline-none"
           onChange={(e) => setNewChild({ ...newChild, name: e.target.value })}
         />
@@ -109,6 +130,7 @@ const BabyForm = ({ onClose }) => {
               type="radio"
               name="gender"
               value="Girl"
+              checked={newChild.gender === "Girl"}
               onChange={(e) =>
                 setNewChild({ ...newChild, gender: e.target.value })
               }
@@ -120,22 +142,12 @@ const BabyForm = ({ onClose }) => {
               type="radio"
               name="gender"
               value="Boy"
+              checked={newChild.gender === "Boy"}
               onChange={(e) =>
                 setNewChild({ ...newChild, gender: e.target.value })
               }
             />
             <span>Boy</span>
-          </label>
-          <label className="flex items-center space-x-1">
-            <input
-              type="radio"
-              name="gender"
-              value="Don't know"
-              onChange={(e) =>
-                setNewChild({ ...newChild, gender: e.target.value })
-              }
-            />
-            <span>Don't know</span>
           </label>
         </div>
 
