@@ -12,6 +12,7 @@ public class CategoryMapper {
                 .id(category.getId())
                 .title(category.getTitle())
                 .description(category.getDescription())
+                .isDeleted(category.isDeleted())
                 .build();
     }
 }
