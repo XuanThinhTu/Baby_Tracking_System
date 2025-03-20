@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaRuler, FaWeight, FaCalendarAlt, FaUserMd, FaBaby, FaChild, FaBabyCarriage, FaUser } from "react-icons/fa";
+import {
+  FaRuler,
+  FaWeight,
+  FaCalendarAlt,
+  FaUserMd,
+  FaBaby,
+  FaChild,
+  FaBabyCarriage,
+  FaUser,
+} from "react-icons/fa";
 import { getBabyGrowthData, getBabyInfo } from "../../../../services/APIServices";
 import dayjs from "dayjs";
 
@@ -97,7 +106,27 @@ const BabyDetails = ({ babyId }) => {
   };
 
   return (
-    <div className="container mx-auto px-6 py-10">
+    <div
+      className="
+        container mx-auto px-6 py-10 
+        relative isolate 
+        bg-gradient-to-tr from-green-50 via-green-100 to-green-200
+      "
+    >
+      {/* Shape trang trí */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 transform-gpu overflow-hidden blur-3xl"
+      >
+        <div
+          className="mx-auto aspect-square w-[80rem] rounded-full bg-gradient-to-r from-green-200 via-green-300 to-green-400 opacity-40"
+          style={{
+            clipPath:
+              "polygon(70% 0%, 100% 35%, 100% 100%, 30% 100%, 0% 65%, 0% 0%)",
+          }}
+        />
+      </div>
+
       <div className="grid grid-cols-12 gap-10">
         {/* Sidebar Left */}
         <aside className="col-span-4 bg-white shadow-lg rounded-lg p-6">
@@ -107,7 +136,10 @@ const BabyDetails = ({ babyId }) => {
               {baby?.name}
             </h2>
             <p className="text-gray-500 text-lg mt-1">
-              Ngày sinh: {baby?.birthDate ? dayjs(baby.birthDate).format("DD/MM/YYYY") : "N/A"}
+              Ngày sinh:{" "}
+              {baby?.birthDate
+                ? dayjs(baby.birthDate).format("DD/MM/YYYY")
+                : "N/A"}
             </p>
             <p className="text-gray-600 text-md">
               Tuổi: {calculateAge(baby?.birthDate)} tuổi
