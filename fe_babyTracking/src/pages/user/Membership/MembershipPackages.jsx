@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaCheckCircle } from "react-icons/fa";
-import { getMembershipPackages } from "../../../services/APIServices"; // Import API service
+import { getMembershipPackages } from "../../../services/APIServices";
+import { purchaseMembership } from "../../../services/membershipServices"; // <-- import hàm purchase
 
 const MembershipPackages = () => {
     const [packages, setPackages] = useState([]);
@@ -11,7 +12,7 @@ const MembershipPackages = () => {
             try {
                 const result = await getMembershipPackages();
                 if (result?.success) {
-                    setPackages(result.data || []); // Giả sử result = { success, data: [...] }
+                    setPackages(result.data || []);
                 } else {
                     console.error(result?.message || "Không thể lấy gói membership");
                 }
@@ -23,6 +24,18 @@ const MembershipPackages = () => {
         };
         fetchPackages();
     }, []);
+
+    const handlePurchasePackage = async (packageId) => {
+        try {
+            const result = await purchaseMembership(packageId);
+            if (result) {
+                // Chuyển hướng sang trang thanh toán
+                window.location.href = result.paymentUrl;
+            }
+        } catch (error) {
+            console.log("Lỗi khi mua gói membership:", error);
+        }
+    };
 
     if (loading) {
         return (
@@ -69,7 +82,9 @@ const MembershipPackages = () => {
                                     >
                                         {pkg.featured ? "FEATURED" : "STANDARD"}
                                     </span>
-                                    <h3 className="text-4xl md:text-5xl font-bold mt-4">{`$${pkg.price}`}</h3>
+                                    <h3 className="text-4xl md:text-5xl font-bold mt-4">
+                                        ${pkg.price}
+                                    </h3>
                                     <p className="text-sm md:text-base mt-2">
                                         {pkg.billingCycle}
                                     </p>
@@ -91,6 +106,7 @@ const MembershipPackages = () => {
                             {/* Button inside Card */}
                             <div className="mt-6">
                                 <button
+                                    onClick={() => handlePurchasePackage(pkg.id)} // <-- gọi hàm
                                     className={`w-full px-6 py-4 font-semibold rounded-full text-white transition-all ${pkg.featured
                                             ? "bg-green-700 hover:bg-green-800"
                                             : "bg-green-600 hover:bg-green-500"
