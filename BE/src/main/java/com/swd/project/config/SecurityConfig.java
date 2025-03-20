@@ -42,7 +42,6 @@ public class SecurityConfig {
             "/children/update/**",
             "/children/delete/**",
             "/membership-package/create",
-            "/membership-package/list",
             "/membership-package/update/**",
             "/membership-package/delete/**",
             "/membership-package/enable/**",
