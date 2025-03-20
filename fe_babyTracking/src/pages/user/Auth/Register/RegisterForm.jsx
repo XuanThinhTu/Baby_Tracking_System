@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import LinkToGoogle from "../Google/LinkToGoogle";
 import { registerFunction } from "../../../../services/APIServices";
+import toast from "react-hot-toast";
 
 const RegisterForm = () => {
   const navigate = useNavigate();

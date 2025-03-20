@@ -5,7 +5,7 @@ import {
   getUserInformation,
   loginFucntion,
 } from "../../../../services/APIServices";
-// import { fetchLogin } from "../../../data/api.jsx";
+import { getMyMembershipPackage } from "../../../../services/APIServices"; // <-- import API membership
 import toast from "react-hot-toast";
 
 const LoginForm = () => {
@@ -24,16 +24,38 @@ const LoginForm = () => {
         sessionStorage.setItem("userId", userInfo.data?.id);
         toast.success("Login success!");
 
+        // Kiểm tra role
         if (userInfo.data?.role === "ROLE_ADMIN") {
           navigation("/admin");
         } else if (userInfo.data?.role === "ROLE_DOCTOR") {
           navigation("/doctor-dashboard");
         } else {
-          navigation("/");
+          // User thường -> Kiểm tra membership
+          try {
+            const membershipRes = await getMyMembershipPackage();
+            // Nếu gọi API thành công
+            if (membershipRes.success && membershipRes.data) {
+              // Ví dụ check status
+              if (membershipRes.data.status === "AVAILABLE") {
+                // User đã có membership
+                navigation("/");
+              } else {
+                // Membership không khả dụng
+                navigation("/membership");
+              }
+            } else {
+              // Không có membership
+              navigation("/membership");
+            }
+          } catch (err) {
+            console.log("Lỗi khi kiểm tra membership:", err);
+            // Nếu lỗi thì chuyển hướng membership
+            navigation("/membership");
+          }
         }
       }
     } catch (error) {
-      toast.error(error?.message);
+      toast.error(error?.message || "Login failed");
     }
   };
 
@@ -53,7 +75,6 @@ const LoginForm = () => {
               type="email"
               placeholder="Nhập email..."
               onChange={(e) => setEmail(e.target.value)}
-              // disabled
             />
           </div>
 
@@ -64,13 +85,12 @@ const LoginForm = () => {
               type="password"
               placeholder="Nhập mật khẩu..."
               onChange={(e) => setPassword(e.target.value)}
-              // disabled
             />
           </div>
 
           <div className="mt-8 flex justify-between items-center">
             <div>
-              <input type="checkbox" id="remember" /*disabled*/ />
+              <input type="checkbox" id="remember" />
               <label className="ml-2 font-medium text-base" htmlFor="remember">
                 Lưu mật khẩu
               </label>
@@ -86,7 +106,7 @@ const LoginForm = () => {
           <div className="mt-8 flex flex-col gap-y-4">
             <button
               type="button"
-              className=" py-4 bg-violet-500 rounded-xl text-white font-bold text-lg"
+              className="py-4 bg-violet-500 rounded-xl text-white font-bold text-lg"
               onClick={() => fetchLogin()}
             >
               Đăng Nhập
