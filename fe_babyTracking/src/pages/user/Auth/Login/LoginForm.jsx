@@ -22,6 +22,7 @@ const LoginForm = () => {
         sessionStorage.setItem("token", token);
         const userInfo = await getUserInformation();
         sessionStorage.setItem("userId", userInfo.data?.id);
+        sessionStorage.setItem("role", userInfo.data?.role);
         toast.success("Login success!");
 
         if (userInfo.data?.role === "ROLE_ADMIN") {

@@ -11,7 +11,7 @@ const MembershipPackages = () => {
       try {
         const result = await getMembershipPackages();
         if (result?.success) {
-          setPackages(result.data || []); // Giả sử result = { success, data: [...] }
+          setPackages(result.data || []);
         } else {
           console.error(result?.message || "Không thể lấy gói membership");
         }
