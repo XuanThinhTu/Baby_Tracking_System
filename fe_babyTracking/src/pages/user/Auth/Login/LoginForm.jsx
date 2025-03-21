@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import {
   getUserInformation,
   loginFucntion,
+  getMyMembershipPackage,
 } from "../../../../services/APIServices";
-// import { fetchLogin } from "../../../data/api.jsx";
 import toast from "react-hot-toast";
 
 const LoginForm = () => {
@@ -13,28 +13,68 @@ const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Basic email regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const fetchLogin = async () => {
+    // 1. Client-side validation
+    if (!email) {
+      toast.error("Email is required!");
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      toast.error("Invalid email format!");
+      return;
+    }
+    if (!password) {
+      toast.error("Password is required!");
+      return;
+    }
+
     try {
       const result = await loginFucntion(email, password);
       const token = result?.data?.accessToken;
 
       if (token) {
         sessionStorage.setItem("token", token);
+
+        // Fetch user info
         const userInfo = await getUserInformation();
         sessionStorage.setItem("userId", userInfo.data?.id);
         sessionStorage.setItem("role", userInfo.data?.role);
         toast.success("Login success!");
 
+        // Check role
         if (userInfo.data?.role === "ROLE_ADMIN") {
           navigation("/admin");
         } else if (userInfo.data?.role === "ROLE_DOCTOR") {
           navigation("/doctor-dashboard");
         } else {
-          navigation("/");
+          // Normal user -> Check membership
+          try {
+            const membershipRes = await getMyMembershipPackage();
+            if (membershipRes.success && membershipRes.data) {
+              // Check membership status
+              if (membershipRes.data.status === "AVAILABLE") {
+                // User already has membership
+                navigation("/");
+              } else {
+                // Membership not available
+                navigation("/membership");
+              }
+            } else {
+              // No membership
+              navigation("/membership");
+            }
+          } catch (err) {
+            console.log("Error checking membership:", err);
+            navigation("/membership");
+          }
         }
       }
     } catch (error) {
-      toast.error(error?.message);
+      // Server or network error
+      toast.error(error?.message || "Login failed");
     }
   };
 
@@ -42,70 +82,68 @@ const LoginForm = () => {
     <div className="w-full px-10 py-12 rounded-3xl border-solid border-2 border-[rgba(0,0,0,0.1)] shadow-2xl">
       <h1 className="text-5xl font-semibold">Welcome Back</h1>
       <p className="font-medium text-lg text-gray-500 mt-4">
-        Vui lòng điền thông tin của bạn!
+        Please enter your information!
       </p>
 
       <div className="mt-8">
         <form>
           <div className="flex flex-col">
-            <label className="text-lg font-medium">Địa Chỉ Email</label>
+            <label className="text-lg font-medium">Email Address</label>
             <input
               className="w-full border-2 border-[rgba(0,0,0,0.2)] rounded-xl p-4 mt-1 bg-transparent"
               type="email"
-              placeholder="Nhập email..."
+              placeholder="Enter your email..."
               onChange={(e) => setEmail(e.target.value)}
-              // disabled
             />
           </div>
 
           <div className="flex flex-col mt-4">
-            <label className="text-lg font-medium">Mật Khẩu</label>
+            <label className="text-lg font-medium">Password</label>
             <input
               className="w-full border-2 border-[rgba(0,0,0,0.2)] rounded-xl p-4 mt-1 bg-transparent"
               type="password"
-              placeholder="Nhập mật khẩu..."
+              placeholder="Enter your password..."
               onChange={(e) => setPassword(e.target.value)}
-              // disabled
             />
           </div>
 
           <div className="mt-8 flex justify-between items-center">
             <div>
-              <input type="checkbox" id="remember" /*disabled*/ />
+              <input type="checkbox" id="remember" />
               <label className="ml-2 font-medium text-base" htmlFor="remember">
-                Lưu mật khẩu
+                Remember me
               </label>
             </div>
             <a
               className="font-medium text-base text-violet-500"
               href="/forgot-password"
             >
-              Quên mật khẩu?
+              Forgot your password?
             </a>
           </div>
 
           <div className="mt-8 flex flex-col gap-y-4">
             <button
               type="button"
-              className=" py-4 bg-violet-500 rounded-xl text-white font-bold text-lg"
-              onClick={() => fetchLogin()}
+              className="py-4 bg-green-500 rounded-xl text-white font-bold text-lg"
+              onClick={fetchLogin}
             >
-              Đăng Nhập
+              Log In
             </button>
 
             <div>
-              <LinkToGoogle headline="Đăng Nhập Bằng Google" />
+              <LinkToGoogle headline="Log in with Google" />
             </div>
           </div>
         </form>
 
         <div className="mt-8 flex justify-center items-center">
-          <p className="font-medium text-base">Không có tài khoản?</p>
+          <p className="font-medium text-base">Don't have an account?</p>
           <a
             href="/register"
-            className="ml-2 font-medium text-base text-violet-500"
+            className="ml-2 font-medium text-base text-green-500"
           >
-            Đăng Ký
+            Sign Up
           </a>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import babytrackingLogo from '../../assets/images/logo/babytracking.png';
+import babytrackingLogo from '../../assets/images/logo/babyLogo2.png';
 
 const Footer = () => {
   return (

@@ -125,7 +125,7 @@ const EditBabyForm = ({ baby, onClose }) => {
 
           <p className="mt-3 text-sm text-center">Baby’s sex</p>
           <div className="flex justify-center space-x-3 mt-2">
-            {["Girl", "Boy", "Don't know"].map((gender) => (
+            {["Girl", "Boy"].map((gender) => (
               <label key={gender} className="flex items-center space-x-1">
                 <input
                   type="radio"

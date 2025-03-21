@@ -11,7 +11,7 @@ import App from "../App";
 import AdminHomePage from "../pages/admin/AdminHomePage/AdminHomePage";
 import HomePage from "../pages/user/Home/index";
 import SignIn from "../pages/user/Auth/Login";
-import UserHeader from "../components/header/UserHeader";
+import UserHeader from "../components/Header/UserHeader";
 import SignUp from "../pages/user/Auth/Register";
 import ForgotPassword from "../pages/user/Auth/ForgotPassword";
 import MainFooter from "../components/Footer";
