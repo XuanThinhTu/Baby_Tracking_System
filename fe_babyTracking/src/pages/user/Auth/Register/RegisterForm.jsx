@@ -3,9 +3,12 @@ import { useState } from "react";
 import LinkToGoogle from "../Google/LinkToGoogle";
 import { registerFunction } from "../../../../services/APIServices";
 import toast from "react-hot-toast";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formValues, setFormValues] = useState({
     email: "",
     password: "",
@@ -59,6 +62,7 @@ const RegisterForm = () => {
       return;
     }
 
+    setLoading(true);
     try {
       // 2. Call registerFunction
       const result = await registerFunction(
@@ -71,7 +75,9 @@ const RegisterForm = () => {
       );
 
       if (result.success) {
-        toast.success("A verification email has been sent. Please check your inbox!");
+        toast.success(
+          "A verification email has been sent. Please check your inbox!"
+        );
       } else {
         toast.error(result.message || "Registration failed!");
       }
@@ -82,6 +88,7 @@ const RegisterForm = () => {
         toast.error("Registration failed! " + (error.message || ""));
       }
     }
+    setLoading(false);
   };
 
   return (
@@ -171,9 +178,16 @@ const RegisterForm = () => {
         <div className="mt-8 flex flex-col gap-y-4">
           <button
             type="submit"
-            className="py-4 bg-violet-500 rounded-xl text-white font-bold text-lg"
+            className="bg-green-500 w-full py-4 rounded-xl text-white font-bold text-lg"
           >
-            Register
+            {loading ? (
+              <>
+                <Spin indicator={<LoadingOutlined spin />} />{" "}
+                <span>Registering...</span>
+              </>
+            ) : (
+              "Register"
+            )}
           </button>
           <div>
             <LinkToGoogle headline="Sign in with Google" />
