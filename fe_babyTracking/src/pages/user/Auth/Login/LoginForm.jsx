@@ -36,6 +36,7 @@ const LoginForm = () => {
       const token = result?.data?.accessToken;
 
       if (token) {
+        // Save token to session
         sessionStorage.setItem("token", token);
 
         // Fetch user info
@@ -43,7 +44,7 @@ const LoginForm = () => {
         sessionStorage.setItem("userId", userInfo.data?.id);
         toast.success("Login successful!");
 
-        // Check role
+        // Check user role
         if (userInfo.data?.role === "ROLE_ADMIN") {
           navigation("/admin");
         } else if (userInfo.data?.role === "ROLE_DOCTOR") {

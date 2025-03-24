@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaCheckCircle } from "react-icons/fa";
-import { getMembershipPackages } from "../../../services/APIServices";
-import { purchaseMembership } from "../../../services/membershipServices"; // <-- import hàm purchase
+import { getMembershipPackages } from "../../../../../../../../../Programming/SWP/Baby_Tracking_SWD392/fe_babyTracking/src/services/APIServices";
+import { purchaseMembership } from "../../../../../../../../../Programming/SWP/Baby_Tracking_SWD392/fe_babyTracking/src/services/membershipServices"; // <-- import hàm purchase
 
 const MembershipPackages = () => {
     const [packages, setPackages] = useState([]);
@@ -67,8 +67,8 @@ const MembershipPackages = () => {
                         <div
                             key={pkg.id}
                             className={`p-8 md:p-10 rounded-3xl shadow-lg flex flex-col w-full ${pkg.featured
-                                    ? "bg-gradient-to-r from-green-400 to-green-500 text-white"
-                                    : "bg-green-100 hover:scale-105 transition-transform duration-300"
+                                ? "bg-gradient-to-r from-green-400 to-green-500 text-white"
+                                : "bg-green-100 hover:scale-105 transition-transform duration-300"
                                 }`}
                         >
                             <div className="flex flex-col md:flex-row justify-between items-center w-full">
@@ -76,8 +76,8 @@ const MembershipPackages = () => {
                                 <div className="w-full md:w-1/2 flex flex-col items-start">
                                     <span
                                         className={`text-xs md:text-sm ${pkg.featured
-                                                ? "bg-white text-green-600"
-                                                : "bg-green-300 text-gray-700"
+                                            ? "bg-white text-green-600"
+                                            : "bg-green-300 text-gray-700"
                                             } px-3 py-1 rounded-full font-medium`}
                                     >
                                         {pkg.featured ? "FEATURED" : "STANDARD"}
@@ -108,8 +108,8 @@ const MembershipPackages = () => {
                                 <button
                                     onClick={() => handlePurchasePackage(pkg.id)} // <-- gọi hàm
                                     className={`w-full px-6 py-4 font-semibold rounded-full text-white transition-all ${pkg.featured
-                                            ? "bg-green-700 hover:bg-green-800"
-                                            : "bg-green-600 hover:bg-green-500"
+                                        ? "bg-green-700 hover:bg-green-800"
+                                        : "bg-green-600 hover:bg-green-500"
                                         }`}
                                 >
                                     {pkg.featured ? "Start for free" : "Purchase"}
