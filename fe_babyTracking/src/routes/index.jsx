@@ -4,7 +4,9 @@ import {
   Routes,
   Route,
   useLocation,
+  Navigate,
 } from "react-router-dom";
+import toast from "react-hot-toast";
 import App from "../App";
 import AdminHomePage from "../pages/admin/AdminHomePage/AdminHomePage";
 import HomePage from "../pages/user/Home/index";
@@ -98,23 +100,36 @@ function UserLayout() {
   );
 }
 
+const ProtectedRoute = ({ children, requiredRole }) => {
+  const role = sessionStorage.getItem("role");
+  if (role !== requiredRole) {
+    toast.error("Access denied!");
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
+
 function AdminLayout() {
   return (
-    <div className="w-full min-h-screen bg-gray-100">
-      <Routes>
-        <Route path="/" element={<AdminHomePage />} />
-      </Routes>
-    </div>
+    <ProtectedRoute requiredRole="ROLE_ADMIN">
+      <div className="w-full min-h-screen bg-gray-100">
+        <Routes>
+          <Route path="/" element={<AdminHomePage />} />
+        </Routes>
+      </div>
+    </ProtectedRoute>
   );
 }
 
 function DoctorLayout() {
   return (
-    <div className="w-full min-h-screen bg-gray-100">
-      <Routes>
-        <Route path="/" element={<DoctorDashboard />} />
-      </Routes>
-    </div>
+    <ProtectedRoute requiredRole="ROLE_DOCTOR">
+      <div className="w-full min-h-screen bg-gray-100">
+        <Routes>
+          <Route path="/" element={<DoctorDashboard />} />
+        </Routes>
+      </div>
+    </ProtectedRoute>
   );
 }
 

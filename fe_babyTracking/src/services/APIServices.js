@@ -380,7 +380,7 @@ export const bookingMeeting = async (babyId, date, slotTimeId, note) => {
   try {
     const result = await axios.post(
       `${baseUrl}/booking/${babyId}?date=${date}&slotTimeId=${slotTimeId}`,
-      note,
+      { note },
       {
         headers: {
           Authorization: `Bearer ${token}`,

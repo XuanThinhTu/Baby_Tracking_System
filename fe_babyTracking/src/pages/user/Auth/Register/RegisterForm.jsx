@@ -1,11 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LinkToGoogle from "../Google/LinkToGoogle";
 import { registerFunction } from "../../../../services/APIServices";
 import toast from "react-hot-toast";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formValues, setFormValues] = useState({
     email: "",
     password: "",
@@ -13,7 +16,13 @@ const RegisterForm = () => {
     lastName: "",
     phone: "",
     address: "",
+    confirmPassword: "",
   });
+
+  useEffect(() => {
+    console.log(formValues.password);
+    console.log(formValues.confirmPassword);
+  }, [formValues]);
 
   // Basic email regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -58,7 +67,12 @@ const RegisterForm = () => {
       toast.error("Password is required!");
       return;
     }
+    if (formValues.password !== formValues.confirmPassword) {
+      toast.error("Provided password does not match!");
+      return;
+    }
 
+    setLoading(true);
     try {
       // 2. Call registerFunction
       const result = await registerFunction(
@@ -71,7 +85,9 @@ const RegisterForm = () => {
       );
 
       if (result.success) {
-        toast.success("A verification email has been sent. Please check your inbox!");
+        toast.success(
+          "A verification email has been sent. Please check your inbox!"
+        );
       } else {
         toast.error(result.message || "Registration failed!");
       }
@@ -82,6 +98,7 @@ const RegisterForm = () => {
         toast.error("Registration failed! " + (error.message || ""));
       }
     }
+    setLoading(false);
   };
 
   return (
@@ -167,13 +184,32 @@ const RegisterForm = () => {
           />
         </div>
 
+        <div className="flex flex-col mt-4">
+          <label className="text-lg font-medium">Confirm Password</label>
+          <input
+            name="confirmPassword"
+            onChange={handleChange}
+            value={formValues.confirmPassword}
+            className="w-full border-2 border-[rgba(0,0,0,0.2)] rounded-xl p-4 mt-1 bg-transparent"
+            placeholder="Enter your password..."
+            type="password"
+          />
+        </div>
+
         {/* Register Button */}
         <div className="mt-8 flex flex-col gap-y-4">
           <button
             type="submit"
-            className="py-4 bg-violet-500 rounded-xl text-white font-bold text-lg"
+            className="bg-green-500 w-full py-4 rounded-xl text-white font-bold text-lg"
           >
-            Register
+            {loading ? (
+              <>
+                <Spin indicator={<LoadingOutlined spin />} />{" "}
+                <span>Registering...</span>
+              </>
+            ) : (
+              "Register"
+            )}
           </button>
           <div>
             <LinkToGoogle headline="Sign in with Google" />
