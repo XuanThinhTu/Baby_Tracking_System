@@ -121,10 +121,10 @@ const LoginForm = () => {
               size="large"
               loading={loading}
               disabled={loading}
-              className="bg-green-500 w-full py-4 rounded-xl text-white font-bold text-lg"
+              className="bg-green-500 w-full h-14 rounded-xl text-white font-bold text-lg flex items-center justify-center"
               onClick={fetchLogin}
             >
-              {loading ? "Logging in..." : "Log In"}
+              {loading ? <span className="ml-2">Logging in...</span> : "Log In"}
             </Button>
 
             <div>

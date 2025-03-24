@@ -7,7 +7,7 @@ import Breadcrumbs from "../../../../components/elements/Breadcrumb";
 const SignIn = () => {
   return (
     <>
-      <Breadcrumbs headline="Đăng Nhập" />
+      <Breadcrumbs headline="Log In" />
       <div
         className={
           "w-full bg-cover bg-center flex flex-col lg:flex-row gap-8 my-4"
