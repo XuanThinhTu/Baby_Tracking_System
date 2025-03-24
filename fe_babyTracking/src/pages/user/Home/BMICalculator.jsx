@@ -71,9 +71,7 @@ const BMICalculator = () => {
                                 <p className="text-sm text-gray-500">BMI CATEGORY</p>
                             </div>
                             <div className="text-center">
-                                <p className="text-xl font-semibold text-lime-800">
-                                    {recommendedCalories} kcal
-                                </p>
+                                <p className="text-xl font-semibold text-lime-800">{recommendedCalories} kcal</p>
                                 <p className="text-sm text-gray-500">RECOMMENDED DAILY CALORIES</p>
                             </div>
                         </div>
@@ -81,27 +79,33 @@ const BMICalculator = () => {
                         {/* Thông tin người dùng nhập */}
                         <div className="mt-6 border-t pt-4">
                             <h4 className="font-bold mb-2 text-lime-700">Information Entered</h4>
-                            <p className="text-gray-700">
-                                <strong>Age: </strong>
-                                {years
-                                    ? `${years} year${years > 1 ? "s" : ""} `
-                                    : ""}
-                                {months
-                                    ? `${months} month${months > 1 ? "s" : ""}`
-                                    : ""}
-                            </p>
-                            <p className="text-gray-700">
-                                <strong>Sex: </strong>
-                                {sex === "boy" ? "Boy" : "Girl"}
-                            </p>
-                            <p className="text-gray-700">
-                                <strong>Height: </strong>
-                                {height ? `${height} cm` : "N/A"}
-                            </p>
-                            <p className="text-gray-700">
-                                <strong>Weight: </strong>
-                                {weight ? `${weight} kg` : "N/A"}
-                            </p>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-gray-700">
+                                        <strong>Age: </strong>
+                                        {years
+                                            ? `${years} year${years > 1 ? "s" : ""} `
+                                            : ""}
+                                        {months
+                                            ? `${months} month${months > 1 ? "s" : ""}`
+                                            : ""}
+                                    </p>
+                                    <p className="text-gray-700">
+                                        <strong>Sex: </strong>
+                                        {sex === "boy" ? "Boy" : "Girl"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-700">
+                                        <strong>Height: </strong>
+                                        {height ? `${height} cm` : "N/A"}
+                                    </p>
+                                    <p className="text-gray-700">
+                                        <strong>Weight: </strong>
+                                        {weight ? `${weight} kg` : "N/A"}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -168,31 +172,8 @@ const BMICalculator = () => {
                                         />
                                         Years, Months
                                     </label>
-                                    <label className="flex items-center text-sm">
-                                        <input
-                                            type="radio"
-                                            name="ageType"
-                                            value="months"
-                                            className="mr-1"
-                                            checked={ageType === "months"}
-                                            onChange={(e) => setAgeType(e.target.value)}
-                                        />
-                                        Months
-                                    </label>
-                                    <label className="flex items-center text-sm">
-                                        <input
-                                            type="radio"
-                                            name="ageType"
-                                            value="dob"
-                                            className="mr-1"
-                                            checked={ageType === "dob"}
-                                            onChange={(e) => setAgeType(e.target.value)}
-                                        />
-                                        DOB &amp; Measurement
-                                    </label>
                                 </div>
 
-                                {/* Nếu chọn Years, Months */}
                                 {ageType === "yearsMonths" && (
                                     <div className="flex gap-2 mt-2">
                                         <input
@@ -212,39 +193,6 @@ const BMICalculator = () => {
                                             className="border border-lime-200 rounded p-2 w-1/2"
                                             value={months}
                                             onChange={(e) => setMonths(e.target.value)}
-                                        />
-                                    </div>
-                                )}
-
-                                {/* Nếu chọn chỉ Months */}
-                                {ageType === "months" && (
-                                    <div className="mt-2">
-                                        <input
-                                            type="number"
-                                            min="24"
-                                            max="228"
-                                            placeholder="months (24-228)"
-                                            className="border border-lime-200 rounded p-2 w-full"
-                                            value={months}
-                                            onChange={(e) => setMonths(e.target.value)}
-                                        />
-                                    </div>
-                                )}
-
-                                {/* Nếu chọn DOB */}
-                                {ageType === "dob" && (
-                                    <div className="mt-2 flex flex-col gap-2">
-                                        <input
-                                            type="date"
-                                            className="border border-lime-200 rounded p-2 w-full"
-                                            onChange={(e) => console.log("DOB:", e.target.value)}
-                                        />
-                                        <input
-                                            type="date"
-                                            className="border border-lime-200 rounded p-2 w-full"
-                                            onChange={(e) =>
-                                                console.log("Measurement Date:", e.target.value)
-                                            }
                                         />
                                     </div>
                                 )}

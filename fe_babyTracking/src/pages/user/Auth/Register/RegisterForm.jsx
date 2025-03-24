@@ -2,9 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import LinkToGoogle from "../Google/LinkToGoogle";
 import { registerFunction } from "../../../../services/APIServices";
+import toast from "react-hot-toast";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formValues, setFormValues] = useState({
     email: "",
     password: "",
@@ -13,6 +17,9 @@ const RegisterForm = () => {
     phone: "",
     address: "",
   });
+
+  // Basic email regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -24,7 +31,40 @@ const RegisterForm = () => {
 
   const handleRegister = async (event) => {
     event.preventDefault();
+
+    // 1. Validate inputs
+    if (!formValues.lastName.trim()) {
+      toast.error("Last name is required!");
+      return;
+    }
+    if (!formValues.firstName.trim()) {
+      toast.error("First name is required!");
+      return;
+    }
+    if (!formValues.email.trim()) {
+      toast.error("Email is required!");
+      return;
+    }
+    if (!emailRegex.test(formValues.email)) {
+      toast.error("Invalid email format!");
+      return;
+    }
+    if (!formValues.phone.trim()) {
+      toast.error("Phone number is required!");
+      return;
+    }
+    if (!formValues.address.trim()) {
+      toast.error("Address is required!");
+      return;
+    }
+    if (!formValues.password.trim()) {
+      toast.error("Password is required!");
+      return;
+    }
+
+    setLoading(true);
     try {
+      // 2. Call registerFunction
       const result = await registerFunction(
         formValues.email,
         formValues.password,
@@ -33,123 +73,135 @@ const RegisterForm = () => {
         formValues.phone,
         formValues.address
       );
-      console.log(result);
 
-      // Sau khi đăng ký thành công, KHÔNG navigate("/login") nữa
-      // Thay vào đó, hiển thị toast
-      toast.success("Email xác thực đã được gửi. Vui lòng kiểm tra hộp thư!");
-      // => Ở đây user sẽ check mail, bấm link => /verify?token=xxx
+      if (result.success) {
+        toast.success(
+          "A verification email has been sent. Please check your inbox!"
+        );
+      } else {
+        toast.error(result.message || "Registration failed!");
+      }
     } catch (error) {
-      console.log(error);
-      toast.error("Đăng ký thất bại! " + error.message);
+      if (error.response && error.response.status === 409) {
+        toast.error("Email or phone number already in use!");
+      } else {
+        toast.error("Registration failed! " + (error.message || ""));
+      }
     }
+    setLoading(false);
   };
 
   return (
     <div className="w-full px-10 py-12 rounded-3xl border-solid border-2 border-[rgba(0,0,0,0.1)] shadow-2xl">
       <h1 className="text-5xl font-semibold">Welcome</h1>
       <p className="font-medium text-lg text-gray-500 mt-4">
-        Vui lòng điền thông tin của bạn!
+        Please fill in your details!
       </p>
 
-      <form className="mt-8">
+      <form className="mt-8" onSubmit={handleRegister}>
         <div className="w-full flex gap-3">
-          {/* Họ */}
+          {/* Last Name */}
           <div className="w-1/2 flex flex-col">
-            <label className="text-lg font-medium">Họ</label>
+            <label className="text-lg font-medium">Last Name</label>
             <input
               name="lastName"
               onChange={handleChange}
               value={formValues.lastName}
               className="w-full border-2 border-[rgba(0,0,0,0.2)] rounded-xl p-4 mt-1 bg-transparent"
-              placeholder="Nhập họ..."
-              required
+              placeholder="Enter your last name..."
             />
           </div>
-          {/* Tên */}
+          {/* First Name */}
           <div className="w-1/2 flex flex-col">
-            <label className="text-lg font-medium">Tên</label>
+            <label className="text-lg font-medium">First Name</label>
             <input
               name="firstName"
               onChange={handleChange}
               value={formValues.firstName}
               className="w-full border-2 border-[rgba(0,0,0,0.2)] rounded-xl p-4 mt-1 bg-transparent"
-              placeholder="Nhập tên..."
-              required
+              placeholder="Enter your first name..."
             />
           </div>
         </div>
-        {/* Địa chỉ email */}
+
+        {/* Email */}
         <div className="flex flex-col mt-4">
-          <label className="text-lg font-medium">Địa Chỉ Email</label>
+          <label className="text-lg font-medium">Email Address</label>
           <input
             name="email"
             onChange={handleChange}
             value={formValues.email}
             className="w-full border-2 rounded-xl p-4 mt-1 bg-transparent border-[rgba(0,0,0,0.2)]"
-            placeholder="Nhập email..."
+            placeholder="Enter your email..."
             type="email"
-            required
           />
         </div>
-        {/* Số điện thoại */}
+
+        {/* Phone */}
         <div className="flex flex-col mt-4">
-          <label className="text-lg font-medium">Số Điện Thoại</label>
+          <label className="text-lg font-medium">Phone Number</label>
           <input
             name="phone"
             onChange={handleChange}
             value={formValues.phone}
             className="w-full border-2 rounded-xl p-4 mt-1 bg-transparent border-[rgba(0,0,0,0.2)]"
-            placeholder="Nhập số điện thoại..."
-            required
+            placeholder="Enter your phone number..."
           />
         </div>
-        {/* Địa chỉ */}
+
+        {/* Address */}
         <div className="flex flex-col mt-4">
-          <label className="text-lg font-medium">Địa Chỉ</label>
+          <label className="text-lg font-medium">Address</label>
           <input
             name="address"
             onChange={handleChange}
             value={formValues.address}
             className="w-full border-2 rounded-xl p-4 mt-1 bg-transparent border-[rgba(0,0,0,0.2)]"
-            placeholder="Nhập địa chỉ..."
-            required
+            placeholder="Enter your address..."
           />
         </div>
-        {/* Mật khẩu */}
+
+        {/* Password */}
         <div className="flex flex-col mt-4">
-          <label className="text-lg font-medium">Mật Khẩu</label>
+          <label className="text-lg font-medium">Password</label>
           <input
             name="password"
             onChange={handleChange}
             value={formValues.password}
             className="w-full border-2 border-[rgba(0,0,0,0.2)] rounded-xl p-4 mt-1 bg-transparent"
-            placeholder="Nhập mật khẩu..."
+            placeholder="Enter your password..."
             type="password"
-            required
           />
         </div>
-        {/* Nút Đăng Ký */}
+
+        {/* Register Button */}
         <div className="mt-8 flex flex-col gap-y-4">
           <button
             type="submit"
-            className="py-4 bg-violet-500 rounded-xl text-white font-bold text-lg"
-            onClick={handleRegister}
+            className="bg-green-500 w-full py-4 rounded-xl text-white font-bold text-lg"
           >
-            Đăng Ký
+            {loading ? (
+              <>
+                <Spin indicator={<LoadingOutlined spin />} />{" "}
+                <span>Registering...</span>
+              </>
+            ) : (
+              "Register"
+            )}
           </button>
           <div>
-            <LinkToGoogle headline="Đăng Nhập Bằng Google" />
+            <LinkToGoogle headline="Sign in with Google" />
           </div>
         </div>
-        {/* Điều hướng Đăng Nhập */}
+
+        {/* Link to Login */}
         <div className="mt-8 flex justify-center items-center">
-          <p className="font-medium text-base">Bạn đã có tài khoản?</p>
+          <p className="font-medium text-base">Already have an account?</p>
           <a
             href="/login"
             className="ml-2 font-medium text-base text-violet-500"
           >
-            Đăng Nhập
+            Login
           </a>
         </div>
       </form>
