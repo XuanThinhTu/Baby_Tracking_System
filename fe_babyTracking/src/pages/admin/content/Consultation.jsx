@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Select, Tag } from "antd";
+import { Table, Button, Modal, Select, Tag, List, Typography } from "antd";
 import {
   assignConsultation,
   getAllConsultations,
   getAllDoctors,
+  getConsultationReplies,
 } from "../../../services/APIServices";
 import toast from "react-hot-toast";
 
 const { Option } = Select;
+const { Text } = Typography;
 
 const ConsultationRequests = () => {
   const [doctors, setDoctors] = useState([]);
@@ -15,6 +17,8 @@ const ConsultationRequests = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+  const [replies, setReplies] = useState([]);
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -42,6 +46,7 @@ const ConsultationRequests = () => {
   }, []);
 
   const handleAssignClick = (request) => {
+    setIsDetailModalVisible(false);
     setSelectedRequest(request);
     setIsModalVisible(true);
   };
@@ -63,6 +68,25 @@ const ConsultationRequests = () => {
       )
     );
   };
+
+  const handleRowClick = (record) => {
+    console.log(record);
+    setSelectedRequest(record);
+    setIsDetailModalVisible(true);
+  };
+
+  useEffect(() => {
+    const fetchConsultationReplies = async () => {
+      try {
+        const result = await getConsultationReplies(selectedRequest?.id);
+        setReplies(result);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchConsultationReplies();
+  }, [selectedRequest?.id]);
+  console.log("reply: ", replies);
 
   const columns = [
     { title: "Id", dataIndex: "id", key: "id" },
@@ -123,7 +147,58 @@ const ConsultationRequests = () => {
       <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>
         Consultation Requests
       </h1>
-      <Table columns={columns} dataSource={initialData} rowKey="id" />
+      <Table
+        columns={columns}
+        dataSource={initialData}
+        rowKey="id"
+        onRow={(record) => ({
+          onClick: () => handleRowClick(record),
+        })}
+      />
+
+      <Modal
+        title="Consultation Details"
+        open={isDetailModalVisible}
+        onCancel={() => setIsDetailModalVisible(false)}
+        footer={null}
+      >
+        {selectedRequest && (
+          <>
+            <p>
+              <strong>Request Id:</strong> {selectedRequest.id}
+            </p>
+            <p>
+              <strong>Baby Name:</strong> {selectedRequest.child?.name}
+            </p>
+            <p>
+              <strong>Doctor:</strong>{" "}
+              {selectedRequest.doctorName || "Not Assigned"}
+            </p>
+            <p>
+              <strong>Request Title:</strong> {selectedRequest.requestTitle}
+            </p>
+            <p>
+              <strong>Note:</strong> {selectedRequest.note}
+            </p>
+          </>
+        )}
+
+        <h3 style={{ marginTop: 20 }}>Chat History</h3>
+        <List
+          bordered
+          dataSource={replies}
+          renderItem={(item) => (
+            <List.Item>
+              <div>
+                <Text type="secondary">
+                  {new Date(item.createdAt).toLocaleString()}
+                </Text>
+                <p style={{ margin: 0 }}>{item.content}</p>
+              </div>
+            </List.Item>
+          )}
+        />
+      </Modal>
 
       <Modal
         title="Assign Doctor"
@@ -133,7 +208,7 @@ const ConsultationRequests = () => {
       >
         <p style={{ marginBottom: "10px", fontWeight: 500 }}>
           {" "}
-          Request Id: {selectedRequest}
+          Request Id: {selectedRequest?.id}
         </p>
         <Select
           style={{ width: "100%" }}

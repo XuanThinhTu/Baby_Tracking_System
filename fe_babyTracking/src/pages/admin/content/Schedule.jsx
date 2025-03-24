@@ -63,7 +63,7 @@ function Schedule() {
       }
     };
     fetchAllSlots();
-  }, [slots]);
+  }, []);
 
   useEffect(() => {
     const fetchDoctors = async () => {

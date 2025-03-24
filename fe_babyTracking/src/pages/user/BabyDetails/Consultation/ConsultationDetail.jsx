@@ -166,6 +166,12 @@ export default function ConsultationDetail() {
                 Send
               </button>
             </div>
+
+            <div className="flex justify-center mt-6">
+              <button className="w-full sm:w-auto px-6 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition duration-300">
+                Done Consultation
+              </button>
+            </div>
           </div>
         )}
 
@@ -198,7 +204,7 @@ export default function ConsultationDetail() {
           </div>
         ) : null}
 
-        {status === "Pending" && (
+        {status === "PENDING" && (
           <div className="mt-8">
             <p className="text-gray-500">
               This request is still pending. No discussion available yet.
@@ -208,6 +214,11 @@ export default function ConsultationDetail() {
                   Start Processing
                 </button> 
             */}
+            <div className="flex justify-center mt-6">
+              <button className="w-full sm:w-auto px-6 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300">
+                Cancel Consultation
+              </button>
+            </div>
           </div>
         )}
       </div>

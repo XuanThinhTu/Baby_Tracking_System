@@ -17,6 +17,8 @@ import {
   getBabyInfo,
 } from "../../../services/APIServices";
 import toast from "react-hot-toast";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const DAY_NAMES = [
   "Sunday",
@@ -73,6 +75,7 @@ export default function BookingPage() {
     selectedDay && availableDays.map(Number).includes(selectedDay.day);
   const [approvedList, setApprovedList] = useState([]);
   const [allSlotTimes, setAllSlotTimes] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const formatSelectedDay = () => {
     if (!selectedDay) return "";
@@ -162,8 +165,7 @@ export default function BookingPage() {
 
   const handleBack = () => {
     if (step === 1) {
-      // Ở Step 1, back về trang Home (hoặc console.log)
-      console.log("Back to home or parent page");
+      navigate(`/baby-details/${babyId}`);
     } else if (step === 2) {
       // Step 2 => quay lại Step 1
       setStep(1);
@@ -183,6 +185,7 @@ export default function BookingPage() {
   const handleSchedule = async () => {
     const [date, slotTimeId, index] = selectedKey.split("/");
 
+    setLoading(true);
     try {
       const result = await bookingMeeting(
         babyId,
@@ -199,6 +202,7 @@ export default function BookingPage() {
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
 
   const endTime = selectedTime ? getEndTime(selectedTime, duration) : "";
@@ -380,7 +384,16 @@ export default function BookingPage() {
               onClick={handleSchedule}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
-              Schedule Event
+              {loading ? (
+                <>
+                  <Spin indicator={<LoadingOutlined spin />} />{" "}
+                  <span>Booking...</span>
+                </>
+              ) : (
+                <>
+                  <span>Schedule Event</span>
+                </>
+              )}
             </button>
           </div>
         </div>

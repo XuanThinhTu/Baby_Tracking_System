@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getAllDoctors } from "../../../services/APIServices";
-import {
-  FaStar,
-  FaStarHalfAlt,
-  FaRegStar,
-  FaUserCircle,
-} from "react-icons/fa";
+import { FaStar, FaStarHalfAlt, FaRegStar, FaUserCircle } from "react-icons/fa";
 
 const DoctorDetail = () => {
   const { doctorId } = useParams();
@@ -109,7 +104,7 @@ const DoctorDetail = () => {
       <section className="bg-white p-6 rounded shadow-sm flex flex-col md:flex-row md:space-x-8 items-center md:items-start">
         <div className="md:w-1/3 w-full flex flex-col items-center md:items-center border p-6 rounded shadow-sm">
           <img
-            src={doctor?.image || "https://via.placeholder.com/150"}
+            src={doctor?.avatar || "https://via.placeholder.com/150"}
             alt="Doctor"
             className="w-36 h-36 object-cover rounded-full mb-4 shadow"
           />
@@ -243,7 +238,9 @@ const DoctorDetail = () => {
                 <FaUserCircle className="text-gray-400 text-2xl" />
                 <span className="font-semibold text-gray-800">{fb.user}</span>
                 {renderStars(fb.rating)}
-                <span className="text-gray-600 ml-2">{fb.rating.toFixed(1)}</span>
+                <span className="text-gray-600 ml-2">
+                  {fb.rating.toFixed(1)}
+                </span>
               </div>
               <p className="text-gray-700 italic">{fb.comment}</p>
             </div>

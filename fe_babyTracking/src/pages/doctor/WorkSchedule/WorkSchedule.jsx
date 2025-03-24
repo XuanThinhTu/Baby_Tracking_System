@@ -8,6 +8,8 @@ import {
 } from "../../../services/APIServices";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 export default function WorkSchedule() {
   const [shifts, setShifts] = useState([
@@ -25,6 +27,8 @@ export default function WorkSchedule() {
   const [scheduleData, setScheduleData] = useState([]);
   const today = new Date().toISOString().split("T")[0];
   const [numberOfShift, setNumberOfShifts] = useState(0);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const handleCreate = () => {
     setShowForm(true);
@@ -42,6 +46,7 @@ export default function WorkSchedule() {
   };
 
   const handleSave = async () => {
+    setSaveLoading(true);
     try {
       if (currentStatus !== "Draft") {
         const result = await registerWorkingShift(scheduleData);
@@ -58,6 +63,7 @@ export default function WorkSchedule() {
     } catch (error) {
       console.log(error);
     }
+    setSaveLoading(false);
   };
 
   const handleDiscard = () => {
@@ -117,6 +123,7 @@ export default function WorkSchedule() {
   }, [fromDate, toDate]);
 
   const handleSubmit = async () => {
+    setSubmitLoading(true);
     try {
       const dates = scheduleData.map((item) => item.date);
       const newSchedule = await getNewWorkingShiftDraft(
@@ -139,6 +146,7 @@ export default function WorkSchedule() {
     } catch (error) {
       console.log(error);
     }
+    setSubmitLoading(false);
   };
 
   return (
@@ -347,7 +355,16 @@ export default function WorkSchedule() {
               className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
               disabled={currentStatus !== "Draft"}
             >
-              Submit
+              {submitLoading ? (
+                <>
+                  <Spin indicator={<LoadingOutlined spin />} />{" "}
+                  <span>Submitting...</span>
+                </>
+              ) : (
+                <>
+                  <span>Submit</span>
+                </>
+              )}
             </button>
           </div>
 
