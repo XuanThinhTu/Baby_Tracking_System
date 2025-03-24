@@ -82,4 +82,24 @@ public class ConsultationRequestController {
                 .build();
     }
 
+    @Operation(summary = "Cancel consultation request by authenticated user")
+    @PutMapping("/cancel/{id}")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<ConsultationRequestDTO> cancelConsultationRequestByUser(@PathVariable int id) {
+        return ApiResponse.<ConsultationRequestDTO>builder()
+                .message("Cancel consultation request")
+                .data(iConsultationRequestService.cancelConsultationRequestByUser(id))
+                .build();
+    }
+
+    @Operation(summary = "Close consultation request by authenticated user")
+    @PutMapping("/close/{id}")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<ConsultationRequestDTO> closeConsultationRequestByUser(@PathVariable int id) {
+        return ApiResponse.<ConsultationRequestDTO>builder()
+                .message("Close consultation request")
+                .data(iConsultationRequestService.closeConsultationRequestByUser(id))
+                .build();
+    }
+
 }

@@ -121,6 +121,28 @@ public class ConsultationRequestService implements IConsultationRequestService {
     }
 
     @Override
+    public ConsultationRequestDTO cancelConsultationRequestByUser(int consultationRequestId) {
+        ConsultationRequest consultationRequest = consultationRequestRepository.findById(consultationRequestId).orElseThrow(() -> new IllegalArgumentException("Consultation request with id: " + consultationRequestId + " not found"));
+        if(!consultationRequest.getStatus().equals(ConsultationStatus.PENDING)) {
+            throw new RuntimeException("Consultation request is not pending");
+        }
+        consultationRequest.setStatus(ConsultationStatus.CANCELLED);
+        consultationRequestRepository.save(consultationRequest);
+        return consultationRequestMapper.toConsultationRequestDTO(consultationRequest);
+    }
+
+    @Override
+    public ConsultationRequestDTO closeConsultationRequestByUser(int consultationRequestId) {
+        ConsultationRequest consultationRequest = consultationRequestRepository.findById(consultationRequestId).orElseThrow(() -> new IllegalArgumentException("Consultation request with id: " + consultationRequestId + " not found"));
+        if(!consultationRequest.getStatus().equals(ConsultationStatus.ASSIGNED)) {
+            throw new RuntimeException("Consultation request is not assigned");
+        }
+        consultationRequest.setStatus(ConsultationStatus.CLOSED);
+        consultationRequestRepository.save(consultationRequest);
+        return consultationRequestMapper.toConsultationRequestDTO(consultationRequest);
+    }
+
+    @Override
     public Page<ConsultationRequestDTO> getAllConsultation(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ConsultationRequest> consultations = consultationRequestRepository.findAll(pageable);

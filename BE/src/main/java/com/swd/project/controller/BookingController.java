@@ -61,7 +61,7 @@ public class BookingController {
         bookingService.cancelBooking(bookingId);
         return ResponseEntity.ok(
                 ApiResponse.builder()
-                        .message("Booking with id: " + bookingId + " cancled successfully")
+                        .message("Booking with id: " + bookingId + " cancelled successfully")
                         .build()
         );
     }
