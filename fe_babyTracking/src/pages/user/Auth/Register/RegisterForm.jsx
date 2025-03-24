@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LinkToGoogle from "../Google/LinkToGoogle";
 import { registerFunction } from "../../../../services/APIServices";
 import toast from "react-hot-toast";
@@ -16,7 +16,13 @@ const RegisterForm = () => {
     lastName: "",
     phone: "",
     address: "",
+    confirmPassword: "",
   });
+
+  useEffect(() => {
+    console.log(formValues.password);
+    console.log(formValues.confirmPassword);
+  }, [formValues]);
 
   // Basic email regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -59,6 +65,10 @@ const RegisterForm = () => {
     }
     if (!formValues.password.trim()) {
       toast.error("Password is required!");
+      return;
+    }
+    if (formValues.password !== formValues.confirmPassword) {
+      toast.error("Provided password does not match!");
       return;
     }
 
@@ -168,6 +178,18 @@ const RegisterForm = () => {
             name="password"
             onChange={handleChange}
             value={formValues.password}
+            className="w-full border-2 border-[rgba(0,0,0,0.2)] rounded-xl p-4 mt-1 bg-transparent"
+            placeholder="Enter your password..."
+            type="password"
+          />
+        </div>
+
+        <div className="flex flex-col mt-4">
+          <label className="text-lg font-medium">Confirm Password</label>
+          <input
+            name="confirmPassword"
+            onChange={handleChange}
+            value={formValues.confirmPassword}
             className="w-full border-2 border-[rgba(0,0,0,0.2)] rounded-xl p-4 mt-1 bg-transparent"
             placeholder="Enter your password..."
             type="password"
