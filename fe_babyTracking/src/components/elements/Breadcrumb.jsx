@@ -20,7 +20,7 @@ const Breadcrumbs = ({ headline }) => {
                 }, 100);
               }}
             >
-              <p className="text-lg font-semibold text-black">Trang chủ</p>
+              <p className="text-lg font-semibold text-black">Home</p>
             </Link>
           </BreadcrumbItem>
           <BreadcrumbItem>
