@@ -142,6 +142,8 @@ public class MembershipPackageService implements IMembershipPackageService {
             MembershipSubscription membershipSubscription = membershipSubscriptionRepository
                     .findByUserIdAndPaymentStatusAndStatus(user.getId(), PaymentStatus.PENDING, MembershipSubscriptionStatus.UNAVAILABLE);
             membershipSubscription.setPaymentStatus(PaymentStatus.SUCCESS);
+            membershipSubscription.setStartDate(Date.valueOf(LocalDateTime.now().toLocalDate()));
+            membershipSubscription.setEndDate(Date.valueOf(LocalDateTime.now().plusDays(membershipSubscription.getMembershipPackage().getDuration()).toLocalDate()));
             membershipSubscription.setStatus(MembershipSubscriptionStatus.AVAILABLE);
             membershipSubscriptionRepository.save(membershipSubscription);
             return "Payment success";
