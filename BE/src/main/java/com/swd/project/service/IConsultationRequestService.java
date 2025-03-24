@@ -23,4 +23,8 @@ public interface IConsultationRequestService {
     ConsultationRequestDTO assignDoctor(int consultationRequestId, int doctorId);
 
     List<ConsultationRequestDTO> getAllConsultationRequestByUser();
+
+    ConsultationRequestDTO cancelConsultationRequestByUser(int consultationRequestId);
+
+    ConsultationRequestDTO closeConsultationRequestByUser(int consultationRequestId);
 }
