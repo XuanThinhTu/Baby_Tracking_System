@@ -505,6 +505,19 @@ export const getAllBlogs = async () => {
   }
 };
 
+// blog detail
+export const getBlogDetail = async (blogId) => {
+  try {
+    const response = await axios.get(`${baseUrl}/blogs/get/${blogId}`);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
+
 // Get All Categories
 export const getAllCategories = async () => {
   try {
