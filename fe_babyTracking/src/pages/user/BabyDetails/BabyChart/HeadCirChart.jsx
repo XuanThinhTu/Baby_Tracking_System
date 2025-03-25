@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -20,17 +20,17 @@ import dayjs from "dayjs";
 const HeadCirChart = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
   const [growthData, setGrowthData] = useState([]); // SD lines
-  const [userData, setUserData] = useState([]); // data bé
+  const [userData, setUserData] = useState([]); // Baby's data
   const [predictData, setPredictData] = useState([]);
 
-  // Lấy ngày (so với birthDate)
+  // Calculate days (relative to birthDate)
   const calculateDays = (birthDate, measuredAt) => {
     const birth = dayjs(birthDate);
     const measured = dayjs(measuredAt);
     return measured.diff(birth, "day");
   };
 
-  // Hàm tìm dòng dữ liệu chuẩn gần nhất với ngày target
+  // Function to find the closest standard data to the target day
   const getClosestStandardData = (targetDay) =>
     growthData.reduce((closest, current) =>
       Math.abs(current.day - targetDay) < Math.abs(closest.day - targetDay)
@@ -38,7 +38,7 @@ const HeadCirChart = ({ babyId }) => {
         : closest
     );
 
-  // Hàm lấy mảng các chỉ số chuẩn từ dữ liệu chuẩn
+  // Function to get an array of standard values from standard data
   const getStandardValues = (data) => [
     data.SD4neg,
     data.SD3neg,
@@ -51,7 +51,7 @@ const HeadCirChart = ({ babyId }) => {
     data.SD4,
   ];
 
-  // Lấy thông tin bé
+  // Fetch baby info
   useEffect(() => {
     const fetchBabyInfo = async () => {
       try {
@@ -64,7 +64,7 @@ const HeadCirChart = ({ babyId }) => {
     fetchBabyInfo();
   }, [babyId]);
 
-  // Lấy dữ liệu thực bé (headCircumference)
+  // Fetch baby's actual data (headCircumference)
   useEffect(() => {
     const fetchGrowthData = async () => {
       if (!baby) return;
@@ -82,6 +82,7 @@ const HeadCirChart = ({ babyId }) => {
     fetchGrowthData();
   }, [baby, babyId]);
 
+  // Fetch predicted growth data
   useEffect(() => {
     const fetchPredictData = async () => {
       if (!baby || !userData.length) return;
@@ -91,7 +92,7 @@ const HeadCirChart = ({ babyId }) => {
           day: calculateDays(baby.birthDate, item.predictedDate),
           predictHeadCir: item.predictedHeadCircumference,
         }));
-        // Lấy dữ liệu của ngày cuối cùng của bé và chuyển đổi sang object có 2 thuộc tính: day và predictHeight
+        // Get the last day's data of the baby and convert it to an object with 2 properties: day and predictHeadCir
         const lastDayData = userData[userData.length - 1];
         const lastDayPredict = {
           day: lastDayData.day,
@@ -106,7 +107,7 @@ const HeadCirChart = ({ babyId }) => {
     fetchPredictData();
   }, [baby, babyId, userData]);
 
-  // Lấy dữ liệu chuẩn (headCircumference)
+  // Fetch standard data (headCircumference)
   useEffect(() => {
     const fetchHeadCirData = async () => {
       if (!baby) return;
@@ -117,7 +118,7 @@ const HeadCirChart = ({ babyId }) => {
             : await getGirlStandardIndex();
 
         const formatted = result.map((item) => ({
-          day: item.periodType === "DAY" ? item.period : item.period * 30 + 56, // ngày
+          day: item.periodType === "DAY" ? item.period : item.period * 30 + 56, // days
           SD4neg: item.headCircumferenceNeg4Sd,
           SD3neg: item.headCircumferenceNeg3Sd,
           SD2neg: item.headCircumferenceNeg2Sd,
@@ -136,24 +137,23 @@ const HeadCirChart = ({ babyId }) => {
     fetchHeadCirData();
   }, [baby]);
 
-  // === Tính domain X ===
-  // Lấy ngày lớn nhất của bé + 60
-
+  // === Calculate X domain ===
+  // Get the maximum day of the baby + 60
   const userMaxDay = userData.length
     ? Math.max(...userData.map((d) => d.day))
     : Math.max(...growthData.map((d) => d.day));
 
-  const domainMax = userMaxDay + 60; // Dư 60 ngày
+  const domainMax = userMaxDay + 60; // Add 60 days buffer
 
-  // Tạo mảng tick bội số 30 => hiển thị "tháng"
+  // Create an array of ticks as multiples of 30 => display "months"
   const ticks = [];
   let period = userData.length ? 30 : 365;
   for (let i = period; i <= domainMax; i += period) {
     ticks.push(i);
   }
 
-  // === Tính domain Y “center” quanh userData (bỏ qua SD lines) ===
-  // Tính domain Y dựa trên so sánh giữa dữ liệu của bé và chỉ số chuẩn
+  // === Calculate Y domain "center" around userData (ignoring SD lines) ===
+  // Calculate Y domain based on comparison between baby's data and standard index
   let yMin = 0;
   let yMax = 60; // fallback
 
@@ -182,7 +182,7 @@ const HeadCirChart = ({ babyId }) => {
       <LineChart data={growthData} margin={{ right: 20 }}>
         <CartesianGrid stroke="#ccc" strokeDasharray="" />
 
-        {/* Trục X */}
+        {/* X Axis */}
         <XAxis
           dataKey="day"
           type="number"
@@ -194,13 +194,13 @@ const HeadCirChart = ({ babyId }) => {
             userData.length ? `${val / 30}` : `${val / 365}`
           }
           label={{
-            value: userData.length ? "Tháng" : "Năm",
+            value: userData.length ? "Months" : "Years",
             position: "insideBottomRight",
             offset: 0,
           }}
         />
 
-        {/* Trục Y */}
+        {/* Y Axis */}
         <YAxis
           domain={[yMin, yMax]}
           label={{ value: "cm", angle: -90, position: "insideLeft" }}
@@ -208,17 +208,17 @@ const HeadCirChart = ({ babyId }) => {
 
         {/* Tooltip */}
         <Tooltip
-          labelFormatter={(dayValue) => `Ngày: ${dayValue}`}
+          labelFormatter={(dayValue) => `Day: ${dayValue}`}
           formatter={(value, name) => {
             if (name === "headCir") {
-              return [`${value} cm`, "Chu vi đầu Bé"];
+              return [`${value} cm`, "Baby's Head Circumference"];
             }
-            // SD lines => hiển thị raw
+            // SD lines => display raw
             return [value, name];
           }}
         />
 
-        {/* Đường SD */}
+        {/* SD Lines */}
         {growthData.length > 0 &&
           Object.keys(growthData[0])
             .filter((key) => key !== "day")
@@ -234,7 +234,7 @@ const HeadCirChart = ({ babyId }) => {
               />
             ))}
 
-        {/* Đường dữ liệu bé */}
+        {/* Baby's Data Line */}
         {userData.length > 0 && (
           <Line
             type="monotone"
@@ -247,6 +247,7 @@ const HeadCirChart = ({ babyId }) => {
           />
         )}
 
+        {/* Predicted Data Line */}
         {predictData.length > 0 && (
           <Line
             type="monotone"
@@ -265,9 +266,9 @@ const HeadCirChart = ({ babyId }) => {
   return (
     <div className="w-full px-4 py-12">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-bold">Chu vi đầu</h3>
+        <h3 className="text-2xl font-bold">Head Circumference</h3>
         <a href="#" className="text-blue-500 text-lg hover:underline">
-          Chỉ số tiêu chuẩn
+          Standard Index
         </a>
       </div>
 
@@ -276,11 +277,11 @@ const HeadCirChart = ({ babyId }) => {
 
       <div className="flex justify-center items-center mt-6 text-lg text-purple-500">
         <a href="#" className="hover:underline flex items-center">
-          Xem chi tiết <span className="ml-1">&gt;</span>
+          View Details <span className="ml-1">&gt;</span>
         </a>
         <span className="mx-4 border-l border-gray-300 h-5"></span>
         <a href="#" className="hover:underline flex items-center">
-          Xem toàn màn hình <span className="ml-1">&gt;</span>
+          View Fullscreen <span className="ml-1">&gt;</span>
         </a>
       </div>
     </div>

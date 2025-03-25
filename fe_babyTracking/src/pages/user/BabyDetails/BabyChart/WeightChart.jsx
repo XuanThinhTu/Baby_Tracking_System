@@ -84,28 +84,28 @@ const WeightChart = ({ babyId }) => {
   }, [baby, babyId]);
 
   useEffect(() => {
-      const fetchPredictData = async () => {
-        if (!baby || !userData.length) return;
-        try {
-          const result = await getPredictGrowthData(babyId);
-          const formattedData = result.map((item) => ({
-            day: calculateDays(baby.birthDate, item.predictedDate),
-            predictWeight: item.predictedWeight,
-          }));
-          // Lấy dữ liệu của ngày cuối cùng của bé và chuyển đổi sang object có 2 thuộc tính: day và predictHeight
-          const lastDayData = userData[userData.length - 1];
-          const lastDayPredict = {
-            day: lastDayData.day,
-            predictWeight: lastDayData.weight,
-          };
-  
-          setPredictData([lastDayPredict, ...formattedData]);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      fetchPredictData();
-    }, [baby, babyId, userData]);
+    const fetchPredictData = async () => {
+      if (!baby || !userData.length) return;
+      try {
+        const result = await getPredictGrowthData(babyId);
+        const formattedData = result.map((item) => ({
+          day: calculateDays(baby.birthDate, item.predictedDate),
+          predictWeight: item.predictedWeight,
+        }));
+        // Lấy dữ liệu của ngày cuối cùng của bé và chuyển đổi sang object có 2 thuộc tính: day và predictHeight
+        const lastDayData = userData[userData.length - 1];
+        const lastDayPredict = {
+          day: lastDayData.day,
+          predictWeight: lastDayData.weight,
+        };
+
+        setPredictData([lastDayPredict, ...formattedData]);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchPredictData();
+  }, [baby, babyId, userData]);
 
   // Lấy dữ liệu chuẩn (weight)
   useEffect(() => {
@@ -145,7 +145,7 @@ const WeightChart = ({ babyId }) => {
     ? Math.max(...userData.map((d) => d.day))
     : Math.max(...growthData.map((d) => d.day));
 
-  
+
   const domainMax = userMaxDay + 60; // Dư 60 ngày
 
   // Tạo mảng tick bội số 30 => hiển thị "tháng"
@@ -290,9 +290,9 @@ const WeightChart = ({ babyId }) => {
   return (
     <div className="w-full px-4 py-12">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-bold">Cân nặng</h3>
+        <h3 className="text-2xl font-bold">Weight</h3>
         <a href="#" className="text-blue-500 text-lg hover:underline">
-          Chỉ số tiêu chuẩn
+          Standard Index
         </a>
       </div>
 
@@ -302,11 +302,11 @@ const WeightChart = ({ babyId }) => {
       {/* Link Xem chi tiết / Xem toàn màn hình */}
       <div className="flex justify-center items-center mt-6 text-lg text-purple-500">
         <a href="#" className="hover:underline flex items-center">
-          Xem chi tiết <span className="ml-1">&gt;</span>
+          View Details <span className="ml-1">&gt;</span>
         </a>
         <span className="mx-4 border-l border-gray-300 h-5"></span>
         <a href="#" className="hover:underline flex items-center">
-          Xem toàn màn hình <span className="ml-1">&gt;</span>
+          View Fullscreen <span className="ml-1">&gt;</span>
         </a>
       </div>
     </div>

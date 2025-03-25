@@ -27,8 +27,8 @@ const BabyGeneralChart = ({ babyId }) => {
 
   const data = [
     { name: "BMI", value: bmi, fill: "#E2A04A" }, // Vàng - Inner
-    { name: "Chiều cao", value: height, fill: "#9ACA3C" }, // Xanh lá - Middle
-    { name: "Cân nặng", value: weight, fill: "#4A90E2" }, // Xanh dương - Outer
+    { name: "Height", value: height, fill: "#9ACA3C" }, // Xanh lá - Middle
+    { name: "Weight", value: weight, fill: "#4A90E2" }, // Xanh dương - Outer
   ];
 
   return (
@@ -39,10 +39,10 @@ const BabyGeneralChart = ({ babyId }) => {
       <div className="flex justify-between items-center mb-6">
         {" "}
         {/* Thêm margin-bottom để tạo khoảng cách */}
-        <h3 className="text-2xl font-bold">Chỉ số của bé</h3>{" "}
+        <h3 className="text-2xl font-bold">Baby general index</h3>{" "}
         {/* Tăng kích thước chữ lên 2xl */}
         <a href="#" className="text-blue-500 text-lg hover:underline">
-          Xem chi tiết
+          Standard Index
         </a>{" "}
         {/* Tăng kích thước chữ lên lg */}
       </div>

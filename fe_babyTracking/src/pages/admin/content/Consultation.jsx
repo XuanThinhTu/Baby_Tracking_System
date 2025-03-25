@@ -53,9 +53,16 @@ const ConsultationRequests = () => {
 
   const handleAssignDoctor = async () => {
     try {
-      const result = await assignConsultation(selectedDoctor, selectedRequest);
+      const result = await assignConsultation(
+        selectedDoctor,
+        selectedRequest?.id
+      );
       setIsModalVisible(false);
-      toast.success("Assigned success!");
+      if (result) {
+        toast.success("Assigned success!");
+      } else {
+        toast.error("Assigned failed!");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -86,7 +93,6 @@ const ConsultationRequests = () => {
     };
     fetchConsultationReplies();
   }, [selectedRequest?.id]);
-  console.log("reply: ", replies);
 
   const columns = [
     { title: "Id", dataIndex: "id", key: "id" },
