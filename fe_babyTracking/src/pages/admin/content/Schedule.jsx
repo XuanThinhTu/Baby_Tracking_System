@@ -6,6 +6,7 @@ import {
   Modal,
   Pagination,
   Space,
+  Spin,
   TimePicker,
 } from "antd";
 import { useEffect, useState } from "react";
@@ -19,6 +20,7 @@ import {
 } from "../../../services/APIServices";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import { LoadingOutlined } from "@ant-design/icons";
 
 function Schedule() {
   const [slots, setSlots] = useState([]);
@@ -33,6 +35,8 @@ function Schedule() {
   const paginatedSchedule = workDates?.slice(startIndex, startIndex + pageSize);
   const [slotTimes, setSlotTimes] = useState({ startTime: "", endTime: "" });
   const [selectedSlots, setSelectedSlots] = useState([]);
+  const [approveLoading, setApproveLoading] = useState(false);
+  const [rejectLoading, setRejectLoading] = useState(false);
 
   const handleCardClick = (doctor) => {
     setSelectedDoctor(doctor);
@@ -134,6 +138,7 @@ function Schedule() {
 
   const handleApprove = async () => {
     const shifts = workDates.map((item) => item.id);
+    setApproveLoading(true);
     if (selectedSlots.length > 0) {
       const result = await approveWorkShift(selectedSlots);
     } else {
@@ -141,9 +146,11 @@ function Schedule() {
     }
     toast.success("Working schedule approved!");
     handleCloseCard();
+    setApproveLoading(false);
   };
 
   const handleReject = async () => {
+    setRejectLoading(true);
     try {
       const shifts = workDates.map((item) => item.id);
       if (selectedDoctor.length > 0) {
@@ -156,6 +163,7 @@ function Schedule() {
     } catch (error) {
       console.log(error);
     }
+    setRejectLoading(false);
   };
 
   return (
@@ -299,10 +307,28 @@ function Schedule() {
                   }}
                 >
                   <Button type="primary" danger onClick={handleReject}>
-                    Reject
+                    {rejectLoading ? (
+                      <>
+                        <Spin indicator={<LoadingOutlined spin />} />{" "}
+                        <span>Rejecting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Reject</span>
+                      </>
+                    )}
                   </Button>
                   <Button type="primary" onClick={handleApprove}>
-                    Approve
+                    {approveLoading ? (
+                      <>
+                        <Spin indicator={<LoadingOutlined spin />} />{" "}
+                        <span>Approving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Approve</span>
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
