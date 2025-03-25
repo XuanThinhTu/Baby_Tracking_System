@@ -332,6 +332,54 @@ export const getNewWorkingShiftDraft = async (doctorId, dates, number) => {
   }
 };
 
+export const getSubmittedShift = async (doctorId) => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/working-schedule/doctor/${doctorId}?status=SUBMITTED`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getApprovedShift = async (doctorId) => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/working-schedule/doctor/${doctorId}?status=APPROVED`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getRejectedShift = async (doctorId) => {
+  try {
+    const result = await axios.get(
+      `${baseUrl}/working-schedule/doctor/${doctorId}?status=REJECTED`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const submitWorkingShift = async (slots) => {
   try {
     const flattenedSlots = slots?.flat();

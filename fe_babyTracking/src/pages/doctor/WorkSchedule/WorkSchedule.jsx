@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { CheckCircleIcon } from "@heroicons/react/solid";
 import {
+  getApprovedShift,
   getNewWorkingShiftDraft,
+  getRejectedShift,
+  getSubmittedShift,
   getUserInformation,
   registerWorkingShift,
   submitWorkingShift,
 } from "../../../services/APIServices";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
-import { Spin } from "antd";
+import { Spin, Collapse } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
 export default function WorkSchedule() {
@@ -17,6 +20,10 @@ export default function WorkSchedule() {
     { id: 2, title: "Shift B", status: "Approved" },
     { id: 3, title: "Shift C", status: "Rejected" },
   ]);
+
+  const [submittedList, setSubmittedList] = useState([]);
+  const [approvedList, setApprovedList] = useState([]);
+  const [rejectedList, setRejectedList] = useState([]);
 
   const [showForm, setShowForm] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("");
@@ -84,15 +91,27 @@ export default function WorkSchedule() {
   };
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    const fetchData = async () => {
       try {
-        const result = await getUserInformation();
-        setUserInfo(result.data);
+        const userResult = await getUserInformation();
+        setUserInfo(userResult.data);
+
+        if (userResult.data?.id) {
+          const [submitted, approved, rejected] = await Promise.all([
+            getSubmittedShift(userResult.data.id),
+            getApprovedShift(userResult.data.id),
+            getRejectedShift(userResult.data.id),
+          ]);
+
+          setSubmittedList(submitted);
+          setApprovedList(approved);
+          setRejectedList(rejected);
+        }
       } catch (error) {
         console.log(error);
       }
     };
-    fetchUserInfo();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -167,47 +186,77 @@ export default function WorkSchedule() {
       {/* Nếu KHÔNG show form => hiển thị Kanban */}
       {!showForm && (
         <div className="grid grid-cols-3 gap-4">
-          {/* DRAFT */}
-          <div className="bg-gray-100 p-4 rounded shadow-sm">
-            <h3 className="text-lg font-semibold mb-2">Draft</h3>
-            <div className="space-y-2">
-              {shifts
-                .filter((s) => s.status === "Draft")
-                .map((s) => (
-                  <div key={s.id} className="bg-white p-2 rounded shadow-sm">
-                    {s.title}
-                  </div>
-                ))}
-            </div>
-          </div>
+          {/* SUBMITTED */}
+          <Collapse>
+            <Collapse.Panel
+              header={`SUBMITTED (${submittedList.length})`}
+              key="1"
+            >
+              {submittedList.map((s) => (
+                <div
+                  key={s.id}
+                  className="bg-white p-3 rounded shadow-sm border-l-4 border-blue-500"
+                >
+                  <p className="text-sm text-gray-500">
+                    {dayjs(s.date).format("DD/MM/YYYY")}
+                  </p>
+                  <p className="font-semibold text-gray-800">{s.doctorName}</p>
+                  <p className="text-sm text-gray-600">
+                    🕒 {s.startTime} - {s.endTime}
+                  </p>
+                  <p className="text-xs text-gray-500">Status: {s.status}</p>
+                </div>
+              ))}
+            </Collapse.Panel>
+          </Collapse>
 
           {/* APPROVED */}
-          <div className="bg-gray-100 p-4 rounded shadow-sm">
-            <h3 className="text-lg font-semibold mb-2">Approved</h3>
-            <div className="space-y-2">
-              {shifts
-                .filter((s) => s.status === "Approved")
-                .map((s) => (
-                  <div key={s.id} className="bg-white p-2 rounded shadow-sm">
-                    {s.title}
-                  </div>
-                ))}
-            </div>
-          </div>
+          <Collapse>
+            <Collapse.Panel
+              header={`APPROVED (${approvedList.length})`}
+              key="1"
+            >
+              {approvedList.map((s) => (
+                <div
+                  key={s.id}
+                  className="bg-white p-3 rounded shadow-sm border-l-4 border-blue-500"
+                >
+                  <p className="text-sm text-gray-500">
+                    {dayjs(s.date).format("DD/MM/YYYY")}
+                  </p>
+                  <p className="font-semibold text-gray-800">{s.doctorName}</p>
+                  <p className="text-sm text-gray-600">
+                    🕒 {s.startTime} - {s.endTime}
+                  </p>
+                  <p className="text-xs text-gray-500">Status: {s.status}</p>
+                </div>
+              ))}
+            </Collapse.Panel>
+          </Collapse>
 
           {/* REJECTED */}
-          <div className="bg-gray-100 p-4 rounded shadow-sm">
-            <h3 className="text-lg font-semibold mb-2">Rejected</h3>
-            <div className="space-y-2">
-              {shifts
-                .filter((s) => s.status === "Rejected")
-                .map((s) => (
-                  <div key={s.id} className="bg-white p-2 rounded shadow-sm">
-                    {s.title}
-                  </div>
-                ))}
-            </div>
-          </div>
+          <Collapse>
+            <Collapse.Panel
+              header={`REJECTED (${rejectedList.length})`}
+              key="1"
+            >
+              {rejectedList.map((s) => (
+                <div
+                  key={s.id}
+                  className="bg-white p-3 rounded shadow-sm border-l-4 border-blue-500"
+                >
+                  <p className="text-sm text-gray-500">
+                    {dayjs(s.date).format("DD/MM/YYYY")}
+                  </p>
+                  <p className="font-semibold text-gray-800">{s.doctorName}</p>
+                  <p className="text-sm text-gray-600">
+                    🕒 {s.startTime} - {s.endTime}
+                  </p>
+                  <p className="text-xs text-gray-500">Status: {s.status}</p>
+                </div>
+              ))}
+            </Collapse.Panel>
+          </Collapse>
         </div>
       )}
 
