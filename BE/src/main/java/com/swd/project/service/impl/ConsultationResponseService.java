@@ -5,6 +5,7 @@ import com.swd.project.dto.response.ConsultationResponseDTO;
 import com.swd.project.entity.ConsultationRequest;
 import com.swd.project.entity.ConsultationResponse;
 import com.swd.project.entity.User;
+import com.swd.project.enums.ConsultationStatus;
 import com.swd.project.mapper.ConsultationResponseMapper;
 import com.swd.project.repository.ConsultationRequestRepository;
 import com.swd.project.repository.ConsultationResponseRepository;
@@ -39,6 +40,10 @@ public class ConsultationResponseService implements IConsultationResponseService
             consultationResponse.setConsultationRequest(consultationRequest);
             consultationResponse.setCreatedAt(LocalDateTime.now());
             consultationResponse = consultationResponseRepository.save(consultationResponse);
+            if (consultationRequest.getConsultationResponses().isEmpty()) {
+                consultationRequest.setStatus(ConsultationStatus.PROCESSING);
+                consultationRequestRepository.save(consultationRequest);
+            }
             return consultationResponseMapper.toConsultationResponseDTO(consultationResponse);
         }else{
             throw new RuntimeException("You are not allowed to add response to this consultation request");
