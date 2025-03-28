@@ -231,7 +231,7 @@ export const addBabyGrowthData = async (
 
 export const getBoyStandardIndex = async () => {
   try {
-    const result = await axios.get(`${baseUrl}/api/standard-index/pro`);
+    const result = await axios.get(`${baseUrl}/api/standard-index`);
     const standard = result.data.data;
     const boyStandard = standard.filter((item) => item.gender === "boys");
     return boyStandard;
@@ -242,7 +242,7 @@ export const getBoyStandardIndex = async () => {
 
 export const getGirlStandardIndex = async () => {
   try {
-    const result = await axios.get(`${baseUrl}/api/standard-index/pro`);
+    const result = await axios.get(`${baseUrl}/api/standard-index`);
     const standard = result.data.data;
     const girlStandard = standard.filter((item) => item.gender === "girl");
     return girlStandard;
@@ -441,6 +441,32 @@ export const bookingMeeting = async (babyId, date, slotTimeId, note) => {
   }
 };
 
+export const getMeetingInfo = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/booking`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const cancelMeeting = async (meetingId) => {
+  try {
+    const result = await axios.put(`${baseUrl}/booking/${meetingId}/cancel`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const postConsultations = async (title, note, babyId) => {
   try {
     const addingInformation = {
@@ -602,7 +628,7 @@ export const getAllSlotTimes = async () => {
   }
 };
 
-export const addNewSlotTimes = async (startTime, endTime) => {
+export const addNewSlotTimes = async (startTime, endTime, shifts) => {
   try {
     const slots = await getAllSlotTimes();
     const isDup = slots.some(
@@ -613,6 +639,7 @@ export const addNewSlotTimes = async (startTime, endTime) => {
     const data = {
       startTime: startTime,
       endTime: endTime,
+      shifts: shifts,
     };
     const result = await axios.post(`${baseUrl}/slot-time/add`, data, {
       headers: {
@@ -704,6 +731,33 @@ export const assignConsultation = async (doctorId, consultationId) => {
           Authorization: `Bearer ${token}`,
         },
       }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const cancelConsultation = async (consultationId) => {
+  try {
+    const result = await axios.put(
+      `${baseUrl}/consultation/cancel/${consultationId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const closeConsultation = async (consultationId) => {
+  try {
+    const result = await axios.put(
+      `${baseUrl}/consultation/close/${consultationId}`
     );
     return result.data;
   } catch (error) {

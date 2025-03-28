@@ -12,9 +12,11 @@ import {
 } from "@heroicons/react/outline";
 import {
   bookingMeeting,
+  cancelMeeting,
   getAllSlotTimes,
   getApprovedList,
   getBabyInfo,
+  getMeetingInfo,
 } from "../../../services/APIServices";
 import toast from "react-hot-toast";
 import { Spin } from "antd";
@@ -61,9 +63,8 @@ export default function BookingPage() {
   const [baby, setBaby] = useState(null);
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-
   const [duration] = useState("30 min");
-
+  const [meetingList, setMeetingList] = useState([]);
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [meetingNote, setMeetingNote] = useState("");
@@ -113,6 +114,18 @@ export default function BookingPage() {
       }
     };
     fetchSlotTimes();
+  }, []);
+
+  useEffect(() => {
+    const fetchBookingList = async () => {
+      try {
+        const result = await getMeetingInfo();
+        setMeetingList(result);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchBookingList();
   }, []);
 
   useEffect(() => {
@@ -205,6 +218,20 @@ export default function BookingPage() {
     setLoading(false);
   };
 
+  const handleCancelMeeting = async (meetingId) => {
+    try {
+      const result = await cancelMeeting(meetingId);
+      if (result) {
+        toast.success("Cancel meeting success!");
+        handleBack();
+      } else {
+        toast.error("Cancel meeting failed!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const endTime = selectedTime ? getEndTime(selectedTime, duration) : "";
 
   return (
@@ -214,7 +241,6 @@ export default function BookingPage() {
         <div className="flex flex-col md:flex-row gap-6">
           {/* Cột trái (1/3) */}
           <div className="md:w-1/3 bg-white border border-gray-300 p-6 flex flex-col items-center text-center space-y-4 rounded shadow-sm relative">
-            {/* Nút Back icon ở góc trên trái */}
             <button
               onClick={handleBack}
               className="absolute top-3 left-3 text-blue-500 hover:underline flex items-center"
@@ -223,20 +249,59 @@ export default function BookingPage() {
               Back
             </button>
 
-            <img
-              src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
-              alt="Doctor Avatar"
-              className="w-24 h-24 rounded-full shadow"
-            />
-            <h1 className="text-2xl font-bold text-gray-800">
-              Dr. Dubby Rosner
-            </h1>
-            <p className="text-sm text-gray-500 italic">Senior Pediatrician</p>
-
-            <div className="bg-blue-50 w-full p-4 rounded-lg shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-700">Meeting</h2>
-              <p className="text-gray-600">{duration} session</p>
-            </div>
+            {/* Hiển thị cuộc hẹn mới nhất (nếu có) */}
+            {meetingList.length > 0 ? (
+              <>
+                <div className="w-full mt-4">
+                  <h2 className="text-lg font-semibold text-gray-700 mb-2">
+                    All Appointments
+                  </h2>
+                  <ul className="space-y-2">
+                    {meetingList.map((meeting) => (
+                      <li
+                        key={meeting.id}
+                        className="p-3 border rounded flex justify-between items-center"
+                      >
+                        <div>
+                          <p className="text-sm font-semibold">
+                            {meeting.date} <br />
+                            {meeting.startTime} - {meeting.endTime}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {meeting.childName} ({meeting.childGender})
+                          </p>
+                        </div>
+                        <span
+                          className={`px-2 py-1 rounded text-xs ${
+                            meeting.status === "PROCESSING"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : meeting.status === "COMPLETED"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {meeting.status}
+                        </span>
+                        {meeting.status === "PENDING" ? (
+                          <>
+                            <button
+                              onClick={() => handleCancelMeeting(meeting?.id)}
+                              className="px-3 py-1 text-sm font-medium text-white bg-red-500 rounded hover:bg-red-600 transition"
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            ) : (
+              <p className="text-gray-500 italic">No upcoming appointments.</p>
+            )}
           </div>
 
           {/* Cột phải (2/3) */}
