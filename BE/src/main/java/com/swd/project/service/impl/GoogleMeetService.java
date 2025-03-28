@@ -16,9 +16,7 @@ import java.io.FileInputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 import static com.swd.project.config.GoogleMeetConfig.JSON_FACTORY;
 import static com.swd.project.config.GoogleMeetConfig.APPLICATION_NAME;
@@ -45,7 +43,8 @@ public class GoogleMeetService {
     /**
      * Tạo sự kiện trên Google Calendar với conferenceData (Google Meet) và trả về link Google Meet.
      */
-    public String generateGoogleMeetLink(User member, User doctor, LocalDate bookingDate, SlotTime bookingSlotTime) {
+    public Map<String, String> generateGoogleMeetLink(User member, User doctor, LocalDate bookingDate, SlotTime bookingSlotTime) {
+        Map<String, String> result = new HashMap<>();
         try {
 
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -116,19 +115,45 @@ public class GoogleMeetService {
                     .setConferenceDataVersion(1)
                     .execute();
 
+//            System.out.println("-----------Event id: " + createdEvent.getId());
+
+
             // Lấy Google Meet link từ các EntryPoint trong conferenceData
             if (createdEvent.getConferenceData() != null && createdEvent.getConferenceData().getEntryPoints() != null) {
                 for (EntryPoint entry : createdEvent.getConferenceData().getEntryPoints()) {
                     if ("video".equals(entry.getEntryPointType())) {
-                        return entry.getUri();
+                        result.put(createdEvent.getId(), entry.getUri());
+
+//                        System.out.println("-------Link: " + result.get(result.keySet().toArray()[0]));
+//                        System.out.println("-------Id: " + (String) result.keySet().toArray()[0]);
+
+                        return result;
                     }
                 }
             }
             // Nếu không tìm thấy, trả về một link dự phòng
-            return "https://meet.google.com/cdr-unpt-bhi";
+            result.put("fallback", "https://meet.google.com/cdr-unpt-bhi");
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
-            return "https://meet.google.com/cdr-unpt-bhi";
+            result.put("fallback", "https://meet.google.com/cdr-unpt-bhi");
+            return result;
+        }
+    }
+
+    public void cancelAppointment(String eventId) {
+        try {
+            final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+            Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                    .setApplicationName(APPLICATION_NAME)
+                    .build();
+
+            // Hủy sự kiện từ lịch chính ("primary")
+            service.events().delete("primary", eventId).execute();
+            System.out.println("Sự kiện đã được hủy thành công: " + eventId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Có lỗi khi hủy sự kiện: " + e.getMessage());
         }
     }
 }

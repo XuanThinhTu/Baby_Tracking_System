@@ -125,9 +125,11 @@ public class BookingService implements IBookingService {
         booking.setDoctor(doctor);
         booking.setSlotTime(availableSchedule.getSlotTime());
         booking.setContent(note);
-        booking.setStatus(BookingStatus.PROCESSING);
+        booking.setStatus(BookingStatus.PENDING);
         booking.setCreatedAt(LocalDateTime.now());
-        booking.setMeetingLink(generateGoogleMeetLink(member, doctor, date, availableSchedule.getSlotTime()));
+        Map<String, String> googleEvent = generateGoogleMeetLink(member, doctor, date, availableSchedule.getSlotTime());
+        booking.setMeetingLink(googleEvent.get(googleEvent.keySet().toArray()[0]));
+        booking.setGoogleEventId((String) googleEvent.keySet().toArray()[0]);
 
         bookingRepository.save(booking);
 
@@ -139,7 +141,7 @@ public class BookingService implements IBookingService {
     }
 
     @Override
-    public String generateGoogleMeetLink(User member, User doctor, LocalDate bookingDate, SlotTime bookingSlotTime) {
+    public Map<String, String> generateGoogleMeetLink(User member, User doctor, LocalDate bookingDate, SlotTime bookingSlotTime) {
         return googleMeetService.generateGoogleMeetLink(member, doctor, bookingDate, bookingSlotTime);
     }
 
@@ -151,16 +153,67 @@ public class BookingService implements IBookingService {
     }
 
     @Override
+    public List<BookingResponse> getAllBookingsByUser() {
+        User user = userService.getAuthenticatedUser();
+        return bookingRepository.findByMemberOrDoctor(user, user).stream()
+                .map(bookingMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void changeStateToProcessing(int bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
+
+        // Nếu booking đã hủy hoặc hoàn thành thì không cho phép hủy nữa (tùy nghiệp vụ)
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            throw new RuntimeException("Appointment is in a state that can not be processing");
+        }
+
+        if (booking.getStatus() == BookingStatus.PROCESSING) {
+            throw new RuntimeException("Appointment is already processing");
+        }
+
+        booking.setStatus(BookingStatus.PROCESSING);
+        bookingRepository.save(booking);
+    }
+
+    @Override
+    public void changeStateToClosed(int bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
+
+        // Nếu booking đã hủy hoặc hoàn thành thì không cho phép hủy nữa (tùy nghiệp vụ)
+        if (booking.getStatus() != BookingStatus.PROCESSING) {
+            throw new RuntimeException("Appointment is in a state that can not be closed");
+        }
+
+        if (booking.getStatus() == BookingStatus.CLOSED) {
+            throw new RuntimeException("Appointment is already closed");
+        }
+
+        booking.setStatus(BookingStatus.PROCESSING);
+        bookingRepository.save(booking);
+    }
+
+
+    @Override
     public void cancelBooking(int bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy booking với id: " + bookingId));
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
 
         // Nếu booking đã hủy hoặc hoàn thành thì không cho phép hủy nữa (tùy nghiệp vụ)
         if (booking.getStatus() == BookingStatus.CANCELLED || booking.getStatus() == BookingStatus.CLOSED) {
-            throw new RuntimeException("Booking đã ở trạng thái không thể hủy");
+            throw new RuntimeException("Appointment is already canceled or closed");
+        }
+
+        if (booking.getStatus() == BookingStatus.PROCESSING) {
+            throw new RuntimeException("Appointment is in a state that can not be canceled");
         }
 
         booking.setStatus(BookingStatus.CANCELLED);
+        googleMeetService.cancelAppointment(booking.getGoogleEventId());
+
         bookingRepository.save(booking);
 
     }

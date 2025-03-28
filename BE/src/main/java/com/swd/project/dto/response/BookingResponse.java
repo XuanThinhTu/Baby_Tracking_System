@@ -35,6 +35,12 @@ public record BookingResponse(
 
         String childGender,
 
+        int memberId,
+
+        String memberFirstName,
+
+        String memberLastName,
+
         int doctorId,
 
         String doctorFirstName,

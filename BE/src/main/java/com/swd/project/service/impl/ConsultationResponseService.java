@@ -34,16 +34,17 @@ public class ConsultationResponseService implements IConsultationResponseService
                 .orElseThrow(() -> new RuntimeException("Consultation request not found"));
         User user = userService.getAuthenticatedUser();
         if (user.getId() == consultationRequest.getParent().getId() || user.getId() == consultationRequest.getDoctor().getId()) {
+            if (consultationRequest.getConsultationResponses().isEmpty()) {
+                consultationRequest.setStatus(ConsultationStatus.PROCESSING);
+                consultationRequestRepository.save(consultationRequest);
+            }
             ConsultationResponse consultationResponse = new ConsultationResponse();
             consultationResponse.setUser(user);
             consultationResponse.setContent(response.getContent());
             consultationResponse.setConsultationRequest(consultationRequest);
             consultationResponse.setCreatedAt(LocalDateTime.now());
             consultationResponse = consultationResponseRepository.save(consultationResponse);
-            if (consultationRequest.getConsultationResponses().isEmpty()) {
-                consultationRequest.setStatus(ConsultationStatus.PROCESSING);
-                consultationRequestRepository.save(consultationRequest);
-            }
+
             return consultationResponseMapper.toConsultationResponseDTO(consultationResponse);
         }else{
             throw new RuntimeException("You are not allowed to add response to this consultation request");

@@ -4,10 +4,17 @@ import com.swd.project.dto.request.CreateBookingNoteRequest;
 import com.swd.project.dto.response.ApiResponse;
 import com.swd.project.dto.response.BookingAvailableResponse;
 import com.swd.project.dto.response.BookingResponse;
+import com.swd.project.entity.SlotTime;
+import com.swd.project.repository.SlotTimeRepository;
+import com.swd.project.repository.UserRepository;
 import com.swd.project.service.impl.BookingService;
+import com.swd.project.service.impl.GoogleMeetService;
+import com.swd.project.service.impl.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -20,6 +27,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingController {
     private final BookingService bookingService;
+
+    private final UserService userService;
+
+    private final UserRepository userRepository;
+
+    private final SlotTimeRepository slotTimeRepository;
+
+    private final GoogleMeetService googleMeetService;
+
+
 
     @GetMapping("/available")
     public ResponseEntity<ApiResponse<BookingAvailableResponse>> getAllAvailableBookingsSchedule(@RequestParam YearMonth yearMonth) {
@@ -47,11 +64,35 @@ public class BookingController {
     }
 
     @GetMapping
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllBookings() {
         return ResponseEntity.ok(
                 ApiResponse.<List<BookingResponse>>builder()
                         .message("List all bookings")
                         .data(bookingService.getAllBookings())
+                        .build()
+        );
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllBookingsByUser() {
+        return ResponseEntity.ok(
+                ApiResponse.<List<BookingResponse>>builder()
+                        .message("List all bookings by user")
+                        .data(bookingService.getAllBookingsByUser())
+                        .build()
+        );
+    }
+
+    @PutMapping("/{bookingId}/process")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_DOCTOR')")
+    public ResponseEntity<ApiResponse<?>> processBooking(@PathVariable Integer bookingId) {
+        bookingService.changeStateToProcessing(bookingId);
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .message("Booking with id: " + bookingId + " changed to processing successfully")
                         .build()
         );
     }
@@ -65,6 +106,43 @@ public class BookingController {
                         .build()
         );
     }
+
+    @PutMapping("/{bookingId}/close")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_DOCTOR')")
+    public ResponseEntity<ApiResponse<?>> closeBooking(@PathVariable Integer bookingId) {
+        bookingService.changeStateToClosed(bookingId);
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .message("Booking with id: " + bookingId + " closed successfully")
+                        .build()
+        );
+    }
+
+//    @PostMapping("/test")
+//    public ResponseEntity<ApiResponse<?>> testMeetingLink() throws MessagingException {
+//        SlotTime slotTime = new SlotTime();
+//        LocalDate test = LocalDate.now();
+//        return ResponseEntity.ok(
+//                ApiResponse.builder()
+//                        .message("Booking schedule")
+//                        .data(bookingService.generateGoogleMeetLink(userService.getAuthenticatedUser(), userRepository.findById(2).get(), test, slotTimeRepository.findById(2).get()))
+//                        .build()
+//        );
+//    }
+//
+//    @PostMapping("/test/delete")
+//    public ResponseEntity<ApiResponse<?>> testDeleteMeetingLink(@RequestParam String eventId) throws MessagingException {
+//        SlotTime slotTime = new SlotTime();
+//        LocalDate test = LocalDate.now();
+//
+//        googleMeetService.cancelAppointment(eventId);
+//        return ResponseEntity.ok(
+//                ApiResponse.builder()
+//                        .message("deleted schedule")
+//                        .build()
+//        );
+//    }
 
 
 }
