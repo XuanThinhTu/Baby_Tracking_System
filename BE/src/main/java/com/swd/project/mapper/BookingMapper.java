@@ -23,7 +23,7 @@ public class BookingMapper {
                 booking.getChildren().getGender(),
                 booking.getMember().getId(),
                 booking.getMember().getFirstName(),
-                booking.getMember().getFirstName(),
+                booking.getMember().getLastName(),
                 booking.getDoctor().getId(),
                 booking.getDoctor().getFirstName(),
                 booking.getDoctor().getLastName(),
