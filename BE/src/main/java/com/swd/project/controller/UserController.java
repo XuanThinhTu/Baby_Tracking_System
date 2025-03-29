@@ -1,0 +1,179 @@
+package com.swd.project.controller;
+
+
+import com.swd.project.dto.request.ForgotPasswordRequest;
+import com.swd.project.dto.request.ResetPasswordRequest;
+import com.swd.project.dto.request.UserCreationRequest;
+import com.swd.project.dto.request.VerifyUserRequest;
+import com.swd.project.dto.response.ApiResponse;
+import com.swd.project.dto.response.UserDTO;
+import com.swd.project.service.IUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+
+@CrossOrigin("*")
+@RestController
+@RequestMapping("/user")
+@RequiredArgsConstructor
+public class UserController {
+
+    private final IUserService userService;
+
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<UserDTO> registerUser(@Valid @RequestBody UserCreationRequest request) throws MessagingException {
+        UserDTO userDTO = userService.register(request);
+        return ApiResponse.<UserDTO>builder()
+                .message("User registered")
+                .data(userDTO)
+                .build();
+    }
+
+    @PostMapping("/verify")
+    public ApiResponse<UserDTO> verifyUser(@RequestBody VerifyUserRequest request){
+        UserDTO userDTO = userService.verifyEmail(request.getToken());
+        return ApiResponse.<UserDTO>builder()
+                .message("User verified")
+                .data(userDTO)
+                .build();
+    }
+
+    @Operation(summary = "Get the current authenticated user")
+    @GetMapping("/p")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<UserDTO> getAuthUser(){
+        UserDTO userDTO = userService.getAuthenticatedUserDTO();
+        return ApiResponse.<UserDTO>builder()
+                .message("User profile retrieved")
+                .data(userDTO)
+                .build();
+    }
+
+    @PostMapping("/p/update")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<UserDTO> updateUserProfile(
+            @RequestParam("firstName") String firstName,
+            @RequestParam("lastName") String lastName,
+            @RequestParam("phone") String phone,
+            @RequestParam("address") String address,
+            @RequestParam("avatar") MultipartFile avatar
+    ) throws IOException {
+        UserDTO userDTO = userService.updateUserProfile(firstName, lastName, phone, address, avatar);
+        return ApiResponse.<UserDTO>builder()
+                .message("User profile updated")
+                .data(userDTO)
+                .build();
+    }
+
+    @PostMapping("/p/update/password")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<UserDTO> updatePassword(@RequestParam("oldPassword") String oldPassword,
+                                               @RequestParam("newPassword") String newPassword){
+        UserDTO userDTO = userService.updatePassword(oldPassword, newPassword);
+        return ApiResponse.<UserDTO>builder()
+                .message("Password updated")
+                .data(userDTO)
+                .build();
+    }
+
+
+    @GetMapping("/admin/getAll")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<List<UserDTO>> getAllUsers(){
+        List<UserDTO> userDTOs = userService.getAllUsers();
+        return ApiResponse.<List<UserDTO>>builder()
+                .message("Show all users")
+                .data(userDTOs)
+                .build();
+    }
+
+    @DeleteMapping("/admin/deactivate")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<?> deactivateUser(@RequestParam("user") int id){
+        userService.deactivateByUserId(id);
+        return ApiResponse.<List<UserDTO>>builder()
+                .message("Deactivate user successfully")
+                .build();
+    }
+
+    @PutMapping("/admin/activate")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<?> activateUser(@RequestParam("user") int id){
+        userService.activateByUserId(id);
+        return ApiResponse.<List<UserDTO>>builder()
+                .message("Activate user successfully")
+                .build();
+    }
+
+    @PutMapping("/admin/ban")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<?> banUser(@RequestParam("user") int id){
+        userService.banByUserId(id);
+        return ApiResponse.<List<UserDTO>>builder()
+                .message("Deactivate user successfully")
+                .build();
+    }
+
+    @PutMapping("/admin/unban")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<?> unbanUser(@RequestParam("user") int id){
+        userService.unbanByUserId(id);
+        return ApiResponse.<List<UserDTO>>builder()
+                .message("Deactivate user successfully")
+                .build();
+    }
+
+    @PostMapping("/forgot-password")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) throws MessagingException {
+        userService.forgotPassword(request.getEmail());
+        return ApiResponse.<Void>builder()
+                .message("Email sent")
+                .data(null)
+                .build();
+    }
+
+    @PostMapping("/reset-password")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApiResponse<UserDTO> resetPassword(@RequestBody ResetPasswordRequest request){
+        return ApiResponse.<UserDTO>builder()
+                .message("Password reset")
+                .data(userService.resetPassword(request.getToken(), request.getNewPassword()))
+                .build();
+    }
+
+    @PostMapping("/admin/add-doctor")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ApiResponse<UserDTO> addDoctor(@RequestBody UserCreationRequest request){
+        return ApiResponse.<UserDTO>builder()
+                .message("Doctor added")
+                .data(userService.addDoctor(request))
+                .build();
+    }
+
+    @GetMapping("/get-doctors")
+    public ApiResponse<Page<UserDTO>> getDoctors(@RequestParam(defaultValue = "0") int page,
+                                                 @RequestParam(defaultValue = "5") int size){
+        return ApiResponse.<Page<UserDTO>>builder()
+                .message("Doctors retrieved")
+                .data(userService.getDoctors(page, size))
+                .build();
+    }
+}
