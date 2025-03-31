@@ -443,7 +443,7 @@ export const bookingMeeting = async (babyId, date, slotTimeId, note) => {
 
 export const getMeetingInfo = async () => {
   try {
-    const result = await axios.get(`${baseUrl}/booking`, {
+    const result = await axios.get(`${baseUrl}/booking/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -457,6 +457,32 @@ export const getMeetingInfo = async () => {
 export const cancelMeeting = async (meetingId) => {
   try {
     const result = await axios.put(`${baseUrl}/booking/${meetingId}/cancel`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const closeMeeting = async (meetingId) => {
+  try {
+    const result = await axios.put(`${baseUrl}/booking/${meetingId}/close`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const startMeeting = async (meetingId) => {
+  try {
+    const result = await axios.put(`${baseUrl}/booking/${meetingId}/process`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

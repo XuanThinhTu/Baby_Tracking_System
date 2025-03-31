@@ -257,45 +257,60 @@ export default function BookingPage() {
                     All Appointments
                   </h2>
                   <ul className="space-y-2">
-                    {meetingList.map((meeting) => (
-                      <li
-                        key={meeting.id}
-                        className="p-3 border rounded flex justify-between items-center"
-                      >
-                        <div>
-                          <p className="text-sm font-semibold">
-                            {meeting.date} <br />
-                            {meeting.startTime} - {meeting.endTime}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {meeting.childName} ({meeting.childGender})
-                          </p>
-                        </div>
-                        <span
-                          className={`px-2 py-1 rounded text-xs ${
-                            meeting.status === "PROCESSING"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : meeting.status === "COMPLETED"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
+                    {meetingList
+                      .filter((item) => item.status !== "CLOSED")
+                      .map((meeting) => (
+                        <li
+                          key={meeting.id}
+                          className="p-3 border rounded flex flex-col justify-between"
                         >
-                          {meeting.status}
-                        </span>
-                        {meeting.status === "PENDING" ? (
-                          <>
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <p className="text-sm font-semibold">
+                                {meeting.date} <br />
+                                {meeting.startTime} - {meeting.endTime}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {meeting.childName} ({meeting.childGender})
+                              </p>
+                            </div>
+                            <span
+                              className={`px-2 py-1 rounded text-xs ${
+                                meeting.status === "PROCESSING"
+                                  ? "bg-yellow-100 text-yellow-700"
+                                  : meeting.status === "COMPLETED"
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-red-100 text-red-700"
+                              }`}
+                            >
+                              {meeting.status}
+                            </span>
+                          </div>
+
+                          {meeting.status === "PROCESSING" &&
+                            meeting.meetingLink && (
+                              <div className="mt-2">
+                                <a
+                                  href={meeting.meetingLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 underline"
+                                >
+                                  Join Google Meet
+                                </a>
+                              </div>
+                            )}
+
+                          {meeting.status === "PENDING" && (
                             <button
                               onClick={() => handleCancelMeeting(meeting?.id)}
-                              className="px-3 py-1 text-sm font-medium text-white bg-red-500 rounded hover:bg-red-600 transition"
+                              className="mt-2 px-3 py-1 text-sm font-medium text-white bg-red-500 rounded hover:bg-red-600 transition"
                             >
                               Cancel
                             </button>
-                          </>
-                        ) : (
-                          <></>
-                        )}
-                      </li>
-                    ))}
+                          )}
+                        </li>
+                      ))}
                   </ul>
                 </div>
               </>
