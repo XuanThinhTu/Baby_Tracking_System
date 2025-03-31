@@ -21,10 +21,10 @@ const BabyDetails = ({ babyId }) => {
   const [weight, setWeight] = useState(0);
   const [bmi, setBmi] = useState(0);
 
-  // Icon ngẫu nhiên nếu không có avatar
+  // Random icon if no avatar
   const [randomIcon, setRandomIcon] = useState(null);
 
-  // Chọn icon ngẫu nhiên chỉ 1 lần khi component mount
+  // Select a random icon only once when the component mounts
   useEffect(() => {
     const Icon = fallbackIcons[Math.floor(Math.random() * fallbackIcons.length)];
     setRandomIcon(() => Icon);
@@ -46,7 +46,7 @@ const BabyDetails = ({ babyId }) => {
     const fetchGrowthData = async () => {
       try {
         const result = await getBabyGrowthData(babyId);
-        // Lấy dữ liệu đo gần nhất (theo ngày đo)
+        // Get the latest measurement data (by measured date)
         const latestData = result
           .slice()
           .sort((a, b) => new Date(b.measuredAt) - new Date(a.measuredAt))[0];
@@ -62,18 +62,20 @@ const BabyDetails = ({ babyId }) => {
   }, [babyId]);
 
   const calculateAge = (birthDate) => {
-    if (!birthDate) return 0;
+    if (!birthDate) return "0 months, 0 days";
+
     const birth = new Date(birthDate);
     const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    if (
-      today.getMonth() < birth.getMonth() ||
-      (today.getMonth() === birth.getMonth() &&
-        today.getDate() < birth.getDate())
-    ) {
-      age--;
-    }
-    return age;
+
+    // Calculate total days from birth to today
+    const diffTime = Math.abs(today - birth);
+    const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    // Calculate months and remaining days
+    const months = Math.floor(totalDays / 30); // Assuming 1 month = 30 days for simplicity
+    const days = totalDays % 30;
+
+    return `${months} months, ${days} days`;
   };
 
   const calculateTotalWeeks = (startDate) => {
@@ -83,7 +85,7 @@ const BabyDetails = ({ babyId }) => {
     return Math.floor((today - start) / (7 * 24 * 60 * 60 * 1000));
   };
 
-  // Xử lý hiển thị avatar hoặc icon
+  // Handle avatar or icon display
   const AvatarOrIcon = () => {
     if (baby?.avatar) {
       return (
@@ -102,7 +104,7 @@ const BabyDetails = ({ babyId }) => {
         </div>
       );
     }
-    return null; // trường hợp chưa load icon xong
+    return null; // Case when the icon hasn't loaded yet
   };
 
   return (
@@ -113,7 +115,7 @@ const BabyDetails = ({ babyId }) => {
         bg-gradient-to-tr from-green-50 via-green-100 to-green-200
       "
     >
-      {/* Shape trang trí */}
+      {/* Decorative Shape */}
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-10 transform-gpu overflow-hidden blur-3xl"
@@ -136,16 +138,16 @@ const BabyDetails = ({ babyId }) => {
               {baby?.name}
             </h2>
             <p className="text-gray-500 text-lg mt-1">
-              Ngày sinh:{" "}
+              Date of Birth:{" "}
               {baby?.birthDate
                 ? dayjs(baby.birthDate).format("DD/MM/YYYY")
                 : "N/A"}
             </p>
             <p className="text-gray-600 text-md">
-              Tuổi: {calculateAge(baby?.birthDate)} tuổi
+              Age: {calculateAge(baby?.birthDate)}
             </p>
             <p className="text-gray-600 text-md">
-              Tuần: {calculateTotalWeeks(baby?.birthDate)} tuần tuổi
+              Weeks: {calculateTotalWeeks(baby?.birthDate)} weeks old
             </p>
           </div>
         </aside>
@@ -154,7 +156,7 @@ const BabyDetails = ({ babyId }) => {
         <section className="col-span-8">
           <div className="bg-white shadow-lg rounded-lg p-6">
             <h3 className="text-2xl font-medium text-gray-700 mb-4">
-              Chỉ số sức khỏe
+              Health Metrics
             </h3>
 
             {/* Baby Growth Stats - Grid Layout */}
@@ -164,19 +166,19 @@ const BabyDetails = ({ babyId }) => {
                 <p className="text-xl font-semibold mt-2">
                   {height ? `${height} cm` : "N/A"}
                 </p>
-                <p className="text-gray-500 text-md">Chiều cao</p>
+                <p className="text-gray-500 text-md">Height</p>
               </div>
               <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
                 <FaWeight className="text-green-500 text-5xl" />
                 <p className="text-xl font-semibold mt-2">
                   {weight ? `${weight} kg` : "N/A"}
                 </p>
-                <p className="text-gray-500 text-md">Cân nặng</p>
+                <p className="text-gray-500 text-md">Weight</p>
               </div>
               <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
                 <p className="text-4xl font-bold text-gray-700">BMI</p>
                 <p className="text-xl font-semibold">{bmi || "N/A"}</p>
-                <p className="text-gray-500 text-md">Chỉ số bmi</p>
+                <p className="text-gray-500 text-md">BMI Index</p>
               </div>
             </div>
           </div>
@@ -184,7 +186,7 @@ const BabyDetails = ({ babyId }) => {
           {/* Features Section */}
           <div className="mt-6">
             <h3 className="text-2xl font-medium text-gray-700">
-              Tính năng theo dõi
+              Tracking Features
             </h3>
             <div className="grid grid-cols-3 gap-6 mt-4">
               <Link
@@ -193,7 +195,7 @@ const BabyDetails = ({ babyId }) => {
               >
                 <FaRuler className="text-blue-500 text-5xl mb-3" />
                 <p className="text-gray-700 text-lg font-medium">
-                  Chiều cao, cân nặng
+                  Height & Weight
                 </p>
               </Link>
 
@@ -212,7 +214,7 @@ const BabyDetails = ({ babyId }) => {
                 className="flex flex-col items-center bg-white shadow-md rounded-lg p-6 transition hover:shadow-lg hover:bg-gray-50"
               >
                 <FaCalendarAlt className="text-red-500 text-5xl mb-3" />
-                <p className="text-gray-700 text-lg font-medium">Book lịch</p>
+                <p className="text-gray-700 text-lg font-medium">Book Appointment</p>
               </Link>
             </div>
           </div>

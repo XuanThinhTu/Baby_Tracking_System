@@ -55,7 +55,11 @@ const ConsultationRequests = () => {
     try {
       const result = await assignConsultation(selectedDoctor, selectedRequest);
       setIsModalVisible(false);
-      toast.success("Assigned success!");
+      if (result) {
+        toast.success("Assigned success!");
+      } else {
+        toast.error("Assigned failed!");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -69,8 +73,7 @@ const ConsultationRequests = () => {
     );
   };
 
-  const handleRowClick = (record) => {
-    console.log(record);
+  const handleDetailClick = (record) => {
     setSelectedRequest(record);
     setIsDetailModalVisible(true);
   };
@@ -86,7 +89,6 @@ const ConsultationRequests = () => {
     };
     fetchConsultationReplies();
   }, [selectedRequest?.id]);
-  console.log("reply: ", replies);
 
   const columns = [
     { title: "Id", dataIndex: "id", key: "id" },
@@ -109,6 +111,8 @@ const ConsultationRequests = () => {
             ? "orange"
             : status === "ASSIGNED"
             ? "blue"
+            : status === "PROCESSING"
+            ? "green"
             : "red";
         return <Tag color={color}>{status}</Tag>;
       },
@@ -122,23 +126,21 @@ const ConsultationRequests = () => {
     {
       title: "Action",
       key: "action",
-      render: (_, record) => {
-        if (record.status === "PENDING") {
-          return (
+      render: (_, record) => (
+        <div style={{ display: "flex", gap: "8px" }}>
+          {record.status === "PENDING" && (
             <Button type="primary" onClick={() => handleAssignClick(record.id)}>
               Assign
             </Button>
-          );
-        }
-        if (record.status === "ASSIGNED") {
-          return (
+          )}
+          {(record.status === "PROCESSING" || record.status === "ASSIGNED") && (
             <Button danger onClick={() => handleCancelRequest(record.id)}>
               Cancel
             </Button>
-          );
-        }
-        return null;
-      },
+          )}
+          <Button onClick={() => handleDetailClick(record)}>View</Button>
+        </div>
+      ),
     },
   ];
 
@@ -147,14 +149,7 @@ const ConsultationRequests = () => {
       <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>
         Consultation Requests
       </h1>
-      <Table
-        columns={columns}
-        dataSource={initialData}
-        rowKey="id"
-        onRow={(record) => ({
-          onClick: () => handleRowClick(record),
-        })}
-      />
+      <Table columns={columns} dataSource={initialData} rowKey="id" />
 
       <Modal
         title="Consultation Details"

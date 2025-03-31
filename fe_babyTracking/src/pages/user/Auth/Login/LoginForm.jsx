@@ -37,6 +37,7 @@ const LoginForm = () => {
       const token = result?.data?.accessToken;
 
       if (token) {
+        // Save token to session
         sessionStorage.setItem("token", token);
         const userInfo = await getUserInformation();
         sessionStorage.setItem("userId", userInfo.data?.id);

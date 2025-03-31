@@ -34,9 +34,9 @@ export default function ConsultationRequest() {
   }, []);
 
   const pendingRequests = requests?.filter((r) => r.status === "PENDING");
-  const processingRequests = requests?.filter((r) => r.status === "ASSIGNED");
+  const processingRequests = requests?.filter((r) => r.status === "PROCESSING");
   const closedOrCanceled = requests?.filter(
-    (r) => r.status === "CLOSED" || r.status === "CANCELED"
+    (r) => r.status === "CLOSED" || r.status === "CANCELLED"
   );
 
   const handleCreate = () => {

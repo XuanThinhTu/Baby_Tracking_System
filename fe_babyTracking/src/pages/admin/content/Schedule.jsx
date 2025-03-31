@@ -6,6 +6,7 @@ import {
   Modal,
   Pagination,
   Space,
+  Spin,
   TimePicker,
 } from "antd";
 import { useEffect, useState } from "react";
@@ -19,6 +20,7 @@ import {
 } from "../../../services/APIServices";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import { LoadingOutlined } from "@ant-design/icons";
 
 function Schedule() {
   const [slots, setSlots] = useState([]);
@@ -31,8 +33,14 @@ function Schedule() {
   const [currentPage, setCurrentPage] = useState(1);
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedSchedule = workDates?.slice(startIndex, startIndex + pageSize);
-  const [slotTimes, setSlotTimes] = useState({ startTime: "", endTime: "" });
+  const [slotTimes, setSlotTimes] = useState({
+    startTime: "",
+    endTime: "",
+    shifts: "",
+  });
   const [selectedSlots, setSelectedSlots] = useState([]);
+  const [approveLoading, setApproveLoading] = useState(false);
+  const [rejectLoading, setRejectLoading] = useState(false);
 
   const handleCardClick = (doctor) => {
     setSelectedDoctor(doctor);
@@ -117,10 +125,22 @@ function Schedule() {
 
   const handleAddSlot = async () => {
     try {
-      const result = await addNewSlotTimes(
-        slotTimes.startTime,
-        slotTimes.endTime
-      );
+      let shift = "";
+      const start = slotTimes.startTime;
+      const end = slotTimes.endTime;
+      if (start >= "08:00" && end <= "12:00") {
+        shift = "MORNIGN";
+      } else if (start >= "13:00" && end <= "17:00") {
+        shift = "AFTERNOON";
+      } else if (start >= "17:00" && end <= "21:00") {
+        shift = "EVENING";
+      }
+      setSlotTimes((prev) => ({
+        ...prev,
+        shifts: shift,
+      }));
+
+      const result = await addNewSlotTimes(start, end, shift);
       if (result) {
         toast.success("Add slot success!");
         setIsOpen(false);
@@ -134,6 +154,7 @@ function Schedule() {
 
   const handleApprove = async () => {
     const shifts = workDates.map((item) => item.id);
+    setApproveLoading(true);
     if (selectedSlots.length > 0) {
       const result = await approveWorkShift(selectedSlots);
     } else {
@@ -141,9 +162,11 @@ function Schedule() {
     }
     toast.success("Working schedule approved!");
     handleCloseCard();
+    setApproveLoading(false);
   };
 
   const handleReject = async () => {
+    setRejectLoading(true);
     try {
       const shifts = workDates.map((item) => item.id);
       if (selectedDoctor.length > 0) {
@@ -156,6 +179,7 @@ function Schedule() {
     } catch (error) {
       console.log(error);
     }
+    setRejectLoading(false);
   };
 
   return (
@@ -299,10 +323,28 @@ function Schedule() {
                   }}
                 >
                   <Button type="primary" danger onClick={handleReject}>
-                    Reject
+                    {rejectLoading ? (
+                      <>
+                        <Spin indicator={<LoadingOutlined spin />} />{" "}
+                        <span>Rejecting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Reject</span>
+                      </>
+                    )}
                   </Button>
                   <Button type="primary" onClick={handleApprove}>
-                    Approve
+                    {approveLoading ? (
+                      <>
+                        <Spin indicator={<LoadingOutlined spin />} />{" "}
+                        <span>Approving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Approve</span>
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
