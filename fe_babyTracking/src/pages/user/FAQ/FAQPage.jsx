@@ -5,6 +5,18 @@ import { getAllFAQs } from "../../../services/APIServices";
 
 export default function FAQPage() {
   const [faqItems, setFaqItems] = useState([]);
+  const [openIndex, setOpenIndex] = useState(null);
+  const [message, setMessage] = useState("");
+  const toggleFAQ = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert(`Message: ${message}`);
+    setMessage("");
+  };
+
   useEffect(() => {
     const fetchFAQData = async () => {
       try {
@@ -16,22 +28,6 @@ export default function FAQPage() {
     };
     fetchFAQData();
   }, []);
-
-  // State: item đang mở
-  const [openIndex, setOpenIndex] = useState(null);
-
-  const toggleFAQ = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
-  // Form state
-  const [message, setMessage] = useState("");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Message: ${message}`);
-    setMessage("");
-  };
 
   return (
     <>

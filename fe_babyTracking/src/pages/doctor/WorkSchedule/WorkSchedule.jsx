@@ -347,15 +347,6 @@ export default function WorkSchedule() {
 
               <div>
                 <label className="block text-gray-700 font-medium mb-1">
-                  Admin
-                </label>
-                <div className="bg-gray-50 p-3 rounded text-gray-600">
-                  Tu X. Thinh
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-medium mb-1">
                   Company
                 </label>
                 <div className="bg-gray-50 p-3 rounded text-gray-600">
