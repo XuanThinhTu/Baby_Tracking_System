@@ -19,19 +19,20 @@ import dayjs from "dayjs";
 
 const HeightChart = ({ babyId }) => {
   const [baby, setBaby] = useState(null);
-  const [growthData, setGrowthData] = useState([]); // Standard data (SD lines)
-  const [userData, setUserData] = useState([]); // Baby's data
+  const [growthData, setGrowthData] = useState([]); // Dữ liệu chuẩn (SD lines)
+  const [userData, setUserData] = useState([]); // Dữ liệu bé
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [predictData, setPredictData] = useState([]);
+  const [currentData, setCurrentData] = useState(0);
+  const [currentStandard, setCurrentStandard] = useState(0);
 
-  // Function to calculate days from birth date
+  // Hàm tính số ngày từ ngày sinh
   const calculateDays = (birthDate, measuredAt) => {
     const birth = dayjs(birthDate);
     const measured = dayjs(measuredAt);
     return measured.diff(birth, "day");
   };
-
-  // Function to find the closest standard data to the target day
+  // Hàm tìm dòng dữ liệu chuẩn gần nhất với ngày target
   const getClosestStandardData = (targetDay) =>
     growthData.reduce((closest, current) =>
       Math.abs(current.day - targetDay) < Math.abs(closest.day - targetDay)
@@ -39,7 +40,7 @@ const HeightChart = ({ babyId }) => {
         : closest
     );
 
-  // Function to get an array of standard values from standard data
+  // Hàm lấy mảng các chỉ số chuẩn từ dữ liệu chuẩn
   const getStandardValues = (data) => [
     data.SD4neg,
     data.SD3neg,
@@ -51,8 +52,6 @@ const HeightChart = ({ babyId }) => {
     data.SD3,
     data.SD4,
   ];
-
-  // Fetch baby info
   useEffect(() => {
     const fetchBabyInfo = async () => {
       try {
@@ -65,7 +64,7 @@ const HeightChart = ({ babyId }) => {
     fetchBabyInfo();
   }, [babyId]);
 
-  // Fetch baby's actual data
+  // Lấy dữ liệu thực của bé
   useEffect(() => {
     const fetchGrowthData = async () => {
       if (!baby) return;
@@ -77,6 +76,7 @@ const HeightChart = ({ babyId }) => {
           weight: item.weight,
         }));
         setUserData(formatted);
+        setCurrentData(formatted[formatted.length - 1]);
       } catch (error) {
         console.log(error);
       }
@@ -84,7 +84,6 @@ const HeightChart = ({ babyId }) => {
     fetchGrowthData();
   }, [baby, babyId]);
 
-  // Fetch predicted growth data
   useEffect(() => {
     const fetchPredictData = async () => {
       if (!baby || !userData.length) return;
@@ -94,7 +93,7 @@ const HeightChart = ({ babyId }) => {
           day: calculateDays(baby.birthDate, item.predictedDate),
           predictHeight: item.predictedHeight,
         }));
-        // Get the last day's data of the baby and convert it to an object with 2 properties: day and predictHeight
+        // Lấy dữ liệu của ngày cuối cùng của bé và chuyển đổi sang object có 2 thuộc tính: day và predictHeight
         const lastDayData = userData[userData.length - 1];
         const lastDayPredict = {
           day: lastDayData.day,
@@ -109,7 +108,7 @@ const HeightChart = ({ babyId }) => {
     fetchPredictData();
   }, [baby, babyId, userData]);
 
-  // Fetch standard data
+  // Lấy dữ liệu chuẩn
   useEffect(() => {
     const fetchHeightData = async () => {
       if (!baby) return;
@@ -120,7 +119,7 @@ const HeightChart = ({ babyId }) => {
             : await getGirlStandardIndex();
 
         const formatted = result?.map((item) => ({
-          day: item.periodType === "DAY" ? item.period : item.period * 30 + 56, // days
+          day: item.periodType === "DAY" ? item.period : item.period * 30 + 56, // ngày
           SD4neg: item.heightNeg4Sd,
           SD3neg: item.heightNeg3Sd,
           SD2neg: item.heightNeg2Sd,
@@ -139,23 +138,31 @@ const HeightChart = ({ babyId }) => {
     fetchHeightData();
   }, [baby]);
 
-  // === Calculate X domain ===
-  // Get the maximum day of the baby + 60
+  useEffect(() => {
+    if (growthData.length && currentData?.day !== undefined) {
+      const standard = growthData.find((item) => item.day === currentData.day);
+      setCurrentStandard(standard ? [standard] : []);
+    }
+  }, [growthData, currentData]);
+
+  // === Tính domain X ===
+  // Lấy ngày lớn nhất của bé + 60
+
   const userMaxDay = userData.length
     ? Math.max(...userData.map((d) => d.day))
     : Math.max(...growthData.map((d) => d.day));
 
-  const domainMax = userMaxDay + 60; // Add 60 days buffer
+  const domainMax = userMaxDay + 60; // Dư 60 ngày
 
-  // Create an array of ticks as multiples of 30 => display "months"
+  // Tạo mảng tick bội số 30 => hiển thị "tháng"
   const ticks = [];
   let period = userData.length ? 30 : 365;
   for (let i = period; i <= domainMax; i += period) {
     ticks.push(i);
   }
 
-  // === Calculate Y domain "center" around baby's data (ignoring SD lines) ===
-  // Calculate Y domain based on comparison between baby's data and standard index
+  // === Tính domain Y “center” quanh dữ liệu bé (bỏ qua SD lines) ===
+  // Tính domain Y dựa trên so sánh giữa dữ liệu của bé và chỉ số chuẩn
   let yMin = 0;
   let yMax = 130; // fallback
 
@@ -184,7 +191,7 @@ const HeightChart = ({ babyId }) => {
       <LineChart data={growthData} margin={{ right: 20 }}>
         <CartesianGrid stroke="#ccc" strokeDasharray="" />
 
-        {/* X Axis */}
+        {/* Trục X */}
         <XAxis
           dataKey="day"
           type="number"
@@ -196,13 +203,13 @@ const HeightChart = ({ babyId }) => {
             userData.length ? `${val / 30}` : `${val / 365}`
           }
           label={{
-            value: userData.length ? "Months" : "Years",
+            value: userData.length ? "Tháng" : "Năm",
             position: "insideBottomRight",
             offset: 0,
           }}
         />
 
-        {/* Y Axis */}
+        {/* Trục Y */}
         <YAxis
           domain={[yMin, yMax]}
           label={{ value: "cm", angle: -90, position: "insideLeft" }}
@@ -210,17 +217,17 @@ const HeightChart = ({ babyId }) => {
 
         {/* Tooltip */}
         <Tooltip
-          labelFormatter={(dayValue) => `Day: ${dayValue}`}
+          labelFormatter={(dayValue) => `Ngày: ${dayValue}`}
           formatter={(value, name) => {
             if (name === "height") {
-              return [`${value} cm`, "Baby's Height"];
+              return [`${value} cm`, "Chiều cao Bé"];
             }
-            // SD lines => display raw
+            // SD lines => hiển thị raw
             return [value, name];
           }}
         />
 
-        {/* SD Lines */}
+        {/* Đường SD */}
         {growthData.length > 0 &&
           Object.keys(growthData[0])
             .filter((key) => key !== "day")
@@ -236,7 +243,7 @@ const HeightChart = ({ babyId }) => {
               />
             ))}
 
-        {/* Baby's Data Line */}
+        {/* Đường dữ liệu bé */}
         {userData.length > 0 && (
           <Line
             type="monotone"
@@ -249,7 +256,6 @@ const HeightChart = ({ babyId }) => {
           />
         )}
 
-        {/* Predicted Data Line */}
         {predictData.length > 0 && (
           <Line
             type="monotone"
@@ -259,6 +265,7 @@ const HeightChart = ({ babyId }) => {
             dot={{ r: 4 }}
             activeDot={{ r: 6 }}
             isAnimationActive={false}
+            strokeDasharray="5 5"
           />
         )}
       </LineChart>
@@ -269,7 +276,7 @@ const HeightChart = ({ babyId }) => {
     <div>
       <div className="w-full px-4 py-12">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-2xl font-bold">Height</h3>
+          <h3 className="text-2xl font-bold">Chiều cao</h3>
           <a
             href="#"
             className="text-blue-500 text-lg hover:underline"
@@ -278,9 +285,22 @@ const HeightChart = ({ babyId }) => {
               setIsFullScreen(true);
             }}
           >
-            Standard Index
+            Chỉ số tiêu chuẩn
           </a>
         </div>
+        {userData && currentData?.height < currentStandard[0]?.SD1neg ? (
+          <div className="text-red-500 text-center mb-4">
+            ⚠️ LƯU Ý: CHỈ SỐ CHIỀU CAO CỦA BÉ ĐANG THẤP HƠN MỨC TIÊU CHUẨN!
+          </div>
+        ) : userData && currentData?.height > currentStandard[0]?.SD1 ? (
+          <div className="text-red-500 text-center mb-4">
+            ⚠️ LƯU Ý: CHỈ SỐ CHIỀU CAO CỦA BÉ ĐANG CAO HƠN MỨC TIÊU CHUẨN!
+          </div>
+        ) : userData.length > 0 ? (
+          <div className="text-green-500 text-center mb-4">
+            ✅ BÉ CÓ CHỈ SỐ CHIỀU CAO KHỎE MẠNH!
+          </div>
+        ) : null}
 
         {/* Chart */}
         <div style={{ width: "100%", height: 600 }}>{renderChart()}</div>
@@ -294,7 +314,7 @@ const HeightChart = ({ babyId }) => {
               setIsFullScreen(true);
             }}
           >
-            View Details <span className="ml-1">&gt;</span>
+            Xem chi tiết <span className="ml-1">&gt;</span>
           </a>
           <span className="mx-4 border-l border-gray-300 h-5"></span>
           <a
@@ -305,17 +325,17 @@ const HeightChart = ({ babyId }) => {
               setIsFullScreen(true);
             }}
           >
-            View Fullscreen <span className="ml-1">&gt;</span>
+            Xem toàn màn hình <span className="ml-1">&gt;</span>
           </a>
         </div>
       </div>
 
-      {/* Fullscreen Modal */}
+      {/* Modal toàn màn hình */}
       {isFullScreen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
           <div className="bg-white w-full h-full flex flex-col">
             <div className="relative border-b p-4 flex items-center justify-center">
-              <span className="font-bold text-lg">Height Chart</span>
+              <span className="font-bold text-lg">Biểu đồ Chiều Cao</span>
               <button
                 className="absolute right-4 text-gray-600 hover:text-gray-800"
                 onClick={() => setIsFullScreen(false)}
