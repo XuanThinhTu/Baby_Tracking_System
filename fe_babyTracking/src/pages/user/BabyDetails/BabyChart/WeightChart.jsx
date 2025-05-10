@@ -22,6 +22,8 @@ const WeightChart = ({ babyId }) => {
   const [growthData, setGrowthData] = useState([]); // Dữ liệu chuẩn (SD lines)
   const [userData, setUserData] = useState([]); // Dữ liệu bé
   const [predictData, setPredictData] = useState([]);
+  const [currentData, setCurrentData] = useState(0);
+  const [currentStandard, setCurrentStandard] = useState(0);
 
   // Tính ngày so với birthDate
   const calculateDays = (birthDate, measuredAt) => {
@@ -76,6 +78,7 @@ const WeightChart = ({ babyId }) => {
           height: item.height,
         }));
         setUserData(formattedData);
+        setCurrentData(formattedData[formattedData.length - 1]);
       } catch (error) {
         console.log(error);
       }
@@ -118,7 +121,7 @@ const WeightChart = ({ babyId }) => {
             : await getGirlStandardIndex();
 
         const formattedData = result.map((item) => ({
-          day: (item.periodType === "DAY" ? item.period : (item.period * 30) + 56), // ngày
+          day: item.periodType === "DAY" ? item.period : item.period * 30 + 56, // ngày
           SD4neg: item.weightNeg4Sd,
           SD3neg: item.weightNeg3Sd,
           SD2neg: item.weightNeg2Sd,
@@ -138,13 +141,19 @@ const WeightChart = ({ babyId }) => {
     fetchWeightData();
   }, [baby]);
 
+  useEffect(() => {
+    if (growthData.length && currentData?.day !== undefined) {
+      const standard = growthData.find((item) => item.day === currentData.day);
+      setCurrentStandard(standard ? [standard] : []);
+    }
+  }, [growthData, currentData]);
+
   // === Tính domain X ===
   // Lấy ngày lớn nhất của bé + 60
 
   const userMaxDay = userData.length
     ? Math.max(...userData.map((d) => d.day))
     : Math.max(...growthData.map((d) => d.day));
-
 
   const domainMax = userMaxDay + 60; // Dư 60 ngày
 
@@ -154,7 +163,6 @@ const WeightChart = ({ babyId }) => {
   for (let i = period; i <= domainMax; i += period) {
     ticks.push(i);
   }
-
 
   // === Tính domain Y “center” quanh dữ liệu bé (bỏ qua SD lines) ===
   // Tính domain Y dựa trên so sánh giữa dữ liệu của bé và chỉ số chuẩn
@@ -179,6 +187,7 @@ const WeightChart = ({ babyId }) => {
     yMax = Math.max(babyMax, standardMax);
     if (yMin < 0) yMin = 0;
   }
+
   const mergedData = [...userData, ...predictData].sort(
     (a, b) => a.day - b.day
   );
@@ -197,8 +206,14 @@ const WeightChart = ({ babyId }) => {
           scale="linear"
           ticks={ticks}
           interval={0}
-          tickFormatter={(val) => (userData.length ? `${val / 30}` : `${val / 365}`)}
-          label={{ value: (userData.length ? "Tháng" : "Năm"), position: "insideBottomRight", offset: 0 }}
+          tickFormatter={(val) =>
+            userData.length ? `${val / 30}` : `${val / 365}`
+          }
+          label={{
+            value: userData.length ? "Tháng" : "Năm",
+            position: "insideBottomRight",
+            offset: 0,
+          }}
         />
 
         {/* Trục Y */}
@@ -256,6 +271,7 @@ const WeightChart = ({ babyId }) => {
             dot={{ r: 4 }}
             activeDot={{ r: 6 }}
             isAnimationActive={false}
+            strokeDasharray="5 5"
           />
         )}
 
@@ -290,11 +306,24 @@ const WeightChart = ({ babyId }) => {
   return (
     <div className="w-full px-4 py-12">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-bold">Weight</h3>
+        <h3 className="text-2xl font-bold">Cân nặng</h3>
         <a href="#" className="text-blue-500 text-lg hover:underline">
-          Standard Index
+          Chỉ số tiêu chuẩn
         </a>
       </div>
+      {userData && currentData?.weight < currentStandard[0]?.SD1neg ? (
+        <div className="text-red-500 text-center mb-4">
+          ⚠️ LƯU Ý: CHỈ SỐ CÂN NẶNG CỦA BÉ ĐANG Ở MỨC SUY DINH DƯỠNG!
+        </div>
+      ) : userData && currentData?.weight > currentStandard[0]?.SD1 ? (
+        <div className="text-red-500 text-center mb-4">
+          ⚠️ LƯU Ý: CHỈ SỐ CÂN NẶNG CỦA BÉ ĐANG Ở MỨC THỪA CÂN!
+        </div>
+      ) : userData.length > 0 ? (
+        <div className="text-green-500 text-center mb-4">
+          ✅ BÉ CÓ CHỈ SỐ CÂN NẶNG KHỎE MẠNH!
+        </div>
+      ) : null}
 
       {/* Chart container */}
       <div style={{ width: "100%", height: 600 }}>{renderChart()}</div>
@@ -302,11 +331,11 @@ const WeightChart = ({ babyId }) => {
       {/* Link Xem chi tiết / Xem toàn màn hình */}
       <div className="flex justify-center items-center mt-6 text-lg text-purple-500">
         <a href="#" className="hover:underline flex items-center">
-          View Details <span className="ml-1">&gt;</span>
+          Xem chi tiết <span className="ml-1">&gt;</span>
         </a>
         <span className="mx-4 border-l border-gray-300 h-5"></span>
         <a href="#" className="hover:underline flex items-center">
-          View Fullscreen <span className="ml-1">&gt;</span>
+          Xem toàn màn hình <span className="ml-1">&gt;</span>
         </a>
       </div>
     </div>
